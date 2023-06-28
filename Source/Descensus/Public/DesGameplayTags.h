@@ -1,0 +1,13 @@
+﻿#pragma once
+
+#include "NativeGameplayTags.h"
+
+/** Movement */
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Movement_Run)
+
+/** Input */
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Input_Move)
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Input_Crouch)
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Input_Look)
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Input_LookAxis)
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Input_Primary)

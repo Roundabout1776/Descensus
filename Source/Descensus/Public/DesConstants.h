@@ -1,0 +1,10 @@
+﻿#pragma once
+
+#define ECC_MouseInteraction ECollisionChannel::ECC_GameTraceChannel2
+
+#define RR_CLOUD_SIZE 32
+#define RR_LOOKUP_TABLE_SIZE 64
+#define RR_MAX_INT_COORDINATES 1024
+#define RR_LOOKUP_TABLE_SCALE_FACTOR (RR_MAX_INT_COORDINATES / RR_LOOKUP_TABLE_SIZE)
+
+#define DEFAULT_EFFECT_PERIOD 1.0 / 15.0
