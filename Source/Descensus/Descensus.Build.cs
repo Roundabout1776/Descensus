@@ -16,5 +16,9 @@ public class Descensus : ModuleRules
 		PrivateIncludePaths.AddRange(new string[] { });
 		PublicIncludePathModuleNames.AddRange(new string[] { });
 		PrivateIncludePathModuleNames.AddRange(new string[] { });
+		if (Target.bBuildEditor)
+		{
+			PrivateDependencyModuleNames.AddRange(new [] {"UnrealEd"});
+		}
 	}
 }

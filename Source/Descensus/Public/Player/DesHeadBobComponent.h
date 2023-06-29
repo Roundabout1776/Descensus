@@ -5,6 +5,7 @@
 #include "DesHeadBobComponent.generated.h"
 
 class ADesPlayerCharacter;
+class UCameraShakeBase;
 
 UENUM(BlueprintType)
 enum class EHeadBobMode : uint8

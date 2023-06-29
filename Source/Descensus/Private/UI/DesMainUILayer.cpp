@@ -6,6 +6,7 @@
 #include "Components/Overlay.h"
 #include "Player/DesPlayerController.h"
 #include "UI/DesShortcutsPanel.h"
+#include "Materials/MaterialInstanceDynamic.h"
 
 void UDesMainUILayer::HandleControlMappingsRebuilt()
 {

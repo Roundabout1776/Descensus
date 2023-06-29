@@ -210,7 +210,6 @@
 	],
 	"TargetPlatforms": [
 		"Win64",
-		"Windows",
-		"HoloLens"
+		"Windows"
 	]
 }

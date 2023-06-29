@@ -7,6 +7,7 @@
 #include "Engine/TextureRenderTarget2D.h"
 #include "Magic/DesInscriptionSubsystem.h"
 #include "Magic/DesRuneData.h"
+#include "Materials/MaterialInstanceDynamic.h"
 
 ADesInscriptionCanvas::ADesInscriptionCanvas()
 {

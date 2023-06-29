@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 #include "DesGesture.h"
+#include "Engine/DataAsset.h"
 #include "DesRuneData.generated.h"
 
 UCLASS(BlueprintType)

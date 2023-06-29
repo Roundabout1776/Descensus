@@ -6,6 +6,7 @@
 #include "Player/DesPlayerController.h"
 #include "MathUtil.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Camera/CameraShakeBase.h"
 
 UDesHeadBobComponent::UDesHeadBobComponent()
 {
