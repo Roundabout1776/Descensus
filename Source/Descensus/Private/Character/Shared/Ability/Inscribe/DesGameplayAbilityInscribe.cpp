@@ -10,7 +10,7 @@ UE_DEFINE_GAMEPLAY_TAG(TAG_Ability_Inscribe_Active_Local, "Ability.Inscribe.Acti
 UDesGameplayAbilityInscribe::UDesGameplayAbilityInscribe()
 {
 	AbilityTags.AddTag(TAG_Ability_Inscribe);
-	// ActivationOwnedTags.AddTag(TAG_Equip_Inscribe);
+	ActivationOwnedTags.AddTag(TAG_Equip_Inscribe);
 	AbilityInputID = EDesAbilityInputID::Inscribe;
 	
 	LocalActivationOwnedTags.AddTag(TAG_Ability_Inscribe_Active_Local);

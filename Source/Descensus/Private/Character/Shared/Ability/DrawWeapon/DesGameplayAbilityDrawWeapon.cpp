@@ -13,7 +13,7 @@ UE_DEFINE_GAMEPLAY_TAG(TAG_Ability_DrawWeapon_Active_Local, "Ability.DrawWeapon.
 UDesGameplayAbilityDrawWeapon::UDesGameplayAbilityDrawWeapon()
 {
 	AbilityTags.AddTag(TAG_Ability_DrawWeapon);
-	// ActivationOwnedTags.AddTag(TAG_Equip_Unarmed);
+	ActivationOwnedTags.AddTag(TAG_Equip_Unarmed);
 	AbilityInputID = EDesAbilityInputID::DrawWeapon;
 	
 	LocalActivationOwnedTags.AddTag(TAG_Ability_DrawWeapon_Active_Local);

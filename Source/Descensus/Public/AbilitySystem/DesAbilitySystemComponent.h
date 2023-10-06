@@ -14,6 +14,6 @@ public:
 	virtual void ReleaseAbilityClass(TSubclassOf<UGameplayAbility> AbilityClass);
 	virtual void PressAbilitySpec(FGameplayAbilitySpec& Spec);
 	virtual void ReleaseAbilitySpec(FGameplayAbilitySpec& Spec);
-	virtual void PressAbilitiesByTag(FGameplayTag Tag, bool bPressOnlyActive);
-	virtual void ReleaseAbilitiesByTag(FGameplayTag Tag, bool bReleaseOnlyActive);
+	virtual void PressAbilitiesByTag(const FGameplayTagContainer& GameplayTagContainer, bool bPressOnlyActive);
+	virtual void ReleaseAbilitiesByTag(const FGameplayTagContainer& GameplayTagContainer, bool bReleaseOnlyActive);
 };

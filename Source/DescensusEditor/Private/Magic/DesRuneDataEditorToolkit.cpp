@@ -43,7 +43,7 @@ void FDesRuneDataEditorToolkit::RegisterTabSpawners(const TSharedRef<FTabManager
 
 	WorkspaceMenuCategory = InTabManager->AddLocalWorkspaceMenuCategory(INVTEXT("Rune Data Editor"));
 
-	InTabManager->RegisterTabSpawner("RuneDataPlotTab", FOnSpawnTab::CreateLambda([=](const FSpawnTabArgs&)
+	InTabManager->RegisterTabSpawner("RuneDataPlotTab", FOnSpawnTab::CreateLambda([this](const FSpawnTabArgs&)
 	            {
 		            return SNew(SDockTab)
 		            [

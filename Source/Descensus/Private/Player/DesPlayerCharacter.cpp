@@ -15,6 +15,7 @@
 #include "Player/DesPlayerAttributeSet.h"
 #include "Player/Ability/DesGameplayAbilityPlayerInscribe.h"
 #include "Player/DesPlayerAnimInstance.h"
+#include "Player/Ability/Drag/DesGameplayAbilityPlayerDrag.h"
 
 ADesPlayerCharacter::ADesPlayerCharacter(const FObjectInitializer& ObjectInitializer) : Super(
 	ObjectInitializer.SetDefaultSubobjectClass<UDesPlayerAttributeSet>(AttributeSetName))
@@ -22,6 +23,10 @@ ADesPlayerCharacter::ADesPlayerCharacter(const FObjectInitializer& ObjectInitial
 	NetUpdateFrequency = 10.0f;
 
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
+	
+	DefaultAbilities.Add(UDesGameplayAbilityPlayerDrag::StaticClass());
+
+	DragActorTarget = CreateDefaultSubobject<USceneComponent>(TEXT("DragActorTarget"));
 
 	MetaComponent->Name = FText::FromString(TEXT("PC"));
 
@@ -53,16 +58,6 @@ void ADesPlayerCharacter::InputMoveTriggered(const FInputActionInstance& Instanc
 {
 	const auto MoveValue = Instance.GetValue().Get<FVector2D>();
 	AddMovementInput(Camera->GetForwardVector() * MoveValue.Y + Camera->GetRightVector() * MoveValue.X);
-}
-
-void ADesPlayerCharacter::InputPrimaryStarted()
-{
-	AbilitySystemComponent->PressAbilitiesByTag(TAG_Ability_Primary, false);
-}
-
-void ADesPlayerCharacter::InputPrimaryCompleted()
-{
-	AbilitySystemComponent->ReleaseAbilitiesByTag(TAG_Ability_Primary, false);
 }
 
 void ADesPlayerCharacter::InputAbilityPressed(const int32 InputID)
@@ -149,10 +144,6 @@ void ADesPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	                       &ThisClass::InputLookAxisTriggered);
 	Input->BindActionByTag(InputConfig, TAG_Input_Move, ETriggerEvent::Triggered, this,
 	                       &ThisClass::InputMoveTriggered);
-	Input->BindActionByTag(InputConfig, TAG_Input_Primary, ETriggerEvent::Started, this,
-	                       &ThisClass::InputPrimaryStarted);
-	Input->BindActionByTag(InputConfig, TAG_Input_Primary, ETriggerEvent::Completed, this,
-	                       &ThisClass::InputPrimaryCompleted);
 
 	Input->BindAbilities(InputConfig, this, &ThisClass::InputAbilityPressed, &ThisClass::InputAbilityReleased);
 }

@@ -10,10 +10,7 @@ UCLASS()
 class DESCENSUS_API UDesGameplayAbility : public UGameplayAbility
 {
 	GENERATED_BODY()
-
-	/** Hide built-in ActivationOwnedTags; Use custom instead */
-	using Super::ActivationOwnedTags;
-
+	
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Descensus|Ability")
 	FGameplayTagContainer NonReplicatedActivationOwnedTags;

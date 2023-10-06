@@ -1,5 +1,7 @@
 #include "AbilitySystem/DesAbilitySystemComponent.h"
 
+static TArray<FGameplayAbilitySpec*> TemporaryAbilities;
+
 void UDesAbilitySystemComponent::PressAbilityClass(TSubclassOf<UGameplayAbility> AbilityClass)
 {
 	ABILITYLIST_SCOPE_LOCK();
@@ -64,12 +66,10 @@ void UDesAbilitySystemComponent::ReleaseAbilitySpec(FGameplayAbilitySpec& Spec)
 	}
 }
 
-void UDesAbilitySystemComponent::PressAbilitiesByTag(FGameplayTag Tag, bool bPressOnlyActive)
+void UDesAbilitySystemComponent::PressAbilitiesByTag(const FGameplayTagContainer& GameplayTagContainer, bool bPressOnlyActive)
 {
-	/** @TODO fix */
-	TArray<FGameplayAbilitySpec*> TemporaryAbilities;
-
-	GetActivatableGameplayAbilitySpecsByAllMatchingTags(FGameplayTagContainer(Tag), TemporaryAbilities);
+	TemporaryAbilities.Empty();
+	GetActivatableGameplayAbilitySpecsByAllMatchingTags(GameplayTagContainer, TemporaryAbilities);
 	ABILITYLIST_SCOPE_LOCK();
 	for (const auto Spec : TemporaryAbilities)
 	{
@@ -81,12 +81,10 @@ void UDesAbilitySystemComponent::PressAbilitiesByTag(FGameplayTag Tag, bool bPre
 	}
 }
 
-void UDesAbilitySystemComponent::ReleaseAbilitiesByTag(FGameplayTag Tag, bool bReleaseOnlyActive)
+void UDesAbilitySystemComponent::ReleaseAbilitiesByTag(const FGameplayTagContainer& GameplayTagContainer, bool bReleaseOnlyActive)
 {
-	/** @TODO fix */
-	TArray<FGameplayAbilitySpec*> TemporaryAbilities;
-
-	GetActivatableGameplayAbilitySpecsByAllMatchingTags(FGameplayTagContainer(Tag), TemporaryAbilities);
+	TemporaryAbilities.Empty();
+	GetActivatableGameplayAbilitySpecsByAllMatchingTags(GameplayTagContainer, TemporaryAbilities, false);
 	ABILITYLIST_SCOPE_LOCK();
 	for (const auto Spec : TemporaryAbilities)
 	{

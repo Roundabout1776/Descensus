@@ -7,12 +7,6 @@ UDesAbilityTaskRun::UDesAbilityTaskRun(const FObjectInitializer& ObjectInitializ
 	bTickingTask = true;
 }
 
-UDesAbilityTaskRun* UDesAbilityTaskRun::Run(UGameplayAbility* OwningAbility)
-{
-	UDesAbilityTaskRun* MyObj = NewAbilityTask<UDesAbilityTaskRun>(OwningAbility);
-	return MyObj;
-}
-
 void UDesAbilityTaskRun::Activate()
 {
 	const FGameplayAbilityActorInfo* ActorInfo = Ability->GetCurrentActorInfo();

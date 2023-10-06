@@ -26,10 +26,6 @@ protected:
 	void InputLookAxisTriggered(const FInputActionInstance& Instance);
 	void InputMoveTriggered(const FInputActionInstance& Instance);
 	
-	/** These look for an active TAG_Ability_Hands ability and send pressed event to it */
-	void InputPrimaryStarted();
-	void InputPrimaryCompleted();
-
 	/** These activate abilities from InputConfig */
 	void InputAbilityPressed(const int32 InputID);
 	void InputAbilityReleased(const int32 InputID);
@@ -44,6 +40,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	virtual void OnRep_PlayerState() override;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Descensus|PlayerCharacter")
+	TObjectPtr<USceneComponent> DragActorTarget;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Descensus|PlayerCharacter")
 	TObjectPtr<USkeletalMesh> RegularMesh;

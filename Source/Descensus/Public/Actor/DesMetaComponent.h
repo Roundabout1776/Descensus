@@ -15,11 +15,16 @@ class DESCENSUS_API UDesMetaComponent : public UActorComponent
 protected:
 	virtual void BeginPlay() override;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Descensus|Actor")
+	bool bDragAndDrop;
+
 public:
 	UDesMetaComponent();
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
+
+	FORCEINLINE bool IsDragAndDrop() { return bDragAndDrop; }
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Descensus|Actor")
 	FText Name;

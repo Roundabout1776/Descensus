@@ -25,6 +25,8 @@ class DESCENSUS_API ADesPlayerController : public APlayerController
 	void InputLookTriggered();
 	void InputLookStarted();
 	void InputLookCompleted();
+	void InputPrimaryStarted();
+	void InputPrimaryCompleted();
 
 protected:
 	virtual void BeginPlay() override;

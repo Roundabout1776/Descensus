@@ -64,7 +64,7 @@ void UDesGameplayAbilityRun::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 		WaitStaminaChange->OnChange.AddDynamic(this, &ThisClass::OnStaminaDepleted);
 		WaitStaminaChange->ReadyForActivation();
 
-		const auto RunTask = UDesAbilityTaskRun::Run(this);
+		const auto RunTask = UAbilityTask::NewAbilityTask<UDesAbilityTaskRun>(this);
 		RunTask->OnRun.BindUObject(this, &ThisClass::OnRun);
 		RunTask->ReadyForActivation();
 	}

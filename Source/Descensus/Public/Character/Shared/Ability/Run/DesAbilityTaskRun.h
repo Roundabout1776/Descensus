@@ -14,6 +14,7 @@ UCLASS()
 class DESCENSUS_API UDesAbilityTaskRun : public UAbilityTask
 {
 	GENERATED_UCLASS_BODY()
+
 	UPROPERTY()
 	TWeakObjectPtr<UDesCharacterMovementComponent> CachedMovementComponent;
 
@@ -24,6 +25,4 @@ public:
 	virtual void TickTask(float DeltaTime) override;
 
 	FRunDelegate OnRun;
-
-	static UDesAbilityTaskRun* Run(UGameplayAbility* OwningAbility);
 };

@@ -10,6 +10,9 @@
 #include "Input/DesEnhancedInputComponent.h"
 #include "Player/DesInscriptionCanvas.h"
 #include "Player/DesPlayerCharacter.h"
+#include "Player/Ability/Drag/DesGameplayAbilityPlayerDrag.h"
+#include "AbilitySystem/DesGameplayAbilityPrimaryBase.h"
+#include "AbilitySystem/DesAbilitySystemComponent.h"
 #include "Slate/SceneViewport.h"
 
 ADesPlayerController::ADesPlayerController(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -45,11 +48,15 @@ void ADesPlayerController::AcknowledgePossession(APawn* InPawn)
 
 	const auto Input = Cast<UDesEnhancedInputComponent>(InputComponent);
 	Input->BindActionByTag(InputConfig, TAG_Input_Look, ETriggerEvent::Triggered, this,
-	                       &ADesPlayerController::InputLookTriggered);
+	                       &ThisClass::InputLookTriggered);
 	Input->BindActionByTag(InputConfig, TAG_Input_Look, ETriggerEvent::Started, this,
-	                       &ADesPlayerController::InputLookStarted);
+	                       &ThisClass::InputLookStarted);
 	Input->BindActionByTag(InputConfig, TAG_Input_Look, ETriggerEvent::Completed, this,
-	                       &ADesPlayerController::InputLookCompleted);
+	                       &ThisClass::InputLookCompleted);
+	Input->BindActionByTag(InputConfig, TAG_Input_Primary, ETriggerEvent::Started, this,
+	                       &ThisClass::InputPrimaryStarted);
+	Input->BindActionByTag(InputConfig, TAG_Input_Primary, ETriggerEvent::Completed, this,
+	                       &ThisClass::InputPrimaryCompleted);
 }
 
 void ADesPlayerController::InputLookTriggered()
@@ -157,4 +164,28 @@ void ADesPlayerController::GetMousePositionDetailed(FVector2D& Position, FVector
 
 	PositionNormalized = PositionNDC;
 	PositionNormalized.Y /= ViewportSize.X / static_cast<double>(ViewportSize.Y);
+}
+
+void ADesPlayerController::InputPrimaryStarted()
+{
+	if (!PlayerCharacter.IsValid())
+		return;
+	auto ASC = Cast<UDesAbilitySystemComponent>(PlayerCharacter->GetAbilitySystemComponent());
+	if (IsLooking()) {
+		ASC->PressAbilitiesByTag(FGameplayTagContainer(TAG_Ability_Primary), false);
+	} else {
+		ASC->PressAbilitiesByTag(FGameplayTagContainer(TAG_Ability_PlayerDrag), false);
+	}
+}
+
+void ADesPlayerController::InputPrimaryCompleted()
+{
+	if (!PlayerCharacter.IsValid())
+		return;
+	auto ASC = Cast<UDesAbilitySystemComponent>(PlayerCharacter->GetAbilitySystemComponent());
+	if (IsLooking()) {
+		ASC->ReleaseAbilitiesByTag(FGameplayTagContainer(TAG_Ability_Primary), true);
+	} else {
+		ASC->ReleaseAbilitiesByTag(FGameplayTagContainer(TAG_Ability_PlayerDrag), true);
+	}
 }
