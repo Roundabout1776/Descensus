@@ -5,6 +5,8 @@ public class DescensusEditor : ModuleRules
     public DescensusEditor(ReadOnlyTargetRules Target) : base(Target)
     {
         PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
+        
+		PrivateIncludePaths.AddRange(new string[] {"DescensusEditor"});
 
         PublicDependencyModuleNames.AddRange(
             new []

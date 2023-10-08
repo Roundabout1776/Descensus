@@ -10,15 +10,15 @@ void SDesPreLoadWidget::Construct(const FArguments& InArgs)
 {
 	ChildSlot
 	[
-	    SNew(SBorder)
+		SNew(SBorder)
 	    .VAlign(VAlign_Center)
 	    .HAlign(HAlign_Center)
 		.BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush"))
 		.BorderBackgroundColor(FLinearColor::Black)
 		.Padding(0)
-	    [
-	    	SNew(SCircularThrobber)
-	    ]
+		[
+			SNew(SCircularThrobber)
+		]
 	];
 }
 

@@ -5,14 +5,14 @@
 
 class FDesPreLoadScreen;
 
-class FDesStartupLoadingScreenModule : public IModuleInterface
+class FDesStartupLoadingScreenModule final : public IModuleInterface
 {
-    TSharedPtr<FDesPreLoadScreen> PreLoadScreen;
-    
-    static void ShutdownOnPreLoadScreenManagerCleanUp();
-    
+	TSharedPtr<FDesPreLoadScreen> PreLoadScreen;
+
+	static void ShutdownOnPreLoadScreenManagerCleanUp();
+
 public:
-    virtual void StartupModule() override;
-    virtual void ShutdownModule() override;
-    virtual bool IsGameModule() const override;
+	virtual void StartupModule() override;
+	virtual void ShutdownModule() override;
+	virtual bool IsGameModule() const override;
 };

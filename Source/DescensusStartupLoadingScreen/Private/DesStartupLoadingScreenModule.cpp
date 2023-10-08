@@ -16,7 +16,8 @@ void FDesStartupLoadingScreenModule::StartupModule()
 	if (PreLoadScreen.IsValid())
 	{
 		FPreLoadScreenManager::Get()->RegisterPreLoadScreen(PreLoadScreen);
-		FPreLoadScreenManager::Get()->OnPreLoadScreenManagerCleanUp.AddStatic(&FDesStartupLoadingScreenModule::ShutdownOnPreLoadScreenManagerCleanUp);
+		FPreLoadScreenManager::Get()->OnPreLoadScreenManagerCleanUp.AddStatic(
+			&FDesStartupLoadingScreenModule::ShutdownOnPreLoadScreenManagerCleanUp);
 		PreLoadScreen->Init();
 	}
 }

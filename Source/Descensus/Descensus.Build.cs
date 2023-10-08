@@ -12,7 +12,7 @@ public class Descensus : ModuleRules
 			"GameplayAbilities"
 		});
 		PrivateDependencyModuleNames.AddRange(new[] { "Slate", "SlateCore", "GameplayTags", "GameplayTasks" });
-		PublicIncludePaths.AddRange(new string[] { });
+		PublicIncludePaths.AddRange(new string[] {"Descensus"});
 		PrivateIncludePaths.AddRange(new string[] { });
 		PublicIncludePathModuleNames.AddRange(new string[] { });
 		PrivateIncludePathModuleNames.AddRange(new string[] { });

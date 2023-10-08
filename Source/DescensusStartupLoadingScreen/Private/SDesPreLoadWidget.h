@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "Widgets/SCompoundWidget.h"
 
-class SDesPreLoadWidget : public SCompoundWidget
+class SDesPreLoadWidget final : public SCompoundWidget
 {
 public:
 	SLATE_BEGIN_ARGS(SDesPreLoadWidget)

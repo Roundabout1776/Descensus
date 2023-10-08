@@ -5,7 +5,7 @@
 #include "Templates/SharedPointer.h"
 #include <atomic>
 
-class FDesPreLoadScreen : public FPreLoadScreenBase
+class FDesPreLoadScreen final : public FPreLoadScreenBase
 {
 	TSharedPtr<SWidget> Widget = nullptr;
 	double MinTime = 1.0;
@@ -16,7 +16,12 @@ public:
 	virtual void Init() override;
 	virtual void Tick(float DeltaTime) override;
 	virtual void CleanUp() override;
-	virtual EPreLoadScreenTypes GetPreLoadScreenType() const override { return EPreLoadScreenTypes::EngineLoadingScreen; }
+
+	virtual EPreLoadScreenTypes GetPreLoadScreenType() const override
+	{
+		return EPreLoadScreenTypes::EngineLoadingScreen;
+	}
+
 	virtual const TSharedPtr<const SWidget> GetWidget() const override { return Widget; }
 	virtual TSharedPtr<SWidget> GetWidget() override { return Widget; }
 	virtual bool IsDone() const override { return IsDoneFlag; }
