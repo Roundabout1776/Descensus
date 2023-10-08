@@ -24,13 +24,6 @@ void UDesInscriptionComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-void UDesInscriptionComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME_CONDITION(UDesInscriptionComponent, InscriptionOffset, COND_SimulatedOnly)
-}
-
 void UDesInscriptionComponent::ServerSetInscriptionOffset_Implementation(
 	const FVector2D& InInscriptionOffset)
 {
@@ -48,4 +41,11 @@ bool UDesInscriptionComponent::IsInscribing() const
 {
 	return DesCharacterOwner && DesCharacterOwner->GetAbilitySystemComponent()->HasMatchingGameplayTag(
 		TAG_Ability_PlayerInscribe_Active);
+}
+
+void UDesInscriptionComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION(UDesInscriptionComponent, InscriptionOffset, COND_SimulatedOnly)
 }

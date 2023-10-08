@@ -216,7 +216,7 @@ void ADesPlayerController::InputPrimaryCompleted()
 
 UPrimitiveComponent* ADesPlayerController::GetCurrentClickablePrimitive(const bool bForGrab) const
 {
-	if (bForGrab && (!MetaComponentUnderCursor.IsValid() || !MetaComponentUnderCursor->GetPlayerCanGrab()))
+	if (bForGrab && (!MetaComponentUnderCursor.IsValid() || !MetaComponentUnderCursor->CanBeGrabbed()))
 	{
 		return nullptr;
 	}

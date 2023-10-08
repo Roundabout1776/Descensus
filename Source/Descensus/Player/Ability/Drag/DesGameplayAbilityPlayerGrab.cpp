@@ -5,6 +5,7 @@
 #include "Abilities/Tasks/AbilityTask_WaitInputRelease.h"
 #include "DesLogging.h"
 #include "AbilitySystem/DesGameplayAbilityTargetDataTypes.h"
+#include "Actor/DesMetaComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 
 UE_DEFINE_GAMEPLAY_TAG(TAG_Ability_PlayerDrag, "Ability.PlayerDrag")
@@ -28,11 +29,14 @@ void UDesGameplayAbilityPlayerGrab::EndAbilityCleanup(const FGameplayAbilitySpec
 	{
 		const auto PhysicsHandle = GetDesPlayerCharacterFromActorInfo()->PhysicsHandle;
 		PhysicsHandle->ReleaseComponent();
+
+		if (const auto MetaComponent = CachedPrimitiveComponent->GetOwner()->GetComponentByClass<UDesMetaComponent>())
+		{
+			MetaComponent->Tags.RemoveTag(TAG_Meta_Grabbed);
+		}
 	}
 
 	CachedPrimitiveComponent.Reset();
-
-	DES_LOG_BOOL("PlayerDrag: EndAbilityCleanup", true)
 }
 
 void UDesGameplayAbilityPlayerGrab::ActivateAbilityLocalPlayer(const FGameplayAbilitySpecHandle Handle,
@@ -77,10 +81,14 @@ void UDesGameplayAbilityPlayerGrab::ActivateAbilityWithTargetData(
 
 	CachedPrimitiveComponent = MakeWeakObjectPtr(PrimitiveComponent);
 
-	const auto DragTask = UAbilityTask::NewAbilityTask<UDesAbilityTaskPlayerGrab>(this);
-	DragTask->PhysicsHandle = MakeWeakObjectPtr(PhysicsHandle);
-	DragTask->Character = MakeWeakObjectPtr(GetDesPlayerCharacterFromActorInfo());
-	DragTask->ReadyForActivation();
+	if (const auto MetaComponent = CachedPrimitiveComponent->GetOwner()->GetComponentByClass<UDesMetaComponent>())
+	{
+		MetaComponent->Tags.AddTag(TAG_Meta_Grabbed);
+	}
+
+	const auto GrabTask = UAbilityTask::NewAbilityTask<UDesAbilityTaskPlayerGrab>(this);
+	GrabTask->Character = MakeWeakObjectPtr(GetDesPlayerCharacterFromActorInfo());
+	GrabTask->ReadyForActivation();
 }
 
 bool UDesGameplayAbilityPlayerGrab::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,

@@ -1,6 +1,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DesGameplayTags.h"
+#include "GameplayTagContainer.h"
 #include "Components/ActorComponent.h"
 #include "DesMetaComponent.generated.h"
 
@@ -15,19 +17,19 @@ class DESCENSUS_API UDesMetaComponent : public UActorComponent
 protected:
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Descensus|Actor")
-	bool bPlayerCanGrab;
-
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Descensus|Meta")
+	FText Name;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Descensus|Meta", Replicated)
+	FGameplayTagContainer Tags;
+
 	UDesMetaComponent();
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 
-	FORCEINLINE bool GetPlayerCanGrab() const { return bPlayerCanGrab; }
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Descensus|Actor")
-	FText Name;
+	FORCEINLINE bool CanBeGrabbed() const { return Tags.HasTag(TAG_Meta_Grabbable) && !Tags.HasTag(TAG_Meta_Grabbed); }
 
 	UFUNCTION()
 	FDesTooltipData GetTooltipData() const;

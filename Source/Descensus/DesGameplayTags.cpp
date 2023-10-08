@@ -1,5 +1,9 @@
 ﻿#include "DesGameplayTags.h"
 
+/** Meta */
+UE_DEFINE_GAMEPLAY_TAG(TAG_Meta_Grabbable, "Meta.Grabbable")
+UE_DEFINE_GAMEPLAY_TAG(TAG_Meta_Grabbed, "Meta.Grab")
+
 /** Movement */
 UE_DEFINE_GAMEPLAY_TAG(TAG_Movement_Run, "Movement.Run")
 

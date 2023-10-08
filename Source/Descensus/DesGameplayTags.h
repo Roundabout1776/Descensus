@@ -2,6 +2,10 @@
 
 #include "NativeGameplayTags.h"
 
+/** Meta */
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Meta_Grabbable)
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Meta_Grabbed)
+
 /** Movement */
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Movement_Run)
 
