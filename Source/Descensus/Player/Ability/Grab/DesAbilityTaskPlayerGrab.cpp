@@ -1,4 +1,4 @@
-#include "Player/Ability/Drag/DesAbilityTaskPlayerGrab.h"
+#include "Player/Ability/Grab/DesAbilityTaskPlayerGrab.h"
 
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "Player/DesPlayerCharacter.h"
@@ -17,13 +17,18 @@ void UDesAbilityTaskPlayerGrab::TickTask(float DeltaTime)
 		{
 			return;
 		}
-		FVector PhysicsHandleLocation;
-		FRotator PhysicsHandleRotation;
-		Character->PhysicsHandle->GetTargetLocationAndRotation(PhysicsHandleLocation, PhysicsHandleRotation);
 		FVector EyesLocation;
 		FRotator EyesRotation;
 		Character->GetActorEyesViewPoint(EyesLocation, EyesRotation);
 		EyesLocation += EyesRotation.Vector() * 150.0f;
-		Character->PhysicsHandle->SetTargetLocation(FMath::InterpEaseInOut(PhysicsHandleLocation, EyesLocation, DeltaTime * 35.0f, 2.0f));
+		Character->PhysicsHandle->SetTargetLocation(EyesLocation);
 	}
+}
+
+UDesAbilityTaskPlayerGrab* UDesAbilityTaskPlayerGrab::PlayerGrab(UGameplayAbility* OwningAbility,
+                                                                 ADesPlayerCharacter* InCharacter)
+{
+	const auto NewTask = NewAbilityTask<UDesAbilityTaskPlayerGrab>(OwningAbility);
+	NewTask->Character = MakeWeakObjectPtr(InCharacter);
+	return NewTask;
 }

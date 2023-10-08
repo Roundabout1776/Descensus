@@ -1,11 +1,8 @@
 #include "Player/DesPlayerCharacter.h"
 
 #include "DesGameplayTags.h"
-#include "DesLogging.h"
 #include "Actor/DesMetaComponent.h"
 #include "Player/DesPlayerController.h"
-#include "EnhancedInputComponent.h"
-#include "EnhancedInputSubsystems.h"
 #include "AbilitySystem/DesAbilitySystemComponent.h"
 #include "Player/DesHeadBobComponent.h"
 #include "Camera/CameraComponent.h"
@@ -16,7 +13,6 @@
 #include "Player/DesPlayerAttributeSet.h"
 #include "Player/Ability/DesGameplayAbilityPlayerInscribe.h"
 #include "Player/DesPlayerAnimInstance.h"
-#include "Player/Ability/Drag/DesGameplayAbilityPlayerGrab.h"
 
 ADesPlayerCharacter::ADesPlayerCharacter(const FObjectInitializer& ObjectInitializer) : Super(
 	ObjectInitializer.SetDefaultSubobjectClass<UDesPlayerAttributeSet>(AttributeSetName))
@@ -24,8 +20,6 @@ ADesPlayerCharacter::ADesPlayerCharacter(const FObjectInitializer& ObjectInitial
 	NetUpdateFrequency = 10.0f;
 
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
-
-	DefaultAbilities.Add(UDesGameplayAbilityPlayerGrab::StaticClass());
 
 	MetaComponent->Name = FText::FromString(TEXT("PC"));
 

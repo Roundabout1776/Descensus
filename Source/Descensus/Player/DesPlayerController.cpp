@@ -7,15 +7,13 @@
 #include "UI/DesHUD.h"
 #include "Actor/DesMetaComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Ability/Grab/DesGameplayAbilityPlayerGrab.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Input/DesEnhancedInputComponent.h"
-#include "Player/DesInscriptionCanvas.h"
 #include "Player/DesPlayerCharacter.h"
-#include "Player/Ability/Drag/DesGameplayAbilityPlayerGrab.h"
 #include "AbilitySystem/DesGameplayAbilityPrimaryBase.h"
 #include "AbilitySystem/DesAbilitySystemComponent.h"
-#include "Actor/DesActor.h"
 #include "Slate/SceneViewport.h"
 
 ADesPlayerController::ADesPlayerController(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -183,7 +181,7 @@ void ADesPlayerController::InputPrimaryStarted()
 	}
 	else
 	{
-		ASC->PressAbilitiesByTag(FGameplayTagContainer(TAG_Ability_PlayerDrag), false);
+		ASC->PressAbilitiesByTag(FGameplayTagContainer(TAG_Ability_PlayerGrab), false);
 		// if (ActorUnderCursor.IsValid())
 		// {
 		// 	if (const auto MetaComponent = ActorUnderCursor->FindComponentByClass<UDesMetaComponent>(); IsValid(MetaComponent))
@@ -210,7 +208,7 @@ void ADesPlayerController::InputPrimaryCompleted()
 	}
 	else
 	{
-		ASC->ReleaseAbilitiesByTag(FGameplayTagContainer(TAG_Ability_PlayerDrag), true);
+		ASC->ReleaseAbilitiesByTag(FGameplayTagContainer(TAG_Ability_PlayerGrab), true);
 	}
 }
 

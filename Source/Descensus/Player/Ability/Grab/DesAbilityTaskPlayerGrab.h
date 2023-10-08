@@ -18,4 +18,7 @@ class DESCENSUS_API UDesAbilityTaskPlayerGrab : public UAbilityTask
 
 public:
 	virtual void TickTask(float DeltaTime) override;
+	
+	static UDesAbilityTaskPlayerGrab* PlayerGrab(UGameplayAbility* OwningAbility,
+	                                                     ADesPlayerCharacter* InCharacter);
 };

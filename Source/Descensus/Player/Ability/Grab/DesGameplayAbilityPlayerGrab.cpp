@@ -1,18 +1,20 @@
-#include "Player/Ability/Drag/DesGameplayAbilityPlayerGrab.h"
-#include "Player/Ability/Drag/DesAbilityTaskPlayerGrab.h"
+#include "Player/Ability/Grab/DesGameplayAbilityPlayerGrab.h"
+
+#include "AbilitySystemComponent.h"
+#include "Player/Ability/Grab/DesAbilityTaskPlayerGrab.h"
 #include "AbilitySystem/DesGameplayAbilityHandsBase.h"
 #include "AbilitySystem/DesGameplayAbilityPrimaryBase.h"
 #include "Abilities/Tasks/AbilityTask_WaitInputRelease.h"
-#include "DesLogging.h"
 #include "AbilitySystem/DesGameplayAbilityTargetDataTypes.h"
 #include "Actor/DesMetaComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 
-UE_DEFINE_GAMEPLAY_TAG(TAG_Ability_PlayerDrag, "Ability.PlayerDrag")
+UE_DEFINE_GAMEPLAY_TAG(TAG_Ability_PlayerGrab, "Ability.PlayerGrab")
+UE_DEFINE_GAMEPLAY_TAG(TAG_GameplayCue_Ability_PlayerGrab, "GameplayCue.Ability.PlayerGrab")
 
 UDesGameplayAbilityPlayerGrab::UDesGameplayAbilityPlayerGrab()
 {
-	AbilityTags.AddTag(TAG_Ability_PlayerDrag);
+	AbilityTags.AddTag(TAG_Ability_PlayerGrab);
 	AbilityTags.AddTag(TAG_Ability_Hands);
 	CancelAbilitiesWithTag.AddTag(TAG_Ability_Hands);
 	CancelAbilitiesWithTag.AddTag(TAG_Ability_Primary);
@@ -64,31 +66,33 @@ void UDesGameplayAbilityPlayerGrab::ActivateAbilityWithTargetData(
 {
 	const bool bIsAuthority = CurrentActorInfo->IsNetAuthority();
 
-	const auto PrimitiveComponent = FGameplayAbilityTargetDataPrimitiveComponent::GetPrimitiveComponent(
-		LocalTargetDataHandle);
-
-	if (!IsValid(PrimitiveComponent))
+	if (const auto PrimitiveComponent = FGameplayAbilityTargetDataPrimitiveComponent::GetPrimitiveComponent(
+		LocalTargetDataHandle))
 	{
-		CancelAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, bIsAuthority);
-		return;
+		if (const auto MetaComponent = PrimitiveComponent->GetOwner()->GetComponentByClass<UDesMetaComponent>())
+		{
+			const auto Character = GetDesPlayerCharacterFromActorInfo();
+			const auto PhysicsHandle = Character->PhysicsHandle;
+			PhysicsHandle->GrabComponentAtLocationWithRotation(PrimitiveComponent,
+			                                                   NAME_None,
+			                                                   PrimitiveComponent->GetComponentLocation(),
+			                                                   PrimitiveComponent->GetComponentRotation());
+
+			MetaComponent->Tags.AddTag(TAG_Meta_Grabbed);
+
+			FGameplayCueParameters Parameters;
+			Parameters.Location = PrimitiveComponent->GetComponentLocation();
+			GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(TAG_GameplayCue_Ability_PlayerGrab, Parameters);
+
+			const auto GrabTask = UDesAbilityTaskPlayerGrab::PlayerGrab(this, Character);
+			GrabTask->ReadyForActivation();
+
+			CachedPrimitiveComponent = MakeWeakObjectPtr(PrimitiveComponent);
+
+			return;
+		}
 	}
-
-	const auto PhysicsHandle = GetDesPlayerCharacterFromActorInfo()->PhysicsHandle;
-	PhysicsHandle->GrabComponentAtLocationWithRotation(PrimitiveComponent,
-	                                                   NAME_None,
-	                                                   PrimitiveComponent->GetComponentLocation(),
-	                                                   PrimitiveComponent->GetComponentRotation());
-
-	CachedPrimitiveComponent = MakeWeakObjectPtr(PrimitiveComponent);
-
-	if (const auto MetaComponent = CachedPrimitiveComponent->GetOwner()->GetComponentByClass<UDesMetaComponent>())
-	{
-		MetaComponent->Tags.AddTag(TAG_Meta_Grabbed);
-	}
-
-	const auto GrabTask = UAbilityTask::NewAbilityTask<UDesAbilityTaskPlayerGrab>(this);
-	GrabTask->Character = MakeWeakObjectPtr(GetDesPlayerCharacterFromActorInfo());
-	GrabTask->ReadyForActivation();
+	CancelAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, bIsAuthority);
 }
 
 bool UDesGameplayAbilityPlayerGrab::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,

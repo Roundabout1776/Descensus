@@ -16,4 +16,19 @@ public:
 	virtual void ReleaseAbilitySpec(FGameplayAbilitySpec& Spec);
 	virtual void PressAbilitiesByTag(const FGameplayTagContainer& GameplayTagContainer, bool bPressOnlyActive);
 	virtual void ReleaseAbilitiesByTag(const FGameplayTagContainer& GameplayTagContainer, bool bReleaseOnlyActive);
+
+	UFUNCTION(BlueprintCallable, Category = "GameplayCue",
+		Meta = (AutoCreateRefTerm = "GameplayCueParameters", GameplayTagFilter = "GameplayCue"))
+	void ExecuteGameplayCueLocal(const FGameplayTag GameplayCueTag,
+	                             const FGameplayCueParameters& GameplayCueParameters) const;
+
+	UFUNCTION(BlueprintCallable, Category = "GameplayCue",
+		Meta = (AutoCreateRefTerm = "GameplayCueParameters", GameplayTagFilter = "GameplayCue"))
+	void AddGameplayCueLocal(const FGameplayTag GameplayCueTag,
+	                         const FGameplayCueParameters& GameplayCueParameters) const;
+
+	UFUNCTION(BlueprintCallable, Category = "GameplayCue",
+		Meta = (AutoCreateRefTerm = "GameplayCueParameters", GameplayTagFilter = "GameplayCue"))
+	void RemoveGameplayCueLocal(const FGameplayTag GameplayCueTag,
+	                            const FGameplayCueParameters& GameplayCueParameters) const;
 };

@@ -1,5 +1,8 @@
 #include "AbilitySystem/DesAbilitySystemComponent.h"
 
+#include "AbilitySystemGlobals.h"
+#include "GameplayCueManager.h"
+
 static TArray<FGameplayAbilitySpec*> TemporaryAbilities;
 
 void UDesAbilitySystemComponent::PressAbilityClass(TSubclassOf<UGameplayAbility> AbilityClass)
@@ -96,4 +99,27 @@ void UDesAbilitySystemComponent::ReleaseAbilitiesByTag(const FGameplayTagContain
 			ReleaseAbilitySpec(*Spec);
 		}
 	}
+}
+
+void UDesAbilitySystemComponent::ExecuteGameplayCueLocal(const FGameplayTag GameplayCueTag,
+                                                         const FGameplayCueParameters& GameplayCueParameters) const
+{
+	UAbilitySystemGlobals::Get().GetGameplayCueManager()->HandleGameplayCue(
+		GetOwner(), GameplayCueTag, EGameplayCueEvent::Type::Executed, GameplayCueParameters);
+}
+
+void UDesAbilitySystemComponent::AddGameplayCueLocal(const FGameplayTag GameplayCueTag,
+                                                     const FGameplayCueParameters& GameplayCueParameters) const
+{
+	UAbilitySystemGlobals::Get().GetGameplayCueManager()->HandleGameplayCue(
+		GetOwner(), GameplayCueTag, EGameplayCueEvent::Type::OnActive, GameplayCueParameters);
+	UAbilitySystemGlobals::Get().GetGameplayCueManager()->HandleGameplayCue(
+		GetOwner(), GameplayCueTag, EGameplayCueEvent::Type::WhileActive, GameplayCueParameters);
+}
+
+void UDesAbilitySystemComponent::RemoveGameplayCueLocal(const FGameplayTag GameplayCueTag,
+                                                        const FGameplayCueParameters& GameplayCueParameters) const
+{
+	UAbilitySystemGlobals::Get().GetGameplayCueManager()->HandleGameplayCue(
+		GetOwner(), GameplayCueTag, EGameplayCueEvent::Type::Removed, GameplayCueParameters);
 }
