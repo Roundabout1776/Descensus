@@ -1,11 +1,11 @@
-#include "Character/Shared/Ability/Run/DesGameplayAbilityRun.h"
+#include "Character/Ability/Run/DesGameplayAbilityRun.h"
 
 #include "AbilitySystemComponent.h"
 #include "DesLogging.h"
 #include "DesGameplayTags.h"
 #include "Abilities/Tasks/AbilityTask_WaitAttributeChange.h"
 #include "Abilities/Tasks/AbilityTask_WaitInputRelease.h"
-#include "Character/Shared/Ability/Run/DesAbilityTaskRun.h"
+#include "Character/Ability/Run/DesAbilityTaskRun.h"
 #include "Character/DesCharacter.h"
 #include "Character/DesCharacterAttributeSet.h"
 #include "Character/DesCharacterMovementComponent.h"

@@ -1,8 +1,7 @@
-#include "Character/Shared/Ability/DrawWeapon/DesGameplayAbilityDrawWeapon.h"
+#include "Character/Ability/DrawWeapon/DesGameplayAbilityDrawWeapon.h"
 
 #include "AbilitySystemComponent.h"
 #include "DesGameplayTags.h"
-#include "Character/Shared/Ability/Attack/DesGameplayAbilityAttack.h"
 #include "Input/DesAbilityInputID.h"
 
 UE_DEFINE_GAMEPLAY_TAG(TAG_Equip_Unarmed, "Equip.Unarmed")

@@ -85,8 +85,7 @@ float UDesCharacterMovementComponent::GetMaxSpeed() const
 {
 	if (const auto Owner = GetOwner<ADesCharacter>())
 	{
-		const auto AttributeSet = Owner->GetAttributeSet();
-		if (IsValid(AttributeSet))
+		if (const auto AttributeSet = Owner->GetAttributeSet<UDesCharacterAttributeSet>(); IsValid(AttributeSet))
 		{
 			if (bWantsToRunSafe && IsEligibleForRunning())
 			{

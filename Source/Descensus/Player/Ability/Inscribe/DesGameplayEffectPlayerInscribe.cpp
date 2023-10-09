@@ -1,4 +1,4 @@
-﻿#include "Player/Ability/DesGameplayEffectPlayerInscribe.h"
+﻿#include "Player/Ability/Inscribe/DesGameplayEffectPlayerInscribe.h"
 
 UDesGameplayEffectPlayerInscribe::UDesGameplayEffectPlayerInscribe()
 {

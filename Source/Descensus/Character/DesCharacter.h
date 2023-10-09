@@ -5,6 +5,7 @@
 #include "AbilitySystemInterface.h"
 #include "DesCharacter.generated.h"
 
+class UAttributeSet;
 class UDesGameplayAbilityRun;
 class UDesGameplayAbilityJump;
 class UGameplayEffect;
@@ -19,17 +20,9 @@ class DESCENSUS_API ADesCharacter : public ACharacter, public IAbilitySystemInte
 {
 	GENERATED_BODY()
 
-	UPROPERTY(VisibleInstanceOnly, Category="Descensus|Character")
-	TObjectPtr<UDesCharacterAttributeSet> AttributeSet;
-
 protected:
 	virtual void BeginPlay() override;
-
-	static FName AttributeSetName;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Descensus|Character")
-	TObjectPtr<UDesAbilitySystemComponent> AbilitySystemComponent;
-
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Descensus|Character")
 	TObjectPtr<UDesMetaComponent> MetaComponent;
 
@@ -46,24 +39,25 @@ protected:
 	TArray<TSubclassOf<UGameplayEffect>> DefaultEffects;
 
 	virtual void GiveDefaultAbilities();
+	virtual void ApplyDefaultEffects();
 	void GiveAbility(TSubclassOf<UDesGameplayAbility> AbilityClass) const;
 
 public:
+	TWeakObjectPtr<UDesAbilitySystemComponent> ASCWeakPtr;
+	
 	explicit ADesCharacter(const FObjectInitializer& ObjectInitializer);
 
 	virtual void Tick(float DeltaTime) override;
-	virtual void PossessedBy(AController* NewController) override;
 
-	FORCEINLINE virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	UFUNCTION(BlueprintPure)
+	UDesInscriptionComponent* GetInscriptionComponent() const { return InscriptionComponent; }
 
-	FORCEINLINE UDesCharacterAttributeSet* GetAttributeSet() const { return AttributeSet; }
+	FORCEINLINE virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return nullptr; }
+	FORCEINLINE virtual UAttributeSet* GetAttributeSet() const { return nullptr; }
 
 	template <class T>
 	T* GetAttributeSet() const
 	{
 		return Cast<T>(GetAttributeSet());
 	}
-
-	UFUNCTION(BlueprintPure)
-	UDesInscriptionComponent* GetInscriptionComponent() const { return InscriptionComponent; }
 };

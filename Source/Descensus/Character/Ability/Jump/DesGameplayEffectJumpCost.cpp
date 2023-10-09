@@ -1,6 +1,6 @@
-﻿#include "Character/Shared/Ability/Jump/DesGameplayEffectJumpCost.h"
+﻿#include "Character/Ability/Jump/DesGameplayEffectJumpCost.h"
 
-#include "Character/Shared/Ability/Jump/DesGameplayMMCJumpCost.h"
+#include "Character/Ability/Jump/DesGameplayMMCJumpCost.h"
 #include "Character/DesCharacterAttributeSet.h"
 
 UDesGameplayEffectJumpCost::UDesGameplayEffectJumpCost()

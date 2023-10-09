@@ -12,7 +12,7 @@
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Input/DesEnhancedInputComponent.h"
 #include "Player/DesPlayerCharacter.h"
-#include "AbilitySystem/DesGameplayAbilityPrimaryBase.h"
+#include "Character/Ability/DesGameplayAbilityPrimaryBase.h"
 #include "AbilitySystem/DesAbilitySystemComponent.h"
 #include "Slate/SceneViewport.h"
 

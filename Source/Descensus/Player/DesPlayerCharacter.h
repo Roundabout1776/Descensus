@@ -62,4 +62,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Descensus|Input")
 	UDesInputConfig* InputConfig;
+	
+	FORCEINLINE virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	FORCEINLINE virtual UAttributeSet* GetAttributeSet() const override;
 };

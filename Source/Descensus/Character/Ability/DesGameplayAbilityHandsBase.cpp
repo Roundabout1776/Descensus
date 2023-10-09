@@ -1,11 +1,11 @@
-#include "AbilitySystem/DesGameplayAbilityHandsBase.h"
+#include "DesGameplayAbilityHandsBase.h"
 
 #include "AbilitySystemComponent.h"
 #include "DesLogging.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 #include "Abilities/Tasks/AbilityTask_WaitInputPress.h"
-#include "AbilitySystem/DesGameplayAbilityPrimaryBase.h"
+#include "DesGameplayAbilityPrimaryBase.h"
 
 UE_DEFINE_GAMEPLAY_TAG(TAG_Ability_Hands, "Ability.Hands")
 UE_DEFINE_GAMEPLAY_TAG(TAG_Ability_Hands_Active, "Ability.Hands.Active")

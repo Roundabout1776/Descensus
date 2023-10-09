@@ -1,4 +1,4 @@
-﻿#include "Character/Shared/DesGameplayEffectStaminaRegen.h"
+﻿#include "Character/Ability/DesGameplayEffectStaminaRegen.h"
 
 #include "DesConstants.h"
 #include "Character/DesCharacterAttributeSet.h"

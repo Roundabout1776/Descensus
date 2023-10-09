@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "NativeGameplayTags.h"
-#include "AbilitySystem/DesGameplayAbilityHandsBase.h"
+#include "Character/Ability/DesGameplayAbilityHandsBase.h"
 #include "DesGameplayAbilityDrawWeapon.generated.h"
 
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Equip_Unarmed)

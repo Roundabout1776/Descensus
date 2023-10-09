@@ -1,9 +1,9 @@
-﻿#include "Character/Shared/Ability/Attack/DesGameplayAbilityAttack.h"
+﻿#include "Character/Ability/Attack/DesGameplayAbilityAttack.h"
 
 #include "DesGameplayTags.h"
 #include "DesLogging.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
-#include "Character/Shared/Ability/DrawWeapon/DesGameplayAbilityDrawWeapon.h"
+#include "Character/Ability/DrawWeapon/DesGameplayAbilityDrawWeapon.h"
 #include "Item/DesWeaponType.h"
 #include "Player/DesPlayerCharacter.h"
 

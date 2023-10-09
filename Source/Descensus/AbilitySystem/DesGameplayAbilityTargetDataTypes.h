@@ -5,11 +5,11 @@
 #include "DesGameplayAbilityTargetDataTypes.generated.h"
 
 USTRUCT(BlueprintType)
-struct DESCENSUS_API FGameplayAbilityTargetDataSingleActor : public FGameplayAbilityTargetData
+struct DESCENSUS_API FDesGameplayAbilityTargetData_Actor : public FGameplayAbilityTargetData
 {
 	GENERATED_BODY()
 
-	FGameplayAbilityTargetDataSingleActor()
+	FDesGameplayAbilityTargetData_Actor()
 	{
 	}
 
@@ -38,7 +38,7 @@ struct DESCENSUS_API FGameplayAbilityTargetDataSingleActor : public FGameplayAbi
 
 		if (Data->GetScriptStruct() == StaticStruct())
 		{
-			const auto CustomData = static_cast<const FGameplayAbilityTargetDataSingleActor*>(Handle.
+			const auto CustomData = static_cast<const FDesGameplayAbilityTargetData_Actor*>(Handle.
 				Get(0));
 
 			return CustomData->Actor.Get();
@@ -50,7 +50,7 @@ struct DESCENSUS_API FGameplayAbilityTargetDataSingleActor : public FGameplayAbi
 
 template <>
 struct TStructOpsTypeTraits<
-		FGameplayAbilityTargetDataSingleActor> : TStructOpsTypeTraitsBase2<FGameplayAbilityTargetDataSingleActor>
+		FDesGameplayAbilityTargetData_Actor> : TStructOpsTypeTraitsBase2<FDesGameplayAbilityTargetData_Actor>
 {
 	enum
 	{
@@ -59,11 +59,11 @@ struct TStructOpsTypeTraits<
 };
 
 USTRUCT(BlueprintType)
-struct DESCENSUS_API FGameplayAbilityTargetDataPrimitiveComponent : public FGameplayAbilityTargetData
+struct DESCENSUS_API FDesGameplayAbilityTargetData_PrimitiveComponent : public FGameplayAbilityTargetData
 {
 	GENERATED_BODY()
 
-	FGameplayAbilityTargetDataPrimitiveComponent()
+	FDesGameplayAbilityTargetData_PrimitiveComponent()
 	{
 	}
 
@@ -92,7 +92,7 @@ struct DESCENSUS_API FGameplayAbilityTargetDataPrimitiveComponent : public FGame
 
 		if (Data->GetScriptStruct() == StaticStruct())
 		{
-			const auto CustomData = static_cast<const FGameplayAbilityTargetDataPrimitiveComponent*>(Handle.
+			const auto CustomData = static_cast<const FDesGameplayAbilityTargetData_PrimitiveComponent*>(Handle.
 				Get(0));
 
 			return CustomData->PrimitiveComponent.Get();
@@ -104,8 +104,8 @@ struct DESCENSUS_API FGameplayAbilityTargetDataPrimitiveComponent : public FGame
 
 template <>
 struct TStructOpsTypeTraits<
-		FGameplayAbilityTargetDataPrimitiveComponent> : TStructOpsTypeTraitsBase2<
-		FGameplayAbilityTargetDataPrimitiveComponent>
+		FDesGameplayAbilityTargetData_PrimitiveComponent> : TStructOpsTypeTraitsBase2<
+		FDesGameplayAbilityTargetData_PrimitiveComponent>
 {
 	enum
 	{

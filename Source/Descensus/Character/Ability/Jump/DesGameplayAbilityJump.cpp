@@ -1,7 +1,7 @@
-#include "Character/Shared/Ability/Jump/DesGameplayAbilityJump.h"
+#include "Character/Ability/Jump/DesGameplayAbilityJump.h"
 
 #include "DesGameplayTags.h"
-#include "Character/Shared/Ability/Jump/DesGameplayEffectJumpCost.h"
+#include "Character/Ability/Jump/DesGameplayEffectJumpCost.h"
 #include "Character/DesCharacter.h"
 #include "Input/DesAbilityInputID.h"
 

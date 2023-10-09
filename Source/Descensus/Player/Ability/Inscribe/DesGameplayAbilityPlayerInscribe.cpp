@@ -1,17 +1,15 @@
-﻿#include "Player/Ability/DesGameplayAbilityPlayerInscribe.h"
+﻿#include "Player/Ability/Inscribe/DesGameplayAbilityPlayerInscribe.h"
 
 #include "AbilitySystemComponent.h"
 #include "DesGameplayTags.h"
-#include "DesLogging.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEffectRemoved.h"
 #include "Abilities/Tasks/AbilityTask_WaitInputRelease.h"
-#include "Character/Shared/Ability/Inscribe/DesGameplayAbilityInscribe.h"
-#include "Input/DesAbilityInputID.h"
+#include "Character/Ability/Inscribe/DesGameplayAbilityInscribe.h"
 #include "Player/DesPlayerCharacter.h"
-#include "Player/Ability/DesGameplayEffectPlayerInscribe.h"
+#include "Player/Ability/Inscribe/DesGameplayEffectPlayerInscribe.h"
 #include "Player/DesPlayerController.h"
 #include "UI/DesHUD.h"
-#include "Player/Ability/DesAbilityTaskPlayerInscribe.h"
+#include "Player/Ability/Inscribe/DesAbilityTaskPlayerInscribe.h"
 
 UE_DEFINE_GAMEPLAY_TAG(TAG_Ability_PlayerInscribe, "Ability.PlayerInscribe")
 UE_DEFINE_GAMEPLAY_TAG(TAG_Ability_PlayerInscribe_Active, "Ability.PlayerInscribe.Active")

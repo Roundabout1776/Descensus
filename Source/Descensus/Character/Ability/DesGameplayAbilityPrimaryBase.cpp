@@ -1,4 +1,4 @@
-﻿#include "AbilitySystem/DesGameplayAbilityPrimaryBase.h"
+﻿#include "DesGameplayAbilityPrimaryBase.h"
 
 UE_DEFINE_GAMEPLAY_TAG(TAG_Ability_Primary, "Ability.Primary")
 UE_DEFINE_GAMEPLAY_TAG(TAG_Ability_Primary_Active, "Ability.Primary.Active")

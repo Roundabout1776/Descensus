@@ -2,8 +2,8 @@
 
 #include "AbilitySystemComponent.h"
 #include "Player/Ability/Grab/DesAbilityTaskPlayerGrab.h"
-#include "AbilitySystem/DesGameplayAbilityHandsBase.h"
-#include "AbilitySystem/DesGameplayAbilityPrimaryBase.h"
+#include "Character/Ability/DesGameplayAbilityHandsBase.h"
+#include "Character/Ability/DesGameplayAbilityPrimaryBase.h"
 #include "Abilities/Tasks/AbilityTask_WaitInputRelease.h"
 #include "AbilitySystem/DesGameplayAbilityTargetDataTypes.h"
 #include "Actor/DesMetaComponent.h"
@@ -46,7 +46,7 @@ void UDesGameplayAbilityPlayerGrab::ActivateAbilityLocalPlayer(const FGameplayAb
                                                                const FGameplayAbilityActivationInfo ActivationInfo,
                                                                const FGameplayEventData* TriggerEventData)
 {
-	FGameplayAbilityTargetDataPrimitiveComponent* TargetData = new FGameplayAbilityTargetDataPrimitiveComponent();
+	FDesGameplayAbilityTargetData_PrimitiveComponent* TargetData = new FDesGameplayAbilityTargetData_PrimitiveComponent();
 
 	if (const auto PC = GetDesPlayerControllerFromActorInfo())
 	{
@@ -66,7 +66,7 @@ void UDesGameplayAbilityPlayerGrab::ActivateAbilityWithTargetData(
 {
 	const bool bIsAuthority = CurrentActorInfo->IsNetAuthority();
 
-	if (const auto PrimitiveComponent = FGameplayAbilityTargetDataPrimitiveComponent::GetPrimitiveComponent(
+	if (const auto PrimitiveComponent = FDesGameplayAbilityTargetData_PrimitiveComponent::GetPrimitiveComponent(
 		LocalTargetDataHandle))
 	{
 		if (const auto MetaComponent = PrimitiveComponent->GetOwner()->GetComponentByClass<UDesMetaComponent>())

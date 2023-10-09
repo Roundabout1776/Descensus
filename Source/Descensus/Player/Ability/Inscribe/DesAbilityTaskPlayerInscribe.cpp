@@ -1,4 +1,4 @@
-﻿#include "Player/Ability/DesAbilityTaskPlayerInscribe.h"
+﻿#include "Player/Ability/Inscribe/DesAbilityTaskPlayerInscribe.h"
 
 #include "DesLogging.h"
 #include "Character/DesInscriptionComponent.h"

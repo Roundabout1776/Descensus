@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "AbilitySystem/DesGameplayAbilityHandsBase.h"
+#include "Character/Ability/DesGameplayAbilityHandsBase.h"
 #include "DesGameplayAbilityInscribe.generated.h"
 
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Equip_Inscribe)

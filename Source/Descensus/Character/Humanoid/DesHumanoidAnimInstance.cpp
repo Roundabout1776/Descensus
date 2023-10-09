@@ -1,10 +1,10 @@
 ﻿#include "Character/Humanoid/DesHumanoidAnimInstance.h"
 
 #include "AbilitySystemComponent.h"
-#include "AbilitySystem/DesGameplayAbilityHandsBase.h"
+#include "Character/Ability/DesGameplayAbilityHandsBase.h"
 #include "Character/DesCharacter.h"
-#include "Character/Shared/Ability/DrawWeapon/DesGameplayAbilityDrawWeapon.h"
-#include "Character/Shared/Ability/Inscribe/DesGameplayAbilityInscribe.h"
+#include "Character/Ability/DrawWeapon/DesGameplayAbilityDrawWeapon.h"
+#include "Character/Ability/Inscribe/DesGameplayAbilityInscribe.h"
 
 void UDesHumanoidAnimInstance::InitializeForCharacter(ADesCharacter* InCharacter)
 {

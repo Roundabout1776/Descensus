@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "NativeGameplayTags.h"
-#include "AbilitySystem/DesGameplayAbilityPrimaryBase.h"
+#include "Character/Ability/DesGameplayAbilityPrimaryBase.h"
 #include "DesGameplayAbilityAttack.generated.h"
 
 enum class EDesWeaponType : uint8;

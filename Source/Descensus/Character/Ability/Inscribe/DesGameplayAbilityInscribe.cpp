@@ -1,4 +1,4 @@
-﻿#include "Character/Shared/Ability/Inscribe/DesGameplayAbilityInscribe.h"
+﻿#include "Character/Ability/Inscribe/DesGameplayAbilityInscribe.h"
 
 #include "Input/DesAbilityInputID.h"
 

@@ -1,6 +1,7 @@
 #include "Player/DesPlayerCharacter.h"
 
 #include "DesGameplayTags.h"
+#include "DesPlayerState.h"
 #include "Actor/DesMetaComponent.h"
 #include "Player/DesPlayerController.h"
 #include "AbilitySystem/DesAbilitySystemComponent.h"
@@ -11,15 +12,13 @@
 #include "Input/DesEnhancedInputComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "Player/DesPlayerAttributeSet.h"
-#include "Player/Ability/DesGameplayAbilityPlayerInscribe.h"
+#include "Player/Ability/Inscribe/DesGameplayAbilityPlayerInscribe.h"
 #include "Player/DesPlayerAnimInstance.h"
 
 ADesPlayerCharacter::ADesPlayerCharacter(const FObjectInitializer& ObjectInitializer) : Super(
-	ObjectInitializer.SetDefaultSubobjectClass<UDesPlayerAttributeSet>(AttributeSetName))
+	ObjectInitializer.SetDefaultSubobjectClass<UDesPlayerAttributeSet>(UDesCharacterAttributeSet::AttributeSetName))
 {
-	NetUpdateFrequency = 10.0f;
-
-	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
+	NetUpdateFrequency = 100.0f;
 
 	MetaComponent->Name = FText::FromString(TEXT("PC"));
 
@@ -57,12 +56,12 @@ void ADesPlayerCharacter::InputMoveTriggered(const FInputActionInstance& Instanc
 
 void ADesPlayerCharacter::InputAbilityPressed(const int32 InputID)
 {
-	AbilitySystemComponent->PressInputID(InputID);
+	GetAbilitySystemComponent()->PressInputID(InputID);
 }
 
 void ADesPlayerCharacter::InputAbilityReleased(const int32 InputID)
 {
-	AbilitySystemComponent->ReleaseInputID(InputID);
+	GetAbilitySystemComponent()->ReleaseInputID(InputID);
 }
 
 void ADesPlayerCharacter::SetFirstPersonMode(const bool bFirstPerson) const
@@ -94,15 +93,39 @@ void ADesPlayerCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	SetFirstPersonMode(IsLocallyControlled());
-
-	const auto AnimInstance = Cast<UDesPlayerAnimInstance>(
-		GetMesh()->GetAnimInstance());
-	AnimInstance->InitializeForCharacter(this);
 }
 
 void ADesPlayerCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
+
+	if (const auto PS = GetPlayerState<ADesPlayerState>())
+	{
+		ASCWeakPtr = MakeWeakObjectPtr(PS->ASC);
+
+		ASCWeakPtr->InitAbilityActorInfo(PS, this);
+
+		GiveDefaultAbilities();
+		ApplyDefaultEffects();
+
+		SetOwner(NewController);
+	}
+}
+
+void ADesPlayerCharacter::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	if (const auto PS = GetPlayerState<ADesPlayerState>())
+	{
+		ASCWeakPtr = MakeWeakObjectPtr(PS->ASC);
+
+		ASCWeakPtr->InitAbilityActorInfo(PS, this);
+
+		const auto AnimInstance = Cast<UDesPlayerAnimInstance>(
+			GetMesh()->GetAnimInstance());
+		AnimInstance->InitializeForCharacter(this);
+	}
 }
 
 void ADesPlayerCharacter::UnPossessed()
@@ -143,7 +166,12 @@ void ADesPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	Input->BindAbilities(InputConfig, this, &ThisClass::InputAbilityPressed, &ThisClass::InputAbilityReleased);
 }
 
-void ADesPlayerCharacter::OnRep_PlayerState()
+UAbilitySystemComponent* ADesPlayerCharacter::GetAbilitySystemComponent() const
 {
-	Super::OnRep_PlayerState();
+	return GetPlayerStateChecked<ADesPlayerState>()->GetAbilitySystemComponent();
+}
+
+UAttributeSet* ADesPlayerCharacter::GetAttributeSet() const
+{
+	return GetPlayerStateChecked<ADesPlayerState>()->GetAttributeSet();
 }

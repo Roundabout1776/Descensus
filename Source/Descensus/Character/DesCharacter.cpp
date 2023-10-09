@@ -3,17 +3,16 @@
 #include "DesLogging.h"
 #include "AbilitySystem/DesAbilitySystemComponent.h"
 #include "Actor/DesMetaComponent.h"
-#include "Character/Shared/Ability/Jump/DesGameplayAbilityJump.h"
-#include "Character/Shared/Ability/Run/DesGameplayAbilityRun.h"
-#include "Character/Shared/DesGameplayEffectStaminaRegen.h"
+#include "Character/Ability/Jump/DesGameplayAbilityJump.h"
+#include "Character/Ability/Run/DesGameplayAbilityRun.h"
+#include "Character/Ability/DesGameplayEffectStaminaRegen.h"
 #include "Components/AudioComponent.h"
 #include "Character/DesCharacterAttributeSet.h"
 #include "Character/DesCharacterMovementComponent.h"
 #include "Character/DesInscriptionComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Input/DesAbilityInputID.h"
-
-FName ADesCharacter::AttributeSetName(TEXT("CharacterAttributeSet"));
+#include "Player/DesPlayerState.h"
 
 ADesCharacter::ADesCharacter(const FObjectInitializer& ObjectInitializer) : Super(
 	ObjectInitializer.SetDefaultSubobjectClass<UDesCharacterMovementComponent>(
@@ -21,12 +20,6 @@ ADesCharacter::ADesCharacter(const FObjectInitializer& ObjectInitializer) : Supe
 {
 	PrimaryActorTick.bCanEverTick = true;
 	bUseControllerRotationPitch = false;
-
-	AttributeSet = CreateDefaultSubobject<UDesCharacterAttributeSet>(AttributeSetName);
-
-	AbilitySystemComponent = CreateDefaultSubobject<UDesAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
-	AbilitySystemComponent->SetIsReplicated(true);
-	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
 
 	DefaultAbilities.Empty();
 	DefaultAbilities.Add(UDesGameplayAbilityRun::StaticClass());
@@ -55,33 +48,6 @@ void ADesCharacter::BeginPlay()
 	Super::BeginPlay();
 }
 
-void ADesCharacter::PossessedBy(AController* NewController)
-{
-	Super::PossessedBy(NewController);
-
-	if (IsValid(AbilitySystemComponent))
-	{
-		AbilitySystemComponent->InitAbilityActorInfo(this, this);
-
-		GiveDefaultAbilities();
-
-		/* Add default effects */
-		const auto Context = AbilitySystemComponent->MakeEffectContext();
-		for (const auto& EffectClass : DefaultEffects)
-		{
-			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(
-				*AbilitySystemComponent->MakeOutgoingSpec(EffectClass, 0.0, Context).Data.Get(), FPredictionKey());
-		}
-	}
-
-	SetOwner(NewController);
-}
-
-UAbilitySystemComponent* ADesCharacter::GetAbilitySystemComponent() const
-{
-	return Cast<UAbilitySystemComponent>(AbilitySystemComponent);
-}
-
 void ADesCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -89,10 +55,43 @@ void ADesCharacter::Tick(float DeltaTime)
 
 void ADesCharacter::GiveDefaultAbilities()
 {
+	if (ASCWeakPtr->bDefaultAbilitiesGiven || GetLocalRole() != ROLE_Authority)
+	{
+		return;
+	}
 	for (const auto& AbilityClass : DefaultAbilities)
 	{
-		GiveAbility(AbilityClass);
+		if (!IsValid(AbilityClass))
+			continue;
+		ASCWeakPtr->GiveAbility(FGameplayAbilitySpec(AbilityClass, 1,
+		                                      static_cast<int32>(AbilityClass.
+		                                                         GetDefaultObject()->AbilityInputID), this));
 	}
+	ASCWeakPtr->bDefaultAbilitiesGiven = true;
+}
+
+void ADesCharacter::ApplyDefaultEffects()
+{
+	if (ASCWeakPtr->bDefaultEffectsApplied || GetLocalRole() != ROLE_Authority)
+	{
+		return;
+	}
+	for (const auto& EffectClass : DefaultEffects)
+	{
+		if (!IsValid(EffectClass))
+			continue;
+
+		auto EffectContextHandle = ASCWeakPtr->MakeEffectContext();
+		EffectContextHandle.AddSourceObject(this);
+
+		if (auto GameplayEffectSpecHandle = ASCWeakPtr->MakeOutgoingSpec(
+			EffectClass, 1, EffectContextHandle); GameplayEffectSpecHandle.IsValid())
+		{
+			ASCWeakPtr->ApplyGameplayEffectSpecToTarget(*GameplayEffectSpecHandle.Data.Get(),
+			                                     ASCWeakPtr.Get());
+		}
+	}
+	ASCWeakPtr->bDefaultEffectsApplied = true;
 }
 
 void ADesCharacter::GiveAbility(TSubclassOf<UDesGameplayAbility> AbilityClass) const
@@ -104,5 +103,5 @@ void ADesCharacter::GiveAbility(TSubclassOf<UDesGameplayAbility> AbilityClass) c
 	{
 		AbilitySpec.InputID = static_cast<int32>(AbilityInputID);
 	}
-	AbilitySystemComponent->GiveAbility(AbilitySpec);
+	GetAbilitySystemComponent()->GiveAbility(AbilitySpec);
 }

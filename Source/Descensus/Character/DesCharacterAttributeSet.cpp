@@ -2,6 +2,8 @@
 
 #include "Net/UnrealNetwork.h"
 
+FName UDesCharacterAttributeSet::AttributeSetName(TEXT("CharacterAttributeSet"));
+
 #define IMPLEMENT_ATTRIBUTE_ONREP(ClassName, PropertyName) \
 	void ClassName::OnRep_ ## PropertyName(const FGameplayAttributeData& Old ## PropertyName) \
 	{ \

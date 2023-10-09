@@ -1,8 +1,8 @@
 #include "Player/DesPlayerAnimInstance.h"
 
 #include "AbilitySystemComponent.h"
-#include "Character/Shared/Ability/DrawWeapon/DesGameplayAbilityDrawWeapon.h"
-#include "Character/Shared/Ability/Inscribe/DesGameplayAbilityInscribe.h"
+#include "Character/Ability/DrawWeapon/DesGameplayAbilityDrawWeapon.h"
+#include "Character/Ability/Inscribe/DesGameplayAbilityInscribe.h"
 #include "Player/DesPlayerCharacter.h"
 
 void UDesPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)

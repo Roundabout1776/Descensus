@@ -2,9 +2,9 @@
 
 #include "AbilitySystemComponent.h"
 #include "Character/DesCharacter.h"
-#include "Character/Shared/Ability/Inscribe/DesGameplayAbilityInscribe.h"
+#include "Character/Ability/Inscribe/DesGameplayAbilityInscribe.h"
 #include "Net/UnrealNetwork.h"
-#include "Player/Ability/DesGameplayAbilityPlayerInscribe.h"
+#include "Player/Ability/Inscribe/DesGameplayAbilityPlayerInscribe.h"
 
 UDesInscriptionComponent::UDesInscriptionComponent()
 {
