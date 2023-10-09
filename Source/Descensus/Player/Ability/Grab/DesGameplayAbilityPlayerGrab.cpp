@@ -10,12 +10,14 @@
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 
 UE_DEFINE_GAMEPLAY_TAG(TAG_Ability_PlayerGrab, "Ability.PlayerGrab")
+UE_DEFINE_GAMEPLAY_TAG(TAG_Ability_PlayerGrab_Active, "Ability.PlayerGrab.Active")
 UE_DEFINE_GAMEPLAY_TAG(TAG_GameplayCue_Ability_PlayerGrab, "GameplayCue.Ability.PlayerGrab")
 
 UDesGameplayAbilityPlayerGrab::UDesGameplayAbilityPlayerGrab()
 {
 	AbilityTags.AddTag(TAG_Ability_PlayerGrab);
 	AbilityTags.AddTag(TAG_Ability_Hands);
+	ReplicatedActivationOwnedTags.AddTag(TAG_Ability_PlayerGrab_Active);
 	CancelAbilitiesWithTag.AddTag(TAG_Ability_Hands);
 	CancelAbilitiesWithTag.AddTag(TAG_Ability_Primary);
 }

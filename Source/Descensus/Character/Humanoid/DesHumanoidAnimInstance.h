@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "GameplayTagContainer.h"
 #include "DesHumanoidAnimInstance.generated.h"
 
 class ADesCharacter;
@@ -22,9 +23,18 @@ class DESCENSUS_API UDesHumanoidAnimInstance : public UAnimInstance
 	uint8 bInitializedForCharacter : 1;
 
 	UPROPERTY(Transient)
-	TObjectPtr<ADesCharacter> Character;
+	TWeakObjectPtr<ADesCharacter> Character;
 
 protected:
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly)
+	float StrafeAxis;
+	
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly)
+	float RunAxis;
+	
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly)
+	FGameplayTagContainer Tags;
+	
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly)
 	uint8 bSomethingInHands : 1;
 

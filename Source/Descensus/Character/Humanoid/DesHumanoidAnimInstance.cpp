@@ -8,8 +8,8 @@
 
 void UDesHumanoidAnimInstance::InitializeForCharacter(ADesCharacter* InCharacter)
 {
-	ensure(IsValid(InCharacter));
-	Character = InCharacter;
+	IsValidChecked(InCharacter);
+	Character = MakeWeakObjectPtr(InCharacter);
 	bInitializedForCharacter = true;
 }
 
@@ -17,14 +17,17 @@ void UDesHumanoidAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
 
-	if (!IsInitializedForCharacter())
-	{
+	if (!Character.IsValid())
 		return;
-	}
+
+	StrafeAxis = FVector::DotProduct(Character->GetActorRightVector(), Character->GetVelocity().GetSafeNormal());
+	RunAxis = FVector::DotProduct(Character->GetActorForwardVector(), Character->GetVelocity().GetSafeNormal());
 
 	const auto ASC = Character->GetAbilitySystemComponent();
 	if (!ASC)
 		return;
+
+	ASC->GetOwnedGameplayTags(Tags);
 
 	bSomethingInHands = ASC->HasMatchingGameplayTag(
 		TAG_Ability_Hands_Active);
