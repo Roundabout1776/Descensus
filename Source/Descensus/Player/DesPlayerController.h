@@ -20,9 +20,9 @@ class DESCENSUS_API ADesPlayerController : public APlayerController
 	TWeakObjectPtr<ADesHUD> DesHUD;
 
 	TWeakObjectPtr<UDesMetaComponent> MetaComponentUnderCursor;
-	FIntPoint MousePosBeforeHiddenDueToCapture;
+	FIntPoint MousePosBeforeHiddenDueToCapture{};
 
-	bool bIsLooking;
+	bool bIsLooking = false;
 	void InputLookTriggered();
 	void InputLookStarted();
 	void InputLookCompleted();
@@ -36,10 +36,10 @@ protected:
 	TObjectPtr<UInputMappingContext> InputMapping;
 
 	UPROPERTY(EditDefaultsOnly, Category="Descensus|Input")
-	UDesInputConfig* InputConfig;
+	TObjectPtr<UDesInputConfig> InputConfig;
 
 public:
-	ADesPlayerController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+	explicit ADesPlayerController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	virtual void AcknowledgePossession(APawn* InPawn) override;
 

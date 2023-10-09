@@ -174,7 +174,7 @@ void ADesPlayerController::InputPrimaryStarted()
 	{
 		return;
 	}
-	auto ASC = Cast<UDesAbilitySystemComponent>(PlayerCharacter->GetAbilitySystemComponent());
+	const auto ASC = PlayerCharacter->ASCWeakPtr.Get();
 	if (IsLooking())
 	{
 		ASC->PressAbilitiesByTag(FGameplayTagContainer(TAG_Ability_Primary), false);
@@ -182,16 +182,6 @@ void ADesPlayerController::InputPrimaryStarted()
 	else
 	{
 		ASC->PressAbilitiesByTag(FGameplayTagContainer(TAG_Ability_PlayerGrab), false);
-		// if (ActorUnderCursor.IsValid())
-		// {
-		// 	if (const auto MetaComponent = ActorUnderCursor->FindComponentByClass<UDesMetaComponent>(); IsValid(MetaComponent))
-		// 	{
-		// 		DES_LOG(Warning, TEXT("Actor: %s"), *MetaComponent->Name.ToString())
-		// 		auto Payload = FGameplayEventData();
-		// 		Payload.Target = ActorUnderCursor.Get();
-		// 		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(PlayerCharacter.Get(), TAG_Ability_PlayerDrag, Payload);
-		// 	}
-		// }
 	}
 }
 
@@ -201,7 +191,7 @@ void ADesPlayerController::InputPrimaryCompleted()
 	{
 		return;
 	}
-	auto ASC = Cast<UDesAbilitySystemComponent>(PlayerCharacter->GetAbilitySystemComponent());
+	const auto ASC = PlayerCharacter->ASCWeakPtr.Get();
 	if (IsLooking())
 	{
 		ASC->ReleaseAbilitiesByTag(FGameplayTagContainer(TAG_Ability_Primary), true);
