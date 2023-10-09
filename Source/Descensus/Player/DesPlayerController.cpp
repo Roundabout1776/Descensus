@@ -174,7 +174,7 @@ void ADesPlayerController::InputPrimaryStarted()
 	{
 		return;
 	}
-	const auto ASC = PlayerCharacter->ASCWeakPtr.Get();
+	const auto ASC = PlayerCharacter->CustomASC.Get();
 	if (IsLooking())
 	{
 		ASC->PressAbilitiesByTag(FGameplayTagContainer(TAG_Ability_Primary), false);
@@ -191,7 +191,7 @@ void ADesPlayerController::InputPrimaryCompleted()
 	{
 		return;
 	}
-	const auto ASC = PlayerCharacter->ASCWeakPtr.Get();
+	const auto ASC = PlayerCharacter->CustomASC.Get();
 	if (IsLooking())
 	{
 		ASC->ReleaseAbilitiesByTag(FGameplayTagContainer(TAG_Ability_Primary), true);

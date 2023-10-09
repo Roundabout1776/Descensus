@@ -43,7 +43,7 @@ protected:
 	void GiveAbility(TSubclassOf<UDesGameplayAbility> AbilityClass) const;
 
 public:
-	TWeakObjectPtr<UDesAbilitySystemComponent> ASCWeakPtr;
+	TWeakObjectPtr<UDesAbilitySystemComponent> CustomASC;
 	
 	explicit ADesCharacter(const FObjectInitializer& ObjectInitializer);
 

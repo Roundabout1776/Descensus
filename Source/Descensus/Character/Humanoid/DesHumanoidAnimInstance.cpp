@@ -22,14 +22,18 @@ void UDesHumanoidAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		return;
 	}
 
-	bSomethingInHands = Character->GetAbilitySystemComponent()->HasMatchingGameplayTag(
+	const auto ASC = Character->GetAbilitySystemComponent();
+	if (!ASC)
+		return;
+
+	bSomethingInHands = ASC->HasMatchingGameplayTag(
 		TAG_Ability_Hands_Active);
 
-	if (Character->GetAbilitySystemComponent()->HasMatchingGameplayTag(TAG_Ability_DrawWeapon_Active))
+	if (ASC->HasMatchingGameplayTag(TAG_Ability_DrawWeapon_Active))
 	{
 		EquipType = EHandsReadyType::Unarmed;
 	}
-	else if (Character->GetAbilitySystemComponent()->HasMatchingGameplayTag(TAG_Ability_Inscribe_Active))
+	else if (ASC->HasMatchingGameplayTag(TAG_Ability_Inscribe_Active))
 	{
 		EquipType = EHandsReadyType::Inscribe;
 	}

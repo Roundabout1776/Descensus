@@ -6,19 +6,19 @@ public class Descensus : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		PublicDependencyModuleNames.AddRange(new[]
+		// PublicDependencyModuleNames.AddRange(new[] { });
+		PrivateDependencyModuleNames.AddRange(new[]
 		{
-			"Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "UMG", "Niagara",
-			"GameplayAbilities"
+			"Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "UMG", "Niagara", "Slate", "SlateCore",
+			"PhysicsCore", "GameplayAbilities", "GameplayTags", "GameplayTasks"
 		});
-		PrivateDependencyModuleNames.AddRange(new[] { "Slate", "SlateCore", "GameplayTags", "GameplayTasks" });
-		PublicIncludePaths.AddRange(new string[] {"Descensus"});
+		PublicIncludePaths.AddRange(new string[] { "Descensus" });
 		PrivateIncludePaths.AddRange(new string[] { });
 		PublicIncludePathModuleNames.AddRange(new string[] { });
 		PrivateIncludePathModuleNames.AddRange(new string[] { });
 		if (Target.bBuildEditor)
 		{
-			PrivateDependencyModuleNames.AddRange(new [] {"UnrealEd"});
+			PrivateDependencyModuleNames.AddRange(new[] { "UnrealEd" });
 		}
 	}
 }

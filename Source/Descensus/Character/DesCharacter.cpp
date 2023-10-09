@@ -55,7 +55,7 @@ void ADesCharacter::Tick(float DeltaTime)
 
 void ADesCharacter::GiveDefaultAbilities()
 {
-	if (ASCWeakPtr->bDefaultAbilitiesGiven || GetLocalRole() != ROLE_Authority)
+	if (CustomASC->bDefaultAbilitiesGiven || GetLocalRole() != ROLE_Authority)
 	{
 		return;
 	}
@@ -63,16 +63,16 @@ void ADesCharacter::GiveDefaultAbilities()
 	{
 		if (!IsValid(AbilityClass))
 			continue;
-		ASCWeakPtr->GiveAbility(FGameplayAbilitySpec(AbilityClass, 1,
+		CustomASC->GiveAbility(FGameplayAbilitySpec(AbilityClass, 1,
 		                                      static_cast<int32>(AbilityClass.
 		                                                         GetDefaultObject()->AbilityInputID), this));
 	}
-	ASCWeakPtr->bDefaultAbilitiesGiven = true;
+	CustomASC->bDefaultAbilitiesGiven = true;
 }
 
 void ADesCharacter::ApplyDefaultEffects()
 {
-	if (ASCWeakPtr->bDefaultEffectsApplied || GetLocalRole() != ROLE_Authority)
+	if (CustomASC->bDefaultEffectsApplied || GetLocalRole() != ROLE_Authority)
 	{
 		return;
 	}
@@ -81,17 +81,17 @@ void ADesCharacter::ApplyDefaultEffects()
 		if (!IsValid(EffectClass))
 			continue;
 
-		auto EffectContextHandle = ASCWeakPtr->MakeEffectContext();
+		auto EffectContextHandle = CustomASC->MakeEffectContext();
 		EffectContextHandle.AddSourceObject(this);
 
-		if (auto GameplayEffectSpecHandle = ASCWeakPtr->MakeOutgoingSpec(
+		if (auto GameplayEffectSpecHandle = CustomASC->MakeOutgoingSpec(
 			EffectClass, 1, EffectContextHandle); GameplayEffectSpecHandle.IsValid())
 		{
-			ASCWeakPtr->ApplyGameplayEffectSpecToTarget(*GameplayEffectSpecHandle.Data.Get(),
-			                                     ASCWeakPtr.Get());
+			CustomASC->ApplyGameplayEffectSpecToTarget(*GameplayEffectSpecHandle.Data.Get(),
+			                                     CustomASC.Get());
 		}
 	}
-	ASCWeakPtr->bDefaultEffectsApplied = true;
+	CustomASC->bDefaultEffectsApplied = true;
 }
 
 void ADesCharacter::GiveAbility(TSubclassOf<UDesGameplayAbility> AbilityClass) const

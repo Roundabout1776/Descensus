@@ -11,7 +11,7 @@ ADesNPC::ADesNPC(const FObjectInitializer& ObjectInitializer) : Super(ObjectInit
 	ASC->SetIsReplicated(true);
 	ASC->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
 
-	ASCWeakPtr = MakeWeakObjectPtr(ASC);
+	CustomASC = MakeWeakObjectPtr(ASC);
 }
 
 void ADesNPC::BeginPlay()

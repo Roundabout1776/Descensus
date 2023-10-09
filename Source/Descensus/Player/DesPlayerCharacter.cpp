@@ -93,6 +93,10 @@ void ADesPlayerCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	SetFirstPersonMode(IsLocallyControlled());
+
+	const auto AnimInstance = Cast<UDesPlayerAnimInstance>(
+		GetMesh()->GetAnimInstance());
+	AnimInstance->InitializeForCharacter(this);
 }
 
 void ADesPlayerCharacter::PossessedBy(AController* NewController)
@@ -101,9 +105,9 @@ void ADesPlayerCharacter::PossessedBy(AController* NewController)
 
 	if (const auto PS = GetPlayerState<ADesPlayerState>())
 	{
-		ASCWeakPtr = MakeWeakObjectPtr(PS->ASC);
+		CustomASC = MakeWeakObjectPtr(PS->ASC);
 
-		ASCWeakPtr->InitAbilityActorInfo(PS, this);
+		CustomASC->InitAbilityActorInfo(PS, this);
 
 		GiveDefaultAbilities();
 		ApplyDefaultEffects();
@@ -118,13 +122,9 @@ void ADesPlayerCharacter::OnRep_PlayerState()
 
 	if (const auto PS = GetPlayerState<ADesPlayerState>())
 	{
-		ASCWeakPtr = MakeWeakObjectPtr(PS->ASC);
+		CustomASC = MakeWeakObjectPtr(PS->ASC);
 
-		ASCWeakPtr->InitAbilityActorInfo(PS, this);
-
-		const auto AnimInstance = Cast<UDesPlayerAnimInstance>(
-			GetMesh()->GetAnimInstance());
-		AnimInstance->InitializeForCharacter(this);
+		CustomASC->InitAbilityActorInfo(PS, this);
 	}
 }
 
@@ -168,10 +168,18 @@ void ADesPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 
 UAbilitySystemComponent* ADesPlayerCharacter::GetAbilitySystemComponent() const
 {
-	return GetPlayerStateChecked<ADesPlayerState>()->GetAbilitySystemComponent();
+	if (const auto PS = GetPlayerState<ADesPlayerState>())
+	{
+		return PS->GetAbilitySystemComponent();
+	}
+	return nullptr;
 }
 
 UAttributeSet* ADesPlayerCharacter::GetAttributeSet() const
 {
-	return GetPlayerStateChecked<ADesPlayerState>()->GetAttributeSet();
+	if (const auto PS = GetPlayerState<ADesPlayerState>())
+	{
+		return PS->GetAttributeSet();
+	}
+	return nullptr;
 }
