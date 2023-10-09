@@ -136,20 +136,6 @@ void ADesPlayerCharacter::UnPossessed()
 void ADesPlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	const auto Velocity = GetVelocity().Length();
-	CommonAudio->SetFloatParameter("WalkSpeed", Velocity);
-	if (Velocity > 0.1 && !GetCharacterMovement()->IsFalling())
-	{
-		if (!CommonAudio->IsPlaying())
-		{
-			CommonAudio->Play();
-		}
-	}
-	else
-	{
-		CommonAudio->Stop();
-	}
 }
 
 void ADesPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
