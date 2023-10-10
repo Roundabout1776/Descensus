@@ -28,7 +28,7 @@ protected:
 	                              MovementSpeed(435.0f),
 	                              MovementSpeedRunMultiplier(1.62f)
 	{
-	};
+	}
 
 	UPROPERTY(BlueprintReadOnly, Category = "Descensus|Attributes", ReplicatedUsing = OnRep_Health)
 	FGameplayAttributeData Health;

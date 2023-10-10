@@ -1,6 +1,6 @@
 #include "Character/DesCharacter.h"
 
-#include "DesLogging.h"
+#include "DesPhysicalMaterial.h"
 #include "AbilitySystem/DesAbilitySystemComponent.h"
 #include "Actor/DesMetaComponent.h"
 #include "Character/Ability/Jump/DesGameplayAbilityJump.h"
@@ -12,7 +12,14 @@
 #include "Character/DesInscriptionComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Input/DesAbilityInputID.h"
-#include "Player/DesPlayerState.h"
+#include "Kismet/GameplayStatics.h"
+
+static TAutoConsoleVariable<int32> CVarShowFootsteps(
+	TEXT("ShowDebugFootsteps"),
+	0,
+	TEXT("Show debug footsteps"),
+	ECVF_Cheat
+);
 
 ADesCharacter::ADesCharacter(const FObjectInitializer& ObjectInitializer) : Super(
 	ObjectInitializer.SetDefaultSubobjectClass<UDesCharacterMovementComponent>(
@@ -51,6 +58,98 @@ void ADesCharacter::BeginPlay()
 void ADesCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (IsNetMode(NM_DedicatedServer))
+		return;
+
+	TickStepSound(DeltaTime);
+}
+
+void ADesCharacter::TickStepSound(float DeltaTime)
+{
+	if (!StepSound.bEnableStepSound)
+		return;
+
+	StepSound.Time = FMath::Max(0, StepSound.Time - (1000.0f * DeltaTime));
+	if (StepSound.Time > 0)
+		return;
+
+	if (!GetCharacterMovement()->IsMovingOnGround())
+		return;
+
+	const auto Speed = FVector::DistXY(FVector::ZeroVector, GetCharacterMovement()->Velocity);
+	const auto bIsMovingFastEnough = Speed >= StepSound.MinSpeed;
+
+	if (!bIsMovingFastEnough)
+	{
+		StepSound.bSkip = true;
+		return;
+	}
+
+	const bool bIsRunning = Speed >= StepSound.MinRunningSpeed;
+
+	FVector Location = GetActorLocation();
+	FVector EndLocation = Location + FVector::UpVector * -150.0f;
+
+	FCollisionQueryParams QueryParams;
+	QueryParams.bReturnPhysicalMaterial = true;
+	QueryParams.AddIgnoredActor(this);
+
+	const int32 ShowFootsteps = CVarShowFootsteps.GetValueOnAnyThread();
+
+	const auto World = GetMesh()->GetWorld();
+
+	if (FHitResult HitResult; World->LineTraceSingleByChannel(HitResult, Location,
+	                                                          EndLocation, ECC_WorldStatic,
+	                                                          QueryParams))
+	{
+		if (!HitResult.bBlockingHit)
+		{
+			if (ShowFootsteps > 0)
+			{
+				DrawDebugLine(World, Location, EndLocation, FColor::Green, false, 4.0f, 0, 1.0f);
+			}
+			return;
+		}
+		if (const auto* Material = Cast<UDesPhysicalMaterial>(HitResult.PhysMaterial.Get()))
+		{
+			if (bIsRunning && CustomASC->HasMatchingGameplayTag(TAG_Movement_Run))
+			{
+				StepSound.Time = StepSound.TimeRunning;
+			}
+			else
+			{
+				StepSound.Time = StepSound.TimeWalking;
+			}
+
+			if (!StepSound.bSkip)
+			{
+				UGameplayStatics::PlaySoundAtLocation(World, Material->FootstepSound, HitResult.Location, 1.0f);
+				if (ShowFootsteps > 0)
+				{
+					DrawDebugString(World, HitResult.ImpactPoint, GetNameSafe(Material), nullptr,
+					                FColor::White, 4.0f);
+				}
+			}
+			else
+			{
+				StepSound.bSkip = false;
+				StepSound.Time /= 2.0f;
+			}
+		}
+		if (ShowFootsteps > 0)
+		{
+			DrawDebugSphere(World, HitResult.ImpactPoint, 16, 16, FColor::Red, false, 4.0f);
+		}
+	}
+	else
+	{
+		if (ShowFootsteps > 0)
+		{
+			DrawDebugLine(World, Location, EndLocation, FColor::Green, false, 4.0f, 0, 1.0f);
+			DrawDebugSphere(World, EndLocation, 16, 16, FColor::Red, false, 4.0f);
+		}
+	}
 }
 
 void ADesCharacter::GiveDefaultAbilities()
@@ -64,8 +163,8 @@ void ADesCharacter::GiveDefaultAbilities()
 		if (!IsValid(AbilityClass))
 			continue;
 		CustomASC->GiveAbility(FGameplayAbilitySpec(AbilityClass, 1,
-		                                      static_cast<int32>(AbilityClass.
-		                                                         GetDefaultObject()->AbilityInputID), this));
+		                                            static_cast<int32>(AbilityClass.
+		                                                               GetDefaultObject()->AbilityInputID), this));
 	}
 	CustomASC->bDefaultAbilitiesGiven = true;
 }
@@ -88,7 +187,7 @@ void ADesCharacter::ApplyDefaultEffects()
 			EffectClass, 1, EffectContextHandle); GameplayEffectSpecHandle.IsValid())
 		{
 			CustomASC->ApplyGameplayEffectSpecToTarget(*GameplayEffectSpecHandle.Data.Get(),
-			                                     CustomASC.Get());
+			                                           CustomASC.Get());
 		}
 	}
 	CustomASC->bDefaultEffectsApplied = true;
