@@ -31,10 +31,10 @@ struct FInventoryGrid : public FFastArraySerializer
 		return FastArrayDeltaSerialize<FInventoryGridItem, FInventoryGrid>(Items, DeltaParams, *this);
 	}
 
-	void AddItem(TSubclassOf<UDesItemData> InItemStaticDataClass);
+	void AddItem(TSubclassOf<UDesItemData> InItemDataClass);
 	void AddItem(TObjectPtr<UDesItemInstance> InItemInstance);
 
-	void RemoveItem(TSubclassOf<UDesItemData> InItemStaticDataClass);
+	void RemoveItem(TSubclassOf<UDesItemData> InItemDataClass);
 	void RemoveItem(TObjectPtr<UDesItemInstance> InItemInstance);
 
 	TArray<FInventoryGridItem>& GetItemsRef() { return Items; }
@@ -57,6 +57,8 @@ struct TStructOpsTypeTraits<FInventoryGrid> : TStructOpsTypeTraitsBase2<FInvento
 	};
 };
 
+DECLARE_DELEGATE(FOnRepGridSignature)
+
 UCLASS(ClassGroup=(Descensus), meta=(BlueprintSpawnableComponent))
 class DESCENSUS_API UDesInventoryComponent : public UActorComponent
 {
@@ -66,10 +68,19 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	UPROPERTY(Replicated)
+	FOnRepGridSignature OnRepGridDelegate;
+
+	UPROPERTY(ReplicatedUsing=OnRep_Grid)
 	FInventoryGrid Grid;
-	
+
+	UPROPERTY(EditDefaultsOnly, Category="Descensus|Inventory")
+	TArray<TSubclassOf<UDesItemData>> DefaultItems;
+
 	UDesInventoryComponent();
+	virtual void InitializeComponent() override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
+
+	UFUNCTION()
+	virtual void OnRep_Grid(const FInventoryGrid& OldGrid);
 };

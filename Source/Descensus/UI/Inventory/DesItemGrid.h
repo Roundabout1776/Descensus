@@ -4,6 +4,8 @@
 #include "Components/Widget.h"
 #include "DesItemGrid.generated.h"
 
+class UDesInventoryComponent;
+struct FInventoryGrid;
 class SDesItemGrid;
 
 UCLASS()
@@ -17,9 +19,13 @@ protected:
 	virtual TSharedRef<SWidget> RebuildWidget() override;
 	
 public:
+	TWeakObjectPtr<UDesInventoryComponent> Inventory;
 	virtual void ReleaseSlateResources(bool bReleaseChildren) override;
 	
 #if WITH_EDITOR
 	virtual const FText GetPaletteCategory() override;
 #endif
+
+	void AttachGrid(TObjectPtr<UDesInventoryComponent> Grid);
+	void OnRepGrid();
 };

@@ -4,6 +4,8 @@
 #include "UI/DesUIUtilities.h"
 #include "Blueprint/UserWidget.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
+#include "Components/DesInventoryComponent.h"
+#include "Inventory/DesItemGrid.h"
 #include "Player/DesInscriptionCanvas.h"
 #include "Player/DesPlayerCharacter.h"
 #include "Player/DesPlayerController.h"
@@ -109,6 +111,7 @@ void ADesHUD::InitMainUILayer(const ADesPlayerCharacter* Character)
 	check(IsValid(MainUILayerClass));
 	MainUILayer = CreateWidget<UDesMainUILayer>(PlayerController, MainUILayerClass);
 	MainUILayer->SetInscriptionOverlayMaterial(InscriptionCanvas->GetInscriptionCanvasMaterial());
+	MainUILayer->ItemGrid->AttachGrid(Character->Inventory);
 	MainUILayer->AddToPlayerScreen(0);
 }
 

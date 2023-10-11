@@ -4,6 +4,8 @@
 #include "Blueprint/UserWidget.h"
 #include "DesMainUILayer.generated.h"
 
+class UDesInventoryComponent;
+class UDesItemGrid;
 class UInputAction;
 class SDesShortcutsPanel;
 class UOverlay;
@@ -21,6 +23,7 @@ class DESCENSUS_API UDesMainUILayer : public UUserWidget
 protected:
 	virtual void NativeOnInitialized() override;
 	
+public:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UOverlay> RootOverlay;
 
@@ -36,7 +39,9 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UDesShortcutsPanel> ShortcutsPanel;
 
-public:
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UDesItemGrid> ItemGrid;
+	
 	void SetInscriptionOverlayMaterial(UMaterialInstanceDynamic* Material) const;
 	void SetCrosshairVisible(bool bNewVisible) const;
 

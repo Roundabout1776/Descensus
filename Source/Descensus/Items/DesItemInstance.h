@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "DesItemInstance.generated.h"
 
-class ADesActor;
+class ADesItemActor;
 class UDesItemData;
 
 UCLASS()
@@ -19,7 +19,7 @@ public:
 	int32 Quantity;
 
 	UPROPERTY(Replicated)
-	TWeakObjectPtr<ADesActor> ItemActor;
+	TWeakObjectPtr<ADesItemActor> ItemActor;
 
 	TObjectPtr<UDesItemData> GetItemData() const;
 

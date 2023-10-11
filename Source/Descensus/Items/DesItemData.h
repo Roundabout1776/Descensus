@@ -29,5 +29,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="Descensus|Item")
 	TSoftClassPtr<ADesActor> ActorClass;
 	
+	UPROPERTY(EditDefaultsOnly, Category="Descensus|Item")
+	TSoftClassPtr<UTexture2D> Icon;
+	
 	virtual FPrimaryAssetType GetPrimaryAssetType() const override;
 };

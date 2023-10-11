@@ -4,7 +4,7 @@
 #include "Items/DesItemInstance.h"
 #include "Net/UnrealNetwork.h"
 
-void FInventoryGrid::AddItem(TSubclassOf<UDesItemData> InItemStaticDataClass)
+void FInventoryGrid::AddItem(TSubclassOf<UDesItemData> InItemDataClass)
 {
 	FInventoryGridItem& Item = Items.AddDefaulted_GetRef();
 	Item.ItemInstance = NewObject<UDesItemInstance>();
@@ -20,12 +20,12 @@ void FInventoryGrid::AddItem(TObjectPtr<UDesItemInstance> InItemInstance)
 	MarkItemDirty(Item);
 }
 
-void FInventoryGrid::RemoveItem(TSubclassOf<UDesItemData> InItemStaticDataClass)
+void FInventoryGrid::RemoveItem(TSubclassOf<UDesItemData> InItemDataClass)
 {
 	for (auto ItemIter = Items.CreateIterator(); ItemIter; ++ItemIter)
 	{
 		const FInventoryGridItem& Item = *ItemIter;
-		if (Item.ItemInstance && Item.ItemInstance->GetItemData()->IsA(InItemStaticDataClass))
+		if (Item.ItemInstance && Item.ItemInstance->GetItemData()->IsA(InItemDataClass))
 		{
 			ItemIter.RemoveCurrent();
 			MarkArrayDirty();
@@ -88,6 +88,20 @@ UDesInventoryComponent::UDesInventoryComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 	SetIsReplicatedByDefault(true);
+	bWantsInitializeComponent = true;
+}
+
+void UDesInventoryComponent::InitializeComponent()
+{
+	Super::InitializeComponent();
+
+	if (GetOwner()->HasAuthority())
+	{
+		for (const auto ItemDataClass : DefaultItems)
+		{
+			Grid.AddItem(ItemDataClass);
+		}
+	}
 }
 
 void UDesInventoryComponent::BeginPlay()
@@ -101,9 +115,14 @@ void UDesInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
+void UDesInventoryComponent::OnRep_Grid(const FInventoryGrid& OldGrid)
+{
+	const auto _ =OnRepGridDelegate.ExecuteIfBound();
+}
+
 void UDesInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
-    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-    DOREPLIFETIME(UDesInventoryComponent, Grid);
+	DOREPLIFETIME(UDesInventoryComponent, Grid);
 }
