@@ -2,14 +2,14 @@
 
 #include "NativeGameplayTags.h"
 
-/** Meta */
+/* Meta */
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Meta_Grabbable)
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Meta_Grabbed)
 
-/** Movement */
+/* Movement */
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Movement_Run)
 
-/** Input */
+/* Input */
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Input_Move)
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Input_Crouch)
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Input_Look)

@@ -1,6 +1,6 @@
 #include "UI/DesHUD.h"
 
-#include "Actor/DesMetaComponent.h"
+#include "Components/DesMetaComponent.h"
 #include "UI/DesUIUtilities.h"
 #include "Blueprint/UserWidget.h"
 #include "Blueprint/WidgetLayoutLibrary.h"

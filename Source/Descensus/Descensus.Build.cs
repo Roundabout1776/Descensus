@@ -10,7 +10,7 @@ public class Descensus : ModuleRules
 		PrivateDependencyModuleNames.AddRange(new[]
 		{
 			"Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "UMG", "Niagara", "Slate", "SlateCore",
-			"PhysicsCore", "GameplayAbilities", "GameplayTags", "GameplayTasks"
+			"PhysicsCore", "GameplayAbilities", "GameplayTags", "GameplayTasks", "NetCore"
 		});
 		PublicIncludePaths.AddRange(new string[] { "Descensus" });
 		PrivateIncludePaths.AddRange(new string[] { });

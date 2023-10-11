@@ -2,7 +2,7 @@
 
 #include "DesPhysicalMaterial.h"
 #include "AbilitySystem/DesAbilitySystemComponent.h"
-#include "Actor/DesMetaComponent.h"
+#include "Components/DesMetaComponent.h"
 #include "Character/Ability/Jump/DesGameplayAbilityJump.h"
 #include "Character/Ability/Run/DesGameplayAbilityRun.h"
 #include "Character/Ability/DesGameplayEffectStaminaRegen.h"

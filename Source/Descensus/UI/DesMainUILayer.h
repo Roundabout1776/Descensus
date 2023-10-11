@@ -20,7 +20,7 @@ class DESCENSUS_API UDesMainUILayer : public UUserWidget
 
 protected:
 	virtual void NativeOnInitialized() override;
-
+	
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UOverlay> RootOverlay;
 

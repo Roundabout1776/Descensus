@@ -3,25 +3,21 @@
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 #include "DesGesture.h"
-#include "Engine/DataAsset.h"
+#include "DesPrimaryDataAsset.h"
 #include "DesRuneData.generated.h"
 
 UCLASS(BlueprintType)
-class DESCENSUS_API UDesRuneData : public UPrimaryDataAsset
+class DESCENSUS_API UDesRuneData : public UDesPrimaryDataAsset
 {
 	GENERATED_BODY()
 
 public:
-	explicit UDesRuneData(const FObjectInitializer& ObjectInitializer);
-
-	virtual FPrimaryAssetId GetPrimaryAssetId() const override;
-
-	UPROPERTY(EditDefaultsOnly)
-	FText Name;
-
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category="Descensus|Rune")
 	FGameplayTag GameplayTag;
 
-	UPROPERTY()
+	UPROPERTY(EditDefaultsOnly, Category="Descensus|Rune")
 	TArray<FDesGesture> Templates;
+	
+	explicit UDesRuneData(const FObjectInitializer& ObjectInitializer);
+	virtual FPrimaryAssetType GetPrimaryAssetType() const override;
 };

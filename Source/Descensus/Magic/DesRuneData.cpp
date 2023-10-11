@@ -10,7 +10,7 @@ UDesRuneData::UDesRuneData(const FObjectInitializer& ObjectInitializer) : Super(
 	}
 }
 
-FPrimaryAssetId UDesRuneData::GetPrimaryAssetId() const
+FPrimaryAssetType UDesRuneData::GetPrimaryAssetType() const
 {
-	return FPrimaryAssetId(UDesAssetManager::RuneDataType, GameplayTag.GetTagName());
+	return UDesAssetManager::RuneDataType;
 }

@@ -7,6 +7,8 @@
 #include "UI/DesStyle.h"
 #include "UI/SDesShortcutSlot.h"
 
+#define LOCTEXT_NAMESPACE "Descensus"
+
 TSharedRef<SWidget> UDesShortcutsPanel::RebuildWidget()
 {
 	SAssignNew(ShortcutsContainer, SHorizontalBox);
@@ -55,3 +57,12 @@ void UDesShortcutsPanel::UpdateInputMappings(const ADesPlayerController* PlayerC
 		Shortcut->UpdateInputText(InputSystem);
 	}
 }
+
+#if WITH_EDITOR
+const FText UDesShortcutsPanel::GetPaletteCategory()
+{
+	return LOCTEXT("Descensus", "Descensus");
+}
+#endif
+
+#undef LOCTEXT_NAMESPACE

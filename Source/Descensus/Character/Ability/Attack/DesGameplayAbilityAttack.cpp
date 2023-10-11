@@ -4,7 +4,7 @@
 #include "DesLogging.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Character/Ability/DrawWeapon/DesGameplayAbilityDrawWeapon.h"
-#include "Item/DesWeaponType.h"
+#include "Items/DesWeaponType.h"
 #include "Player/DesPlayerCharacter.h"
 
 UE_DEFINE_GAMEPLAY_TAG(TAG_Ability_Attack, "Ability.Attack")

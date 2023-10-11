@@ -4,6 +4,7 @@
 #include "Character/DesCharacter.h"
 #include "DesPlayerCharacter.generated.h"
 
+class UDesInventoryComponent;
 class UPhysicsHandleComponent;
 struct FGameplayAbilitySpecHandle;
 struct FGameplayAbilitySpec;
@@ -42,6 +43,9 @@ public:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	virtual void OnRep_PlayerState() override;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Descensus|PlayerCharacter")
+	TObjectPtr<UDesInventoryComponent> Inventory;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Descensus|PlayerCharacter")
 	TObjectPtr<UPhysicsHandleComponent> PhysicsHandle;
 

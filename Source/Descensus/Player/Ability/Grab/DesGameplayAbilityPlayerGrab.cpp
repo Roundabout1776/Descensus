@@ -6,7 +6,7 @@
 #include "Character/Ability/DesGameplayAbilityPrimaryBase.h"
 #include "Abilities/Tasks/AbilityTask_WaitInputRelease.h"
 #include "AbilitySystem/DesGameplayAbilityTargetDataTypes.h"
-#include "Actor/DesMetaComponent.h"
+#include "Components/DesMetaComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 
 UE_DEFINE_GAMEPLAY_TAG(TAG_Ability_PlayerGrab, "Ability.PlayerGrab")

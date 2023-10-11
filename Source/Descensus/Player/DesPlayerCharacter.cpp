@@ -1,14 +1,13 @@
-#include "Player/DesPlayerCharacter.h"
+#include "DesPlayerCharacter.h"
 
 #include "DesGameplayTags.h"
 #include "DesPlayerState.h"
-#include "Actor/DesMetaComponent.h"
+#include "Components/DesMetaComponent.h"
 #include "Player/DesPlayerController.h"
 #include "AbilitySystem/DesAbilitySystemComponent.h"
 #include "Player/DesHeadBobComponent.h"
 #include "Camera/CameraComponent.h"
-#include "Components/AudioComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
+#include "Components/DesInventoryComponent.h"
 #include "Input/DesEnhancedInputComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "Player/DesPlayerAttributeSet.h"
@@ -19,6 +18,8 @@ ADesPlayerCharacter::ADesPlayerCharacter(const FObjectInitializer& ObjectInitial
 	ObjectInitializer.SetDefaultSubobjectClass<UDesPlayerAttributeSet>(UDesCharacterAttributeSet::AttributeSetName))
 {
 	NetUpdateFrequency = 100.0f;
+	
+	Inventory = CreateDefaultSubobject<UDesInventoryComponent>(TEXT("Inventory"));
 
 	MetaComponent->Name = FText::FromString(TEXT("PC"));
 

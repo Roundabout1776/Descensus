@@ -10,7 +10,8 @@ class DESCENSUS_API UDesAssetManager : public UAssetManager
 	GENERATED_BODY()
 
 public:
-	virtual void StartInitialLoading() override;
-
+	static const FPrimaryAssetType ItemDataType;
 	static const FPrimaryAssetType RuneDataType;
+	
+	virtual void StartInitialLoading() override;
 };
