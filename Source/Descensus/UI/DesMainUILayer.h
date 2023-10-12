@@ -4,8 +4,8 @@
 #include "Blueprint/UserWidget.h"
 #include "DesMainUILayer.generated.h"
 
+class UDesItemContainerWidget;
 class UDesInventoryComponent;
-class UDesItemGrid;
 class UInputAction;
 class SDesShortcutsPanel;
 class UOverlay;
@@ -40,7 +40,7 @@ public:
 	TObjectPtr<UDesShortcutsPanel> ShortcutsPanel;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UDesItemGrid> ItemGrid;
+	TObjectPtr<UDesItemContainerWidget> ItemContainer;
 	
 	void SetInscriptionOverlayMaterial(UMaterialInstanceDynamic* Material) const;
 	void SetCrosshairVisible(bool bNewVisible) const;

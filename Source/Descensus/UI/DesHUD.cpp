@@ -4,15 +4,15 @@
 #include "UI/DesUIUtilities.h"
 #include "Blueprint/UserWidget.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
-#include "Components/DesInventoryComponent.h"
-#include "Inventory/DesItemGrid.h"
+#include "DesItemContainerWidget.h"
 #include "Player/DesInscriptionCanvas.h"
 #include "Player/DesPlayerCharacter.h"
 #include "Player/DesPlayerController.h"
-#include "UI/DesGenericTooltip.h"
-#include "UI/DesTooltipData.h"
-#include "UI/DesWidget.h"
-#include "UI/DesMainUILayer.h"
+#include "DesGenericTooltip.h"
+#include "DesTooltipData.h"
+#include "DesWidget.h"
+#include "DesMainUILayer.h"
+#include "Components/DesItemContainerComponent.h"
 #include "Widgets/DeclarativeSyntaxSupport.h"
 
 FVector2D ADesHUD::GetDesiredTooltipPositionForActor(const AActor* Actor) const
@@ -111,7 +111,7 @@ void ADesHUD::InitMainUILayer(const ADesPlayerCharacter* Character)
 	check(IsValid(MainUILayerClass));
 	MainUILayer = CreateWidget<UDesMainUILayer>(PlayerController, MainUILayerClass);
 	MainUILayer->SetInscriptionOverlayMaterial(InscriptionCanvas->GetInscriptionCanvasMaterial());
-	MainUILayer->ItemGrid->AttachGrid(Character->Inventory);
+	MainUILayer->ItemContainer->AttachContainer(Cast<UDesItemContainerComponent>(Character->Inventory));
 	MainUILayer->AddToPlayerScreen(0);
 }
 

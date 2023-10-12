@@ -1,6 +1,5 @@
-﻿#include "SDesItemGrid.h"
+﻿#include "SDesItemContainerWidget.h"
 
-#include "EnhancedInputSubsystems.h"
 #include "SlateOptMacros.h"
 #include "Widgets/Layout/SBox.h"
 #include "Widgets/Layout/SBorder.h"
@@ -9,7 +8,7 @@
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 
-void SDesItemGrid::Construct(const FArguments& InArgs)
+void SDesItemContainerWidget::Construct(const FArguments& InArgs)
 {
 	GridSize = InArgs._GridSize;
 
@@ -30,7 +29,7 @@ void SDesItemGrid::Construct(const FArguments& InArgs)
 	];
 }
 
-int32 SDesItemGrid::OnPaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry, const FSlateRect& MyCullingRect,
+int32 SDesItemContainerWidget::OnPaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry, const FSlateRect& MyCullingRect,
                             FSlateWindowElementList& OutDrawElements, int32 LayerId, const FWidgetStyle& InWidgetStyle,
                             bool bParentEnabled) const
 {

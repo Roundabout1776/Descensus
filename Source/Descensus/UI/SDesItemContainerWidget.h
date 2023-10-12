@@ -3,13 +3,7 @@
 #include "CoreMinimal.h"
 #include "Widgets/SCompoundWidget.h"
 
-class UEnhancedInputLocalPlayerSubsystem;
-class UInputAction;
-class SImage;
-class STextBlock;
-class UTexture2D;
-
-class DESCENSUS_API SDesItemGrid : public SCompoundWidget
+class DESCENSUS_API SDesItemContainerWidget : public SCompoundWidget
 {
 	FIntVector2 GridSize{};
 
@@ -18,7 +12,7 @@ class DESCENSUS_API SDesItemGrid : public SCompoundWidget
 	const FSlateBrush* BackgroundBrush{};
 
 public:
-	SLATE_BEGIN_ARGS(SDesItemGrid)
+	SLATE_BEGIN_ARGS(SDesItemContainerWidget)
 		{
 		}
 
