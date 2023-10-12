@@ -12,7 +12,7 @@ struct DESCENSUS_API FDesSlateWidgetStyle : public FSlateWidgetStyle
 	float CellSize = 50.0f;
 
 	UPROPERTY(EditDefaultsOnly)
-	float Padding = 18.0f;
+	float Padding = 19.0f;
 	
 	UPROPERTY(EditDefaultsOnly)
 	FTextBlockStyle DefaultTextStyle;
@@ -22,6 +22,9 @@ struct DESCENSUS_API FDesSlateWidgetStyle : public FSlateWidgetStyle
 
 	UPROPERTY(EditDefaultsOnly)
 	FSlateBrush TestBrush;
+
+	UPROPERTY(EditDefaultsOnly)
+	FSlateBrush ItemContainerTelegraphBrush;
 	
 	static const FName TypeName;
 
@@ -40,6 +43,7 @@ struct DESCENSUS_API FDesSlateWidgetStyle : public FSlateWidgetStyle
 	{
 		OutBrushes.Add(&CommonBox);
 		OutBrushes.Add(&TestBrush);
+		OutBrushes.Add(&ItemContainerTelegraphBrush);
 	}
 };
 

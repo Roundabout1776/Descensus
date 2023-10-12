@@ -14,6 +14,7 @@ TSharedRef<SWidget> UDesCharacterScreen::RebuildWidget()
 	
 	SAssignNew(Root, SBorder)
 		.BorderImage(&Style->CommonBox)
+		.Padding(Style->Padding)
 		[
 			SNew(SHorizontalBox)
 			+ SHorizontalBox::Slot()

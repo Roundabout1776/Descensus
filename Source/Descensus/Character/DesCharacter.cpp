@@ -134,7 +134,7 @@ void ADesCharacter::TickStepSound(float DeltaTime)
 			else
 			{
 				StepSound.bSkip = false;
-				StepSound.Time /= 2.0f;
+				StepSound.Time /= 3.0f;
 			}
 		}
 		if (ShowFootsteps > 0)
