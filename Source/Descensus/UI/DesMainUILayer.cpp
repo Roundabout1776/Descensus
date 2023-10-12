@@ -26,11 +26,6 @@ void UDesMainUILayer::NativeOnInitialized()
 	}
 }
 
-void UDesMainUILayer::SetInscriptionOverlayMaterial(UMaterialInstanceDynamic* Material) const
-{
-	InscriptionOverlay->SetBrushFromMaterial(Material);
-}
-
 void UDesMainUILayer::SetCrosshairVisible(const bool bNewVisible) const
 {
 	Crosshair->SetVisibility(bNewVisible ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);

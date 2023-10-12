@@ -2,30 +2,31 @@
 
 #include "CoreMinimal.h"
 #include "Components/Widget.h"
-#include "DesItemContainerWidget.generated.h"
+#include "DesCharacterScreen.generated.h"
 
-class UDesItemContainerComponent;
 class UDesInventoryComponent;
+class ADesPlayerCharacter;
 class SDesItemContainerWidget;
 
 UCLASS()
-class DESCENSUS_API UDesItemContainerWidget : public UWidget
+class DESCENSUS_API UDesCharacterScreen : public UWidget
 {
 	GENERATED_BODY()
-	
+
 protected:
-	TSharedPtr<SDesItemContainerWidget> ItemContainerWidget;
+	TSharedPtr<SBorder> Root;
+	TSharedPtr<SDesItemContainerWidget> Inventory;
+	
+	TWeakObjectPtr<UDesInventoryComponent> InventoryComponent;
 	
 	virtual TSharedRef<SWidget> RebuildWidget() override;
 	
 public:
-	TWeakObjectPtr<UDesItemContainerComponent> ItemContainerComponent;
 	virtual void ReleaseSlateResources(bool bReleaseChildren) override;
+	void InitForCharacter(const ADesPlayerCharacter* Character);
+	void OnRepGrid();
 	
 #if WITH_EDITOR
 	virtual const FText GetPaletteCategory() override;
 #endif
-
-	void AttachContainer(TObjectPtr<UDesItemContainerComponent> InItemContainerComponent);
-	void OnRepGrid();
 };

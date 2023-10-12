@@ -1,5 +1,6 @@
 ﻿#include "SDesItemContainerWidget.h"
 
+#include "DesWidgetStyleCatalog.h"
 #include "SlateOptMacros.h"
 #include "Widgets/Layout/SBox.h"
 #include "Widgets/Layout/SBorder.h"
@@ -12,38 +13,37 @@ void SDesItemContainerWidget::Construct(const FArguments& InArgs)
 {
 	GridSize = InArgs._GridSize;
 
-	BackgroundBrush = FDesStyle::Get().GetBrush("/Brush/SB_Test");
+	const auto Style = FDesStyle::GetDefaultStyle();
 
-	// const auto InputTextBlockStyle = FDesStyle::Get().GetWidgetStyle<FTextBlockStyle>("/Style/SWS_Default");
+	BackgroundBrush = &Style->TestBrush;
 
 	ChildSlot
 	[
 		SNew(SBox)
-		.HeightOverride(Padding * 2.0f + GridSize.Y * CellSize)
-		.WidthOverride(Padding * 2.0f + GridSize.X * CellSize)
-		[
-			SNew(SBorder)
-			.Padding(Padding)
-			.BorderImage(FDesStyle::Get().GetBrush("/Brush/SB_CommonBox"))
-		]
+		.HeightOverride(Style->Padding * 2.0f + GridSize.Y * Style->CellSize)
+		.WidthOverride(Style->Padding * 2.0f + GridSize.X * Style->CellSize)
 	];
 }
 
-int32 SDesItemContainerWidget::OnPaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry, const FSlateRect& MyCullingRect,
-                            FSlateWindowElementList& OutDrawElements, int32 LayerId, const FWidgetStyle& InWidgetStyle,
-                            bool bParentEnabled) const
+int32 SDesItemContainerWidget::OnPaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry,
+                                       const FSlateRect& MyCullingRect,
+                                       FSlateWindowElementList& OutDrawElements, int32 LayerId,
+                                       const FWidgetStyle& InWidgetStyle,
+                                       bool bParentEnabled) const
 {
 	LayerId = SCompoundWidget::OnPaint(Args, AllottedGeometry, MyCullingRect, OutDrawElements, LayerId, InWidgetStyle,
 	                                   bParentEnabled);
 
-	const auto Offset = FVector2D(Padding, Padding);
+	const auto Style = FDesStyle::GetDefaultStyle();
+
+	const auto Offset = FVector2D(Style->Padding, Style->Padding);
 	const auto Size = AllottedGeometry.GetLocalSize() - (Offset * 2.0f);
 	const auto Square = AllottedGeometry.MakeChild(Size, FSlateLayoutTransform(Offset))
 	                                    .ToPaintGeometry();
 
 	static TArray<FVector2D> PointsTemp;
 
-	for (int X = 0; X <= Size.X; X += CellSize)
+	for (int X = 0; X <= Size.X; X += Style->CellSize)
 	{
 		PointsTemp.Reset();
 		PointsTemp.Add({static_cast<float>(X), 0});
@@ -53,7 +53,7 @@ int32 SDesItemContainerWidget::OnPaint(const FPaintArgs& Args, const FGeometry& 
 		                             ESlateDrawEffect::None, FLinearColor::White, false, 1.0f);
 	}
 
-	for (int Y = 0; Y <= Size.Y; Y += CellSize)
+	for (int Y = 0; Y <= Size.Y; Y += Style->CellSize)
 	{
 		PointsTemp.Reset();
 		PointsTemp.Add({0, static_cast<float>(Y)});

@@ -6,9 +6,6 @@
 class DESCENSUS_API SDesItemContainerWidget : public SCompoundWidget
 {
 	FIntVector2 GridSize{};
-
-	const float CellSize = 50.0f;
-	const float Padding = 18.0f;
 	const FSlateBrush* BackgroundBrush{};
 
 public:

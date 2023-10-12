@@ -1,4 +1,4 @@
-﻿#include "UI/SDesShortcutSlot.h"
+﻿#include "SDesShortcutSlot.h"
 
 #include "EnhancedInputSubsystems.h"
 #include "SlateOptMacros.h"
@@ -16,7 +16,7 @@ void SDesShortcutSlot::Construct(const FArguments& InArgs)
 
 	const auto SizeOverride = InArgs._SizeOverride.Get();
 
-	const auto InputTextBlockStyle = FDesStyle::Get().GetWidgetStyle<FTextBlockStyle>("/Style/SWS_Default");
+	const auto Style = FDesStyle::GetDefaultStyle();
 
 	ChildSlot.SetPadding(FMargin(0.0f, 0.0f, 7.0f, 0.0f));
 	ChildSlot
@@ -29,7 +29,7 @@ void SDesShortcutSlot::Construct(const FArguments& InArgs)
 			.WidthOverride(SizeOverride)
 			[
 				SNew(SBorder)
-				.BorderImage(FDesStyle::Get().GetBrush("/Brush/SB_CommonBox"))
+				.BorderImage(&Style->CommonBox)
 				[
 					SNew(SOverlay)
 					+ SOverlay::Slot()
@@ -44,7 +44,7 @@ void SDesShortcutSlot::Construct(const FArguments& InArgs)
 					[
 						SAssignNew(InputTextBlock, STextBlock)
 						.Justification(ETextJustify::Right)
-						.TextStyle(&InputTextBlockStyle)
+						.TextStyle(&Style->DefaultTextStyle)
 						.Text(INVTEXT("F"))
 					]
 				]

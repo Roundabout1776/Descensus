@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "DesWidgetStyleCatalog.h"
 #include "Styling/ISlateStyle.h"
 
 class FDesStyle
@@ -13,4 +14,9 @@ public:
 	static const ISlateStyle& Get();
 	static void Initialize();
 	static void Shutdown();
+
+	static const FDesSlateWidgetStyle* GetDefaultStyle()
+	{
+		return &Get().GetWidgetStyle<FDesSlateWidgetStyle>("SWS_Descensus");
+	}
 };
