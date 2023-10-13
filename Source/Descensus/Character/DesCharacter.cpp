@@ -26,6 +26,7 @@ ADesCharacter::ADesCharacter(const FObjectInitializer& ObjectInitializer) : Supe
 		CharacterMovementComponentName))
 {
 	PrimaryActorTick.bCanEverTick = true;
+	bReplicateUsingRegisteredSubObjectList = true;
 	bUseControllerRotationPitch = false;
 
 	DefaultAbilities.Empty();
@@ -43,6 +44,7 @@ ADesCharacter::ADesCharacter(const FObjectInitializer& ObjectInitializer) : Supe
 	InscriptionComponent->SetIsReplicated(true);
 
 	MetaComponent = CreateDefaultSubobject<UDesMetaComponent>(TEXT("MetaComponent"));
+	AddReplicatedSubObject(MetaComponent);
 
 	const auto Movement = GetCharacterMovement();
 	Movement->AirControl = 0.1;

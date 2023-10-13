@@ -25,7 +25,7 @@ void SDesItemContainerWidget::Construct(const FArguments& InArgs)
 		.HeightOverride(GridSize.Y * Style->CellSize)
 		.WidthOverride(GridSize.X * Style->CellSize)
 		[
-			SNew(SCanvas)
+			SAssignNew(Canvas, SCanvas)
 			+ SCanvas::Slot()
 			  .Expose(TelegraphSlot)
 			  .Size(Style->CellSize)
@@ -110,6 +110,20 @@ FReply SDesItemContainerWidget::OnMouseMove(const FGeometry& MyGeometry, const F
 	}
 	// DES_LOG_CSTR("ItemContainerPos", *MouseLocal.ToString())
 	return SCompoundWidget::OnMouseMove(MyGeometry, MouseEvent);
+}
+
+void SDesItemContainerWidget::AddItem(FIntVector2 Position, FIntVector2 Size, const FSlateBrush* Texture)
+{
+	const auto Style = FDesStyle::GetDefaultStyle();
+	Canvas->AddSlot()
+	.Position(FVector2D{Position.X * Style->CellSize, Position.Y * Style->CellSize})
+	.Size(FVector2D{Size.X * Style->CellSize, Size.Y * Style->CellSize})
+	[
+		SNew(SImage)
+		// .Image(&Style->ItemContainerTelegraphBrush)
+		.Image(Texture)
+	];
+	Invalidate(EInvalidateWidgetReason::Layout);
 }
 
 END_SLATE_FUNCTION_BUILD_OPTIMIZATION

@@ -5,8 +5,10 @@
 ADesActor::ADesActor()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	bReplicateUsingRegisteredSubObjectList = true;
 
 	MetaComponent = CreateDefaultSubobject<UDesMetaComponent>(TEXT("DescensusMeta"));
+	AddReplicatedSubObject(MetaComponent);
 }
 
 void ADesActor::BeginPlay()

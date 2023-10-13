@@ -21,7 +21,7 @@ public:
 	FText Description;
 	
 	UPROPERTY(EditDefaultsOnly, Category="Descensus|Item")
-	FIntVector2 Volume{1,1};
+	FIntVector2 Size{1,1};
 	
 	UPROPERTY(EditDefaultsOnly, Category="Descensus|Item")
 	int MaxStackCount{1};
@@ -29,8 +29,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="Descensus|Item")
 	TSoftClassPtr<ADesActor> ActorClass;
 	
+	// UPROPERTY(EditDefaultsOnly, Category="Descensus|Item")
+	// TSoftClassPtr<UTexture2D> Icon;
+	
 	UPROPERTY(EditDefaultsOnly, Category="Descensus|Item")
-	TSoftClassPtr<UTexture2D> Icon;
+	FSlateBrush IconBrush;
 	
 	virtual FPrimaryAssetType GetPrimaryAssetType() const override;
 };

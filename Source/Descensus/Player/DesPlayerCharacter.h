@@ -43,7 +43,7 @@ public:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	virtual void OnRep_PlayerState() override;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Descensus|PlayerCharacter")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated, Category = "Descensus|PlayerCharacter")
 	TObjectPtr<UDesInventoryComponent> Inventory;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Descensus|PlayerCharacter")

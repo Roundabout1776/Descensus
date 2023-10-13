@@ -8,4 +8,7 @@ UCLASS(ClassGroup=(Descensus), meta=(BlueprintSpawnableComponent))
 class DESCENSUS_API UDesInventoryComponent : public UDesItemContainerComponent
 {
 	GENERATED_BODY()
+	
+public:
+	UDesInventoryComponent();
 };

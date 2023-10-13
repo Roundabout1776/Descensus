@@ -15,7 +15,7 @@ class DESCENSUS_API UDesCharacterScreen : public UWidget
 
 protected:
 	TSharedPtr<SBorder> Root;
-	TSharedPtr<SDesItemContainerWidget> Inventory;
+	TSharedPtr<SDesItemContainerWidget> ItemContainerWidget;
 	
 	TWeakObjectPtr<UDesInventoryComponent> InventoryComponent;
 	
@@ -24,7 +24,6 @@ protected:
 public:
 	virtual void ReleaseSlateResources(bool bReleaseChildren) override;
 	void InitForCharacter(const ADesPlayerCharacter* Character);
-	void OnRepGrid();
 	
 #if WITH_EDITOR
 	virtual const FText GetPaletteCategory() override;

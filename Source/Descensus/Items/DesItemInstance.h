@@ -6,7 +6,7 @@
 class ADesItemActor;
 class UDesItemData;
 
-UCLASS()
+UCLASS(BlueprintType)
 class DESCENSUS_API UDesItemInstance : public UObject
 {
 	GENERATED_BODY()

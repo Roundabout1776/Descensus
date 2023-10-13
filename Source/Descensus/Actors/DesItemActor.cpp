@@ -1,5 +1,6 @@
 ﻿#include "DesItemActor.h"
 
+#include "DesGameState.h"
 #include "Items/DesItemData.h"
 #include "Items/DesItemInstance.h"
 #include "Net/UnrealNetwork.h"
@@ -19,9 +20,8 @@ void ADesItemActor::BeginPlay()
 	{
 		if (!IsValid(ItemInstance) && IsValid(ItemDataClass))
 		{
-			ItemInstance = NewObject<UDesItemInstance>();
+			ItemInstance = GetWorld()->GetGameState<ADesGameState>()->CreateItemInstance(ItemDataClass);
 			ItemInstance->Quantity = 1;
-			ItemInstance->ItemDataClass = ItemDataClass;
 		}
 	}
 }

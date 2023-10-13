@@ -46,13 +46,10 @@ void SDesItemWidget::SetFromInstance(const UDesItemInstance* ItemInstance) const
 
 	const auto Style = FDesStyle::GetDefaultStyle();
 	
-	Box->SetHeightOverride(ItemData->Volume.X * Style->CellSize);
-	Box->SetWidthOverride(ItemData->Volume.Y * Style->CellSize);
+	Box->SetHeightOverride(ItemData->Size.X * Style->CellSize);
+	Box->SetWidthOverride(ItemData->Size.Y * Style->CellSize);
 
-	FSlateBrush Brush;
-	Brush.SetResourceObject(ItemInstance->ItemDataClass.GetDefaultObject()->Icon.LoadSynchronous());
-	Brush.DrawAs = ESlateBrushDrawType::Image;
-	IconImage->SetImage(&Brush);
+	IconImage->SetImage(&ItemInstance->GetItemData()->IconBrush);
 
 	QuantityTextBlock->SetText(FText::FromString(FString::FromInt(ItemInstance->Quantity)));
 }

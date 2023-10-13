@@ -9,7 +9,7 @@ UDesMetaComponent::UDesMetaComponent()
 
 	Name = FText::FromString(TEXT("Default Name"));
 	
-	// SetIsReplicated(true);
+	SetIsReplicatedByDefault(true);
 }
 
 void UDesMetaComponent::BeginPlay()

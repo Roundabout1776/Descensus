@@ -1,128 +1,134 @@
 ﻿#include "DesItemContainerComponent.h"
 
+#include "DesGameState.h"
 #include "Items/DesItemData.h"
 #include "Items/DesItemInstance.h"
 #include "Net/UnrealNetwork.h"
 
-void FItemContainer::AddItem(TSubclassOf<UDesItemData> InItemDataClass)
+void FItemContainerEntry::PostReplicatedAdd(const FItemContainer& InArraySerializer)
 {
-	FItemContainerEntry& Item = Items.AddDefaulted_GetRef();
-	Item.ItemInstance = NewObject<UDesItemInstance>();
-	// Item.ItemInstance->Init(InItemStaticDataClass,
-	//                         UActionGameStatics::GetItemStaticData(InItemStaticDataClass)->MaxStackCount);
-	MarkItemDirty(Item);
+	const auto _ = InArraySerializer.OnItemAddedDelegate.ExecuteIfBound(*this);
 }
 
-void FItemContainer::AddItem(TObjectPtr<UDesItemInstance> InItemInstance)
+void FItemContainerEntry::PostReplicatedChange(const FItemContainer& InArraySerializer)
 {
-	FItemContainerEntry& Item = Items.AddDefaulted_GetRef();
-	Item.ItemInstance = InItemInstance;
-	MarkItemDirty(Item);
+	const auto _ = InArraySerializer.OnItemChangedDelegate.ExecuteIfBound(*this);
 }
 
-void FItemContainer::RemoveItem(TSubclassOf<UDesItemData> InItemDataClass)
+void FItemContainerEntry::PreReplicatedRemove(const FItemContainer& InArraySerializer)
 {
-	for (auto ItemIter = Items.CreateIterator(); ItemIter; ++ItemIter)
-	{
-		const FItemContainerEntry& Item = *ItemIter;
-		if (Item.ItemInstance && Item.ItemInstance->GetItemData()->IsA(InItemDataClass))
-		{
-			ItemIter.RemoveCurrent();
-			MarkArrayDirty();
-			break;
-		}
-	}
-}
-
-void FItemContainer::RemoveItem(TObjectPtr<UDesItemInstance> InItemInstance)
-{
-	for (auto ItemIter = Items.CreateIterator(); ItemIter; ++ItemIter)
-	{
-		const FItemContainerEntry& Item = *ItemIter;
-		if (Item.ItemInstance && Item.ItemInstance == InItemInstance)
-		{
-			ItemIter.RemoveCurrent();
-			MarkArrayDirty();
-			break;
-		}
-	}
-}
-
-TArray<TObjectPtr<UDesItemInstance>> FItemContainer::GetAllInstancesWithTag(FGameplayTag Tag)
-{
-	TArray<TObjectPtr<UDesItemInstance>> OutInstances;
-	for (auto ItemIter = Items.CreateIterator(); ItemIter; ++ItemIter)
-	{
-		FItemContainerEntry& Item = *ItemIter;
-		if (Item.ItemInstance && Item.ItemInstance->GetItemData()->Tags.HasTag(Tag))
-		{
-			OutInstances.Add(Item.ItemInstance);
-		}
-	}
-	return OutInstances;
-}
-
-TArray<TObjectPtr<UDesItemInstance>> FItemContainer::GetAllAvailableInstancesOfType(
-	TSubclassOf<UDesItemData> InItemDataClass)
-{
-	TArray<TObjectPtr<UDesItemInstance>> OutInstances;
-	for (auto ItemIter = Items.CreateIterator(); ItemIter; ++ItemIter)
-	{
-		FItemContainerEntry& Item = *ItemIter;
-		if (!Item.ItemInstance)
-		{
-			continue;
-		}
-		const UDesItemData* ItemData = Item.ItemInstance->GetItemData();
-		const bool bSameType = ItemData->IsA(InItemDataClass);
-		const bool bHasCapacity = ItemData->MaxStackCount > Item.ItemInstance->Quantity;
-		if (bSameType && bHasCapacity)
-		{
-			OutInstances.Add(Item.ItemInstance);
-		}
-	}
-	return OutInstances;
+	const auto _ = InArraySerializer.OnItemRemovedDelegate.ExecuteIfBound(*this);
 }
 
 UDesItemContainerComponent::UDesItemContainerComponent()
 {
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 	SetIsReplicatedByDefault(true);
 	bWantsInitializeComponent = true;
 }
 
 void UDesItemContainerComponent::InitializeComponent()
 {
-	Super::InitializeComponent();
-
-	if (GetOwner()->HasAuthority())
-	{
-		for (const auto ItemDataClass : DefaultItems)
-		{
-			Grid.AddItem(ItemDataClass);
-		}
-	}
+	/* @TODO: investigate */
+	Grid.SetNumZeroed(GridSize.X * GridSize.Y);
 }
 
 void UDesItemContainerComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (GetOwner()->HasAuthority())
+	{
+		const auto GameState = GetWorld()->GetGameState<ADesGameState>();
+		for (const auto ItemDataClass : DefaultItems)
+		{
+			AddItemAuto(GameState->CreateItemInstance(ItemDataClass));
+		}
+	}
 }
 
-void UDesItemContainerComponent::TickComponent(float DeltaTime, ELevelTick TickType,
-                                           FActorComponentTickFunction* ThisTickFunction)
+void UDesItemContainerComponent::FillGrid(const FIntVector2 Coords, const FIntVector2 Size, UDesItemInstance* ItemInstance)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	for (auto X = Coords.X; X < Coords.X + Size.X; X++)
+	{
+		for (auto Y = Coords.Y; Y < Coords.Y + Size.Y; Y++)
+		{
+			const auto Index = (GridSize.X * Y) + X;
+			Grid[Y * GridSize.X + X] = ItemInstance;
+		}
+	}
 }
 
-void UDesItemContainerComponent::OnRep_Grid(const FItemContainer& OldGrid)
+bool UDesItemContainerComponent::AddItemAuto(UDesItemInstance* InItemInstance)
 {
-	const auto _ = OnRepGridDelegate.ExecuteIfBound();
+	const auto ItemData = InItemInstance->GetItemData();
+
+	/* @TODO: optimize */
+	for (auto GridIndex = 0; GridIndex < Grid.Num(); GridIndex++)
+	{
+		const auto CurrentCell = Grid[GridIndex];
+		const auto CurrentCellY = GridIndex / GridSize.X;
+		const auto CurrentCellX = GridIndex - (CurrentCellY * GridSize.X);
+		if (CurrentCellX + ItemData->Size.X > GridSize.X)
+		{
+			GridIndex += GridSize.X - CurrentCellX - 1;
+			continue;
+		}
+		if (CurrentCellY + ItemData->Size.Y - 1 >= GridSize.Y)
+		{
+			return false;
+		}
+		if (!CurrentCell)
+		{
+			bool bFree = true;
+			for (auto X = CurrentCellX; X < CurrentCellX + ItemData->Size.X; X++)
+			{
+				if (!bFree)
+				{
+					break;
+				}
+				for (auto Y = CurrentCellY; Y < CurrentCellY + ItemData->Size.Y; Y++)
+				{
+					if (const auto Cell = Grid[(Y * GridSize.X) + X])
+					{
+						bFree = false;
+						break;
+					}
+				}
+			}
+			if (bFree)
+			{
+				auto& Items = Array.Items;
+				FItemContainerEntry& Entry = Items.AddDefaulted_GetRef();
+				Entry.Position = {CurrentCellX, CurrentCellY};
+				Entry.ItemInstance = InItemInstance;
+				Array.MarkItemDirty(Entry);
+				FillGrid(Entry.Position, ItemData->Size, Entry.ItemInstance);
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+void UDesItemContainerComponent::RemoveItem(UDesItemInstance* InItemInstance)
+{
+	for (auto ItemIter = GetItemsRef().CreateIterator(); ItemIter; ++ItemIter)
+	{
+		const FItemContainerEntry& Item = *ItemIter;
+		if (Item.ItemInstance && Item.ItemInstance == InItemInstance)
+		{
+			ItemIter.RemoveCurrent();
+			Array.MarkArrayDirty();
+			break;
+		}
+	}
 }
 
 void UDesItemContainerComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UDesItemContainerComponent, Grid);
+	DOREPLIFETIME(UDesItemContainerComponent, Array);
 }

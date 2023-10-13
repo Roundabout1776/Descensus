@@ -9,6 +9,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/DesInventoryComponent.h"
 #include "Input/DesEnhancedInputComponent.h"
+#include "Net/UnrealNetwork.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "Player/DesPlayerAttributeSet.h"
 #include "Player/Ability/Inscribe/DesGameplayAbilityPlayerInscribe.h"
@@ -18,8 +19,11 @@ ADesPlayerCharacter::ADesPlayerCharacter(const FObjectInitializer& ObjectInitial
 	ObjectInitializer.SetDefaultSubobjectClass<UDesPlayerAttributeSet>(UDesCharacterAttributeSet::AttributeSetName))
 {
 	NetUpdateFrequency = 100.0f;
+
+	bReplicateUsingRegisteredSubObjectList = true;
 	
 	Inventory = CreateDefaultSubobject<UDesInventoryComponent>(TEXT("Inventory"));
+	AddReplicatedSubObject(Inventory);
 
 	MetaComponent->Name = FText::FromString(TEXT("PC"));
 
@@ -169,4 +173,11 @@ UAttributeSet* ADesPlayerCharacter::GetAttributeSet() const
 		return PS->GetAttributeSet();
 	}
 	return nullptr;
+}
+
+void ADesPlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ADesPlayerCharacter, Inventory);
 }

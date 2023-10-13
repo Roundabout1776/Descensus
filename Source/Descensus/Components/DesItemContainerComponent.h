@@ -15,37 +15,40 @@ struct FItemContainerEntry : public FFastArraySerializerItem
 {
 	GENERATED_BODY()
 
-	UPROPERTY()
+	UPROPERTY(VisibleInstanceOnly)
 	FIntVector2 Position{};
 
-	UPROPERTY()
+	UPROPERTY(VisibleInstanceOnly)
 	TObjectPtr<UDesItemInstance> ItemInstance;
+
+	void PostReplicatedAdd(const struct FItemContainer& InArraySerializer);
+	void PostReplicatedChange(const struct FItemContainer& InArraySerializer);
+	void PreReplicatedRemove(const struct FItemContainer& InArraySerializer);
 };
+
+DECLARE_DELEGATE_OneParam(FOnItemAddedSignature, const FItemContainerEntry&)
+DECLARE_DELEGATE_OneParam(FOnItemChangedSignature, const FItemContainerEntry&)
+DECLARE_DELEGATE_OneParam(FOnItemRemovedSignature, const FItemContainerEntry&)
 
 USTRUCT(BlueprintType)
 struct FItemContainer : public FFastArraySerializer
 {
 	GENERATED_BODY()
 
+	friend struct FItemContainerEntry;
+	friend class UDesItemContainerComponent;
+
 	bool NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaParams)
 	{
 		return FastArrayDeltaSerialize<FItemContainerEntry, FItemContainer>(Items, DeltaParams, *this);
 	}
 
-	void AddItem(TSubclassOf<UDesItemData> InItemDataClass);
-	void AddItem(TObjectPtr<UDesItemInstance> InItemInstance);
-
-	void RemoveItem(TSubclassOf<UDesItemData> InItemDataClass);
-	void RemoveItem(TObjectPtr<UDesItemInstance> InItemInstance);
-
-	TArray<FItemContainerEntry>& GetItemsRef() { return Items; }
-
-	TArray<TObjectPtr<UDesItemInstance>> GetAllInstancesWithTag(FGameplayTag Tag);
-
-	TArray<TObjectPtr<UDesItemInstance>> GetAllAvailableInstancesOfType(TSubclassOf<UDesItemData> InItemDataClass);
-
 protected:
-	UPROPERTY()
+	FOnItemAddedSignature OnItemAddedDelegate;
+	FOnItemChangedSignature OnItemChangedDelegate;
+	FOnItemRemovedSignature OnItemRemovedDelegate;
+	
+	UPROPERTY(VisibleInstanceOnly)
 	TArray<FItemContainerEntry> Items;
 };
 
@@ -58,30 +61,43 @@ struct TStructOpsTypeTraits<FItemContainer> : TStructOpsTypeTraitsBase2<FItemCon
 	};
 };
 
-DECLARE_DELEGATE(FOnRepGridSignature)
-
-UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
+UCLASS(Blueprintable, ClassGroup=(Descensus), meta=(BlueprintSpawnableComponent))
 class DESCENSUS_API UDesItemContainerComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 protected:
+	/* Replicated list of items. */
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Replicated, Category="Descensus|Items")
+	FItemContainer Array;
+	
 	virtual void BeginPlay() override;
 
+	void FillGrid(FIntVector2 Coords, FIntVector2 Size, UDesItemInstance* ItemInstance = nullptr);
+
 public:
-	FOnRepGridSignature OnRepGridDelegate;
+	FOnItemAddedSignature& GetOnItemAddedDelegate() { return Array.OnItemAddedDelegate; }
+	FOnItemChangedSignature& GetOnItemChangedDelegate() { return Array.OnItemChangedDelegate; }
+	FOnItemRemovedSignature& GetOnItemRemovedDelegate() { return Array.OnItemRemovedDelegate; }
 
-	UPROPERTY(ReplicatedUsing=OnRep_Grid)
-	FItemContainer Grid;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Descensus|Items")
+	FIntVector GridSize{5, 5, 0};
 
-	UPROPERTY(EditDefaultsOnly, Category="Descensus|Inventory")
+	/* Locally maintained fast-access item grid. */
+	UPROPERTY()
+	TArray<TObjectPtr<UDesItemInstance>> Grid;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Descensus|Items")
 	TArray<TSubclassOf<UDesItemData>> DefaultItems;
 
 	UDesItemContainerComponent();
 	virtual void InitializeComponent() override;
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
-	                           FActorComponentTickFunction* ThisTickFunction) override;
 
-	UFUNCTION()
-	virtual void OnRep_Grid(const FItemContainer& OldGrid);
+	TArray<FItemContainerEntry>& GetItemsRef() { return Array.Items; }
+
+	UFUNCTION(BlueprintCallable)
+	bool AddItemAuto(UDesItemInstance* InItemInstance);
+
+	UFUNCTION(BlueprintCallable)
+	void RemoveItem(UDesItemInstance* InItemInstance);
 };
