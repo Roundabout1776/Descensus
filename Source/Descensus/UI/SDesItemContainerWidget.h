@@ -21,7 +21,7 @@ public:
 	class FSlot : public TWidgetSlotWithAttributeSupport<FSlot>, public TAlignmentWidgetSlotMixin<FSlot>
 	{
 	public:
-		SLATE_SLOT_BEGIN_ARGS_OneMixin(FSlot, TSlotBase<FSlot>, TAlignmentWidgetSlotMixin<FSlot>)
+		SLATE_SLOT_BEGIN_ARGS(FSlot, TSlotBase<FSlot>)
 			SLATE_ATTRIBUTE(FVector2D, Position)
 			SLATE_ATTRIBUTE(FVector2D, Size)
 		SLATE_SLOT_END_ARGS()

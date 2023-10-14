@@ -37,8 +37,6 @@ void SDesItemContainerWidget::FSlot::Construct(const FChildren& SlotOwner, FSlot
 	{
 		Position.Assign(*this, MoveTemp(InArg._Position));
 	}
-
-	TAlignmentWidgetSlotMixin<FSlot>::ConstructMixin(SlotOwner, MoveTemp(InArg));
 }
 
 
