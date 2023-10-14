@@ -21,14 +21,11 @@ struct FItemContainerEntry : public FFastArraySerializerItem
 	UPROPERTY(VisibleInstanceOnly)
 	TObjectPtr<UDesItemInstance> ItemInstance;
 
-	void PostReplicatedAdd(const struct FItemContainer& InArraySerializer);
-	void PostReplicatedChange(const struct FItemContainer& InArraySerializer);
-	void PreReplicatedRemove(const struct FItemContainer& InArraySerializer);
+	// void PostReplicatedAdd(const struct FItemContainer& InArraySerializer);
+	// void PostReplicatedChange(const struct FItemContainer& InArraySerializer);
+	// void PreReplicatedRemove(const struct FItemContainer& InArraySerializer);
 };
 
-DECLARE_DELEGATE_OneParam(FOnItemAddedSignature, const FItemContainerEntry&)
-DECLARE_DELEGATE_OneParam(FOnItemChangedSignature, const FItemContainerEntry&)
-DECLARE_DELEGATE_OneParam(FOnItemRemovedSignature, const FItemContainerEntry&)
 
 USTRUCT(BlueprintType)
 struct FItemContainer : public FFastArraySerializer
@@ -38,18 +35,25 @@ struct FItemContainer : public FFastArraySerializer
 	friend struct FItemContainerEntry;
 	friend class UDesItemContainerComponent;
 
+	void PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize);
+	void PostReplicatedChange(const TArrayView<int32> ChangedIndices, int32 FinalSize);
+	void PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize);
+
 	bool NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaParams)
 	{
 		return FastArrayDeltaSerialize<FItemContainerEntry, FItemContainer>(Items, DeltaParams, *this);
 	}
 
 protected:
-	FOnItemAddedSignature OnItemAddedDelegate;
-	FOnItemChangedSignature OnItemChangedDelegate;
-	FOnItemRemovedSignature OnItemRemovedDelegate;
-	
+	// FOnItemAddedSignature OnItemAddedDelegate;
+	// FOnItemChangedSignature OnItemChangedDelegate;
+	// FOnItemRemovedSignature OnItemRemovedDelegate;
+
 	UPROPERTY(VisibleInstanceOnly)
 	TArray<FItemContainerEntry> Items;
+
+	UPROPERTY(NotReplicated)
+	TObjectPtr<UDesItemContainerComponent> OwnerComponent;
 };
 
 template <>
@@ -66,19 +70,35 @@ class DESCENSUS_API UDesItemContainerComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
+	friend struct FItemContainer;
+
 protected:
 	/* Replicated list of items. */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Replicated, Category="Descensus|Items")
 	FItemContainer Array;
-	
+
 	virtual void BeginPlay() override;
 
+	void OnItemAdded(const FItemContainerEntry& Entry);
+	void OnItemChanged(const FItemContainerEntry& Entry);
+	void OnItemRemoved(const FItemContainerEntry& Entry);
+
+	void OnAnyChanges();
 	void FillGrid(FIntVector2 Coords, FIntVector2 Size, UDesItemInstance* ItemInstance = nullptr);
 
 public:
-	FOnItemAddedSignature& GetOnItemAddedDelegate() { return Array.OnItemAddedDelegate; }
-	FOnItemChangedSignature& GetOnItemChangedDelegate() { return Array.OnItemChangedDelegate; }
-	FOnItemRemovedSignature& GetOnItemRemovedDelegate() { return Array.OnItemRemovedDelegate; }
+	DECLARE_MULTICAST_DELEGATE_OneParam(FOnItemAddedSignature, const FItemContainerEntry&)
+
+	DECLARE_MULTICAST_DELEGATE_OneParam(FOnItemChangedSignature, const FItemContainerEntry&)
+
+	DECLARE_MULTICAST_DELEGATE_OneParam(FOnItemRemovedSignature, const FItemContainerEntry&)
+
+	DECLARE_MULTICAST_DELEGATE_OneParam(FOnAnyChangesSignature, const TArray<FItemContainerEntry>&)
+
+	FOnItemAddedSignature OnItemAddedDelegate;
+	FOnItemAddedSignature OnItemChangedDelegate;
+	FOnItemAddedSignature OnItemRemovedDelegate;
+	FOnAnyChangesSignature OnAnyChangesDelegate;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Descensus|Items")
 	FIntVector GridSize{5, 5, 0};

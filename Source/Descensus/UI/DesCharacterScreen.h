@@ -4,9 +4,9 @@
 #include "Components/Widget.h"
 #include "DesCharacterScreen.generated.h"
 
+class SDesItemContainerWidget;
 class UDesInventoryComponent;
 class ADesPlayerCharacter;
-class SDesItemContainerWidget;
 
 UCLASS()
 class DESCENSUS_API UDesCharacterScreen : public UWidget

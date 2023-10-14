@@ -25,6 +25,9 @@ struct DESCENSUS_API FDesSlateWidgetStyle : public FSlateWidgetStyle
 
 	UPROPERTY(EditDefaultsOnly)
 	FSlateBrush ItemContainerTelegraphBrush;
+
+	UPROPERTY(EditDefaultsOnly)
+	FLinearColor ItemGridColor = FLinearColor::White;
 	
 	static const FName TypeName;
 

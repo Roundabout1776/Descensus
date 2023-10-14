@@ -6,25 +6,28 @@
 #include "Items/DesItemInstance.h"
 #include "Net/UnrealNetwork.h"
 
-void FItemContainerEntry::PostReplicatedAdd(const FItemContainer& InArraySerializer)
+void FItemContainer::PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize)
 {
-	const auto _ = InArraySerializer.OnItemAddedDelegate.ExecuteIfBound(*this);
-
-	DES_LOG_STR("PostReplicatedAdd!!")
+	for (const auto Index : AddedIndices)
+	{
+		OwnerComponent->OnItemAdded(Items[Index]);
+	}
 }
 
-void FItemContainerEntry::PostReplicatedChange(const FItemContainer& InArraySerializer)
+void FItemContainer::PostReplicatedChange(const TArrayView<int32> ChangedIndices, int32 FinalSize)
 {
-	const auto _ = InArraySerializer.OnItemChangedDelegate.ExecuteIfBound(*this);
-
-	DES_LOG_STR("PostReplicatedChange!!")
+	for (const auto Index : ChangedIndices)
+	{
+		OwnerComponent->OnItemChanged(Items[Index]);
+	}
 }
 
-void FItemContainerEntry::PreReplicatedRemove(const FItemContainer& InArraySerializer)
+void FItemContainer::PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize)
 {
-	const auto _ = InArraySerializer.OnItemRemovedDelegate.ExecuteIfBound(*this);
-	
-	DES_LOG_STR("PreReplicatedRemove!!")
+	for (const auto Index : RemovedIndices)
+	{
+		OwnerComponent->OnItemRemoved(Items[Index]);
+	}
 }
 
 UDesItemContainerComponent::UDesItemContainerComponent()
@@ -32,11 +35,12 @@ UDesItemContainerComponent::UDesItemContainerComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 	SetIsReplicatedByDefault(true);
 	bWantsInitializeComponent = true;
+	Array.OwnerComponent = this;
 }
 
 void UDesItemContainerComponent::InitializeComponent()
 {
-	/* @TODO: investigate */
+	/* @TODO: investigate CDO behavior */
 	Grid.SetNumZeroed(GridSize.X * GridSize.Y);
 }
 
@@ -47,11 +51,58 @@ void UDesItemContainerComponent::BeginPlay()
 	if (GetOwner()->HasAuthority())
 	{
 		const auto GameState = GetWorld()->GetGameState<ADesGameState>();
-		for (const auto ItemDataClass : DefaultItems)
+		for (const auto& ItemDataClass : DefaultItems)
 		{
-			AddItemAuto(GameState->CreateItemInstance(ItemDataClass));
+			// AddItemAuto(GameState->CreateItemInstance(ItemDataClass));
 		}
 	}
+}
+
+void UDesItemContainerComponent::OnItemAdded(const FItemContainerEntry& Entry)
+{
+	if (!IsValid(Entry.ItemInstance))
+	{
+		DES_LOG_STR("OnItemAdded: Non-Valid ItemInstance!")
+		return;
+	}
+	// checkf(IsValid(Entry.ItemInstance), TEXT("OnItemAdded: Non-Valid ItemInstance!"))
+	
+	FillGrid(Entry.Position, Entry.ItemInstance->GetItemData()->Size, Entry.ItemInstance);
+	OnItemAddedDelegate.Broadcast(Entry);
+	OnAnyChanges();
+}
+
+void UDesItemContainerComponent::OnItemChanged(const FItemContainerEntry& Entry)
+{
+	if (!IsValid(Entry.ItemInstance))
+	{
+		DES_LOG_STR("OnItemChanged: Non-Valid ItemInstance!")
+		return;
+	}
+	// checkf(IsValid(Entry.ItemInstance), TEXT("OnItemChanged: Non-Valid ItemInstance!"))
+
+	FillGrid(Entry.Position, Entry.ItemInstance->GetItemData()->Size, Entry.ItemInstance);
+	OnItemChangedDelegate.Broadcast(Entry);
+	OnAnyChanges();
+}
+
+void UDesItemContainerComponent::OnItemRemoved(const FItemContainerEntry& Entry)
+{
+	if (!IsValid(Entry.ItemInstance))
+	{
+		DES_LOG_STR("OnItemRemoved: Non-Valid ItemInstance!")
+		return;
+	}
+	// checkf(IsValid(Entry.ItemInstance), TEXT("OnItemRemoved: Non-Valid ItemInstance!"))
+
+	FillGrid(Entry.Position, Entry.ItemInstance->GetItemData()->Size, nullptr);
+	OnItemRemovedDelegate.Broadcast(Entry);
+	OnAnyChanges();
+}
+
+void UDesItemContainerComponent::OnAnyChanges()
+{
+	OnAnyChangesDelegate.Broadcast(GetItemsRef());
 }
 
 void UDesItemContainerComponent::FillGrid(const FIntVector2 Coords, const FIntVector2 Size,
@@ -97,7 +148,7 @@ bool UDesItemContainerComponent::AddItemAuto(UDesItemInstance* InItemInstance)
 				}
 				for (auto Y = CurrentCellY; Y < CurrentCellY + ItemData->Size.Y; Y++)
 				{
-					if (const auto Cell = Grid[(Y * GridSize.X) + X])
+					if (const auto Cell = Grid[Y * GridSize.X + X])
 					{
 						bFree = false;
 						break;
@@ -111,7 +162,7 @@ bool UDesItemContainerComponent::AddItemAuto(UDesItemInstance* InItemInstance)
 				Entry.Position = {CurrentCellX, CurrentCellY};
 				Entry.ItemInstance = InItemInstance;
 				Array.MarkItemDirty(Entry);
-				FillGrid(Entry.Position, ItemData->Size, Entry.ItemInstance);
+				OnItemAdded(Entry);
 				return true;
 			}
 		}
@@ -129,6 +180,7 @@ void UDesItemContainerComponent::RemoveItem(UDesItemInstance* InItemInstance)
 			FillGrid(Entry.Position, Entry.ItemInstance->GetItemData()->Size, nullptr);
 			ItemIter.RemoveCurrent();
 			Array.MarkArrayDirty();
+			OnItemRemoved(Entry);
 			break;
 		}
 	}

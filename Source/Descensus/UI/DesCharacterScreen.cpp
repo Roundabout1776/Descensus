@@ -1,6 +1,5 @@
 ﻿#include "DesCharacterScreen.h"
 
-#include "DesLogging.h"
 #include "DesStyle.h"
 #include "SDesItemContainerWidget.h"
 #include "Components/DesInventoryComponent.h"
@@ -13,6 +12,8 @@
 TSharedRef<SWidget> UDesCharacterScreen::RebuildWidget()
 {
 	const auto Style = FDesStyle::GetDefaultStyle();
+
+	const auto GridSize = InventoryComponent.IsValid() ? InventoryComponent->GridSize : FIntVector();
 
 	SAssignNew(Root, SBorder)
 		.BorderImage(&Style->CommonBox)
@@ -29,8 +30,13 @@ TSharedRef<SWidget> UDesCharacterScreen::RebuildWidget()
 		+ SHorizontalBox::Slot()
 		.AutoWidth()
 		[
-			SAssignNew(ItemContainerWidget, SDesItemContainerWidget)
-			.GridSize(InventoryComponent.IsValid() ? InventoryComponent->GridSize : FIntVector()) /* @TODO: fix */
+			SNew(SBox)
+				.WidthOverride(GridSize.X * Style->CellSize)
+				.HeightOverride(GridSize.Y * Style->CellSize)
+			[
+				SAssignNew(ItemContainerWidget, SDesItemContainerWidget)
+				.GridSize(GridSize) /* @TODO: fix */
+			]
 		]
 	];
 
@@ -50,23 +56,31 @@ void UDesCharacterScreen::InitForCharacter(const ADesPlayerCharacter* Character)
 	check(Character);
 
 	InventoryComponent = MakeWeakObjectPtr(Character->Inventory);
-	InventoryComponent->GetOnItemAddedDelegate().BindWeakLambda(this, [this](const FItemContainerEntry& Entry)
+	/* @TODO: Unbind! */
+	InventoryComponent->OnAnyChangesDelegate.AddWeakLambda(this, [&](const TArray<FItemContainerEntry>& Items)
 	{
-		if (Entry.ItemInstance)
+		ItemContainerWidget->CollapseAllItems();
+		for (auto& Entry : Items)
 		{
-			const auto ItemData = Entry.ItemInstance->GetItemData();
-			ItemContainerWidget->AddItem(Entry.Position, Entry.ItemInstance->GetItemData()->Size,
-			                             &ItemData->IconBrush);
-			// DES_LOG_CSTR("NewItemClient!!", *Entry.ItemInstance->GetName())
+			if (Entry.ItemInstance)
+			{
+				const auto ItemData = Entry.ItemInstance->GetItemData();
+				ItemContainerWidget->AddItem(Entry.Position, Entry.ItemInstance->GetItemData()->Size,
+				                             &ItemData->IconBrush);
+			}
 		}
 	});
 
-	/* 1. Store all created slots/items
-	 * 2. Any change to item array will invalidate the widget
-	 * 2.A Hide all slots
-	 * 2.B Iterate through grid/array and fill in the items
-	 * 3. Consider making grid an array of indices instead of pointers
-	 */
+	/* Fill in initial items. */
+	// for (const auto& Entry : InventoryComponent->GetItemsRef())
+	// {
+	// 	if (Entry.ItemInstance)
+	// 	{
+	// 		const auto ItemData = Entry.ItemInstance->GetItemData();
+	// 		ItemContainerWidget->AddItem(Entry.Position, Entry.ItemInstance->GetItemData()->Size,
+	// 		                             &ItemData->IconBrush);
+	// 	}
+	// }
 }
 
 #if WITH_EDITOR

@@ -12,13 +12,13 @@ class DESCENSUS_API UDesItemInstance : public UObject
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(Replicated)
+	UPROPERTY(VisibleInstanceOnly, Replicated)
 	TSubclassOf<UDesItemData> ItemDataClass;
 
-	UPROPERTY(Replicated)
+	UPROPERTY(VisibleInstanceOnly, Replicated)
 	int32 Quantity;
 
-	UPROPERTY(Replicated)
+	UPROPERTY(VisibleInstanceOnly, Replicated)
 	TWeakObjectPtr<ADesItemActor> ItemActor;
 
 	TObjectPtr<UDesItemData> GetItemData() const;
