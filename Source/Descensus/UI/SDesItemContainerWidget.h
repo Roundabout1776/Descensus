@@ -18,7 +18,7 @@ class SDesItemContainerWidget : public SPanel
 	SLATE_DECLARE_WIDGET_API(SDesItemContainerWidget, SPanel, DESCENSUS_API)
 
 public:
-	class FSlot : public TWidgetSlotWithAttributeSupport<FSlot>, public TAlignmentWidgetSlotMixin<FSlot>
+	class FSlot : public TWidgetSlotWithAttributeSupport<FSlot>
 	{
 	public:
 		SLATE_SLOT_BEGIN_ARGS(FSlot, TSlotBase<FSlot>)
@@ -26,19 +26,21 @@ public:
 			SLATE_ATTRIBUTE(FVector2D, Size)
 		SLATE_SLOT_END_ARGS()
 
-		void SetPosition( TAttribute<FVector2D> InPosition )
+		void SetPosition(TAttribute<FVector2D> InPosition)
 		{
 			Position.Assign(*this, MoveTemp(InPosition));
 		}
+
 		FVector2D GetPosition() const
 		{
 			return Position.Get();
 		}
 
-		void SetSize( TAttribute<FVector2D> InSize )
+		void SetSize(TAttribute<FVector2D> InSize)
 		{
 			Size.Assign(*this, MoveTemp(InSize));
 		}
+
 		FVector2D GetSize() const
 		{
 			return Size.Get();
@@ -56,10 +58,10 @@ public:
 		/** Default values for a slot. */
 		FSlot()
 			: TWidgetSlotWithAttributeSupport<FSlot>()
-			, TAlignmentWidgetSlotMixin<FSlot>(HAlign_Left, VAlign_Top)
-			, Position(*this, FVector2D::ZeroVector)
-			, Size(*this, FVector2D(1.0f, 1.0f))
-		{ }
+			  , Position(*this, FVector2D::ZeroVector)
+			  , Size(*this, FVector2D(1.0f, 1.0f))
+		{
+		}
 
 		void Construct(const FChildren& SlotOwner, FSlotArguments&& InArg);
 		static void RegisterAttributes(FSlateWidgetSlotAttributeInitializer& AttributeInitializer);
@@ -74,20 +76,20 @@ public:
 
 	FIntVector GridSize{1, 1, 0};
 
-	SLATE_BEGIN_ARGS( SDesItemContainerWidget )
+	SLATE_BEGIN_ARGS(SDesItemContainerWidget)
 		{
 			_Visibility = EVisibility::Visible;
 		}
 
 		SLATE_ARGUMENT(FIntVector, GridSize)
-	
-		SLATE_SLOT_ARGUMENT( FSlot, Slots )
+
+		SLATE_SLOT_ARGUMENT(FSlot, Slots)
 
 	SLATE_END_ARGS()
 
 	SDesItemContainerWidget();
 
-	void Construct( const FArguments& InArgs );
+	void Construct(const FArguments& InArgs);
 
 	static FSlot::FSlotArguments Slot();
 
@@ -95,12 +97,15 @@ public:
 
 	FScopedWidgetSlotArguments AddSlot();
 
-	int32 RemoveSlot( const TSharedRef<SWidget>& SlotWidget );
+	int32 RemoveSlot(const TSharedRef<SWidget>& SlotWidget);
 
 	void ClearChildren();
 
-	virtual void OnArrangeChildren( const FGeometry& AllottedGeometry, FArrangedChildren& ArrangedChildren ) const override;
-	virtual int32 OnPaint( const FPaintArgs& Args, const FGeometry& AllottedGeometry, const FSlateRect& MyCullingRect, FSlateWindowElementList& OutDrawElements, int32 LayerId, const FWidgetStyle& InWidgetStyle, bool bParentEnabled ) const override;
+	virtual void
+	OnArrangeChildren(const FGeometry& AllottedGeometry, FArrangedChildren& ArrangedChildren) const override;
+	virtual int32 OnPaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry, const FSlateRect& MyCullingRect,
+	                      FSlateWindowElementList& OutDrawElements, int32 LayerId, const FWidgetStyle& InWidgetStyle,
+	                      bool bParentEnabled) const override;
 	virtual FChildren* GetChildren() override;
 	virtual void OnMouseEnter(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
 	virtual void OnMouseLeave(const FPointerEvent& MouseEvent) override;
@@ -112,9 +117,9 @@ public:
 	FVector2D TelegraphSize{};
 	void AddItem(FIntVector2 Position, FIntVector2 Size, const FSlateBrush* Texture);
 	void CollapseAllItems();
-	
+
 protected:
 	virtual FVector2D ComputeDesiredSize(float) const override;
 
-	TPanelChildren< FSlot > Children;
+	TPanelChildren<FSlot> Children;
 };

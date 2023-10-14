@@ -76,7 +76,8 @@ int32 SDesItemContainerWidget::RemoveSlot(const TSharedRef<SWidget>& SlotWidget)
 	return Children.Remove(SlotWidget);
 }
 
-void SDesItemContainerWidget::OnArrangeChildren(const FGeometry& AllottedGeometry, FArrangedChildren& ArrangedChildren) const
+void SDesItemContainerWidget::OnArrangeChildren(const FGeometry& AllottedGeometry,
+                                                FArrangedChildren& ArrangedChildren) const
 {
 	if (Children.Num() > 0)
 	{
@@ -85,42 +86,12 @@ void SDesItemContainerWidget::OnArrangeChildren(const FGeometry& AllottedGeometr
 			const SDesItemContainerWidget::FSlot& CurChild = Children[ChildIndex];
 			const FVector2D Size = CurChild.GetSize();
 
-			//Handle HAlignment
-			FVector2D Offset(0.0f, 0.0f);
-
-			switch (CurChild.GetHorizontalAlignment())
-			{
-			case HAlign_Center:
-				Offset.X = -Size.X / 2.0f;
-				break;
-			case HAlign_Right:
-				Offset.X = -Size.X;
-				break;
-			case HAlign_Fill:
-			case HAlign_Left:
-				break;
-			}
-
-			//handle VAlignment
-			switch (CurChild.GetVerticalAlignment())
-			{
-			case VAlign_Bottom:
-				Offset.Y = -Size.Y;
-				break;
-			case VAlign_Center:
-				Offset.Y = -Size.Y / 2.0f;
-				break;
-			case VAlign_Top:
-			case VAlign_Fill:
-				break;
-			}
-
 			// Add the information about this child to the output list (ArrangedChildren)
 			ArrangedChildren.AddWidget(AllottedGeometry.MakeChild(
 				// The child widget being arranged
 				CurChild.GetWidget(),
 				// Child's local position (i.e. position within parent)
-				CurChild.GetPosition() + Offset,
+				CurChild.GetPosition(),
 				// Child's size
 				Size
 			));
@@ -128,9 +99,11 @@ void SDesItemContainerWidget::OnArrangeChildren(const FGeometry& AllottedGeometr
 	}
 }
 
-int32 SDesItemContainerWidget::OnPaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry, const FSlateRect& MyCullingRect,
-                          FSlateWindowElementList& OutDrawElements, int32 LayerId, const FWidgetStyle& InWidgetStyle,
-                          bool bParentEnabled) const
+int32 SDesItemContainerWidget::OnPaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry,
+                                       const FSlateRect& MyCullingRect,
+                                       FSlateWindowElementList& OutDrawElements, int32 LayerId,
+                                       const FWidgetStyle& InWidgetStyle,
+                                       bool bParentEnabled) const
 {
 	const auto PaintGeometry = AllottedGeometry.ToPaintGeometry();
 	const auto Style = FDesStyle::GetDefaultStyle();
