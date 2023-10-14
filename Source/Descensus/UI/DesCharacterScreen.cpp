@@ -60,6 +60,13 @@ void UDesCharacterScreen::InitForCharacter(const ADesPlayerCharacter* Character)
 			// DES_LOG_CSTR("NewItemClient!!", *Entry.ItemInstance->GetName())
 		}
 	});
+
+	/* 1. Store all created slots/items
+	 * 2. Any change to item array will invalidate the widget
+	 * 2.A Hide all slots
+	 * 2.B Iterate through grid/array and fill in the items
+	 * 3. Consider making grid an array of indices instead of pointers
+	 */
 }
 
 #if WITH_EDITOR

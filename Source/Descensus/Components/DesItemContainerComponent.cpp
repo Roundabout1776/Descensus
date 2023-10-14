@@ -1,6 +1,7 @@
 ﻿#include "DesItemContainerComponent.h"
 
 #include "DesGameState.h"
+#include "DesLogging.h"
 #include "Items/DesItemData.h"
 #include "Items/DesItemInstance.h"
 #include "Net/UnrealNetwork.h"
@@ -8,16 +9,22 @@
 void FItemContainerEntry::PostReplicatedAdd(const FItemContainer& InArraySerializer)
 {
 	const auto _ = InArraySerializer.OnItemAddedDelegate.ExecuteIfBound(*this);
+
+	DES_LOG_STR("PostReplicatedAdd!!")
 }
 
 void FItemContainerEntry::PostReplicatedChange(const FItemContainer& InArraySerializer)
 {
 	const auto _ = InArraySerializer.OnItemChangedDelegate.ExecuteIfBound(*this);
+
+	DES_LOG_STR("PostReplicatedChange!!")
 }
 
 void FItemContainerEntry::PreReplicatedRemove(const FItemContainer& InArraySerializer)
 {
 	const auto _ = InArraySerializer.OnItemRemovedDelegate.ExecuteIfBound(*this);
+	
+	DES_LOG_STR("PreReplicatedRemove!!")
 }
 
 UDesItemContainerComponent::UDesItemContainerComponent()
@@ -47,7 +54,8 @@ void UDesItemContainerComponent::BeginPlay()
 	}
 }
 
-void UDesItemContainerComponent::FillGrid(const FIntVector2 Coords, const FIntVector2 Size, UDesItemInstance* ItemInstance)
+void UDesItemContainerComponent::FillGrid(const FIntVector2 Coords, const FIntVector2 Size,
+                                          UDesItemInstance* ItemInstance)
 {
 	for (auto X = Coords.X; X < Coords.X + Size.X; X++)
 	{
@@ -116,9 +124,9 @@ void UDesItemContainerComponent::RemoveItem(UDesItemInstance* InItemInstance)
 {
 	for (auto ItemIter = GetItemsRef().CreateIterator(); ItemIter; ++ItemIter)
 	{
-		const FItemContainerEntry& Item = *ItemIter;
-		if (Item.ItemInstance && Item.ItemInstance == InItemInstance)
+		if (const FItemContainerEntry& Entry = *ItemIter; Entry.ItemInstance && Entry.ItemInstance == InItemInstance)
 		{
+			FillGrid(Entry.Position, Entry.ItemInstance->GetItemData()->Size, nullptr);
 			ItemIter.RemoveCurrent();
 			Array.MarkArrayDirty();
 			break;
