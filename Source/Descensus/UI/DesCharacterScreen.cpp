@@ -1,5 +1,6 @@
 ﻿#include "DesCharacterScreen.h"
 
+#include "DesLogging.h"
 #include "DesStyle.h"
 #include "SDesItemContainerWidget.h"
 #include "Components/DesInventoryComponent.h"
@@ -14,7 +15,6 @@ TSharedRef<SWidget> UDesCharacterScreen::RebuildWidget()
 	const auto Style = FDesStyle::GetDefaultStyle();
 
 	const auto GridSize = InventoryComponent.IsValid() ? InventoryComponent->GridSize : FIntVector();
-
 	SAssignNew(Root, SBorder)
 		.BorderImage(&Style->CommonBox)
 		.Padding(Style->Padding)
@@ -30,12 +30,9 @@ TSharedRef<SWidget> UDesCharacterScreen::RebuildWidget()
 		+ SHorizontalBox::Slot()
 		.AutoWidth()
 		[
-			SNew(SBox)
-				.WidthOverride(GridSize.X * Style->CellSize)
-				.HeightOverride(GridSize.Y * Style->CellSize)
+			SAssignNew(ItemContainerBox, SBox)
 			[
 				SAssignNew(ItemContainerWidget, SDesItemContainerWidget)
-				.GridSize(GridSize) /* @TODO: fix */
 			]
 		]
 	];
@@ -48,6 +45,7 @@ void UDesCharacterScreen::ReleaseSlateResources(bool bReleaseChildren)
 	Super::ReleaseSlateResources(bReleaseChildren);
 
 	Root.Reset();
+	ItemContainerBox.Reset();
 	ItemContainerWidget.Reset();
 }
 
@@ -55,21 +53,27 @@ void UDesCharacterScreen::InitForCharacter(const ADesPlayerCharacter* Character)
 {
 	check(Character);
 
-	InventoryComponent = MakeWeakObjectPtr(Character->Inventory);
-	/* @TODO: Unbind! */
-	InventoryComponent->OnAnyChangesDelegate.AddWeakLambda(this, [&](const TArray<FItemContainerEntry>& Items)
-	{
-		ItemContainerWidget->CollapseAllItems();
-		for (auto& Entry : Items)
-		{
-			if (Entry.ItemInstance)
-			{
-				const auto ItemData = Entry.ItemInstance->GetItemData();
-				ItemContainerWidget->AddItem(Entry.Position, Entry.ItemInstance->GetItemData()->Size,
-				                             &ItemData->IconBrush);
-			}
-		}
-	});
+	// InventoryComponent = MakeWeakObjectPtr(Character->Inventory);
+	// /* @TODO: Unbind! */
+	// InventoryComponent->OnAnyChangesDelegate.AddWeakLambda(this, [&](const TArray<FItemContainerEntry>& Items)
+	// {
+	// 	ItemContainerWidget->CollapseAllItems();
+	// 	for (auto& Entry : Items)
+	// 	{
+	// 		if (Entry.ItemInstance)
+	// 		{
+	// 			const auto ItemData = Entry.ItemInstance->GetItemData();
+	// 			ItemContainerWidget->AddItem(Entry.Position, Entry.ItemInstance->GetItemData()->Size,
+	// 			                             &ItemData->IconBrush);
+	// 		}
+	// 	}
+	// });
+	//
+	// ItemContainerWidget->SetGridSize(InventoryComponent->GridSize);
+	// ItemContainerWidget->OnItemContainerClickedDelegate.BindWeakLambda(this, [](const FIntVector2& Coords)
+	// {
+	// 	DES_LOG_INTVECTOR2("ClickedCoords", Coords)
+	// });
 
 	/* Fill in initial items. */
 	// for (const auto& Entry : InventoryComponent->GetItemsRef())

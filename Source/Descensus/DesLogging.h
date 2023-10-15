@@ -8,3 +8,4 @@ DESCENSUS_API DECLARE_LOG_CATEGORY_EXTERN(LogDes, Log, All);
 #define DES_LOG_INT(Prefix, Value) UE_LOG(LogDes, Warning, TEXT(Prefix  ": %i"), Value)
 #define DES_LOG_BOOL(Prefix, Value) UE_LOG(LogDes, Warning, TEXT(Prefix  ": %s"), Value ? TEXT("true") : TEXT("false"))
 #define DES_LOG_EXPR(Expr) UE_LOG(LogDes, Warning, TEXT("%s"), *FString::Format(TEXT(#Expr ": {0}"), {(Expr)}))
+#define DES_LOG_INTVECTOR2(Prefix, Value) UE_LOG(LogDes, Warning, TEXT(Prefix  ": %i %i"), Value.X, Value.Y)

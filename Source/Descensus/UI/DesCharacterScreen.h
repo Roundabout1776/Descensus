@@ -15,6 +15,7 @@ class DESCENSUS_API UDesCharacterScreen : public UWidget
 
 protected:
 	TSharedPtr<SBorder> Root;
+	TSharedPtr<SBox> ItemContainerBox;
 	TSharedPtr<SDesItemContainerWidget> ItemContainerWidget;
 	
 	TWeakObjectPtr<UDesInventoryComponent> InventoryComponent;

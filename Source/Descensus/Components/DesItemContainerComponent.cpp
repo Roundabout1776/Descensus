@@ -32,7 +32,7 @@ void FItemContainer::PreReplicatedRemove(const TArrayView<int32> RemovedIndices,
 
 UDesItemContainerComponent::UDesItemContainerComponent()
 {
-	PrimaryComponentTick.bCanEverTick = false;
+	PrimaryComponentTick.bCanEverTick = true;
 	SetIsReplicatedByDefault(true);
 	bWantsInitializeComponent = true;
 	Array.OwnerComponent = this;
@@ -42,6 +42,20 @@ void UDesItemContainerComponent::InitializeComponent()
 {
 	/* @TODO: investigate CDO behavior */
 	Grid.SetNumZeroed(GridSize.X * GridSize.Y);
+	Array.Items.Reserve(GridSize.X * GridSize.Y);
+	Array.MarkArrayDirty();
+}
+
+void UDesItemContainerComponent::TickComponent(float DeltaTime, ELevelTick TickType,
+	FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if (bGridDirty)
+	{
+		OnAnyChanges();
+		bGridDirty = false;
+	}
 }
 
 void UDesItemContainerComponent::BeginPlay()
@@ -53,7 +67,7 @@ void UDesItemContainerComponent::BeginPlay()
 		const auto GameState = GetWorld()->GetGameState<ADesGameState>();
 		for (const auto& ItemDataClass : DefaultItems)
 		{
-			// AddItemAuto(GameState->CreateItemInstance(ItemDataClass));
+			AddItemAuto(GameState->CreateItemInstance(ItemDataClass));
 		}
 	}
 }
@@ -62,58 +76,59 @@ void UDesItemContainerComponent::OnItemAdded(const FItemContainerEntry& Entry)
 {
 	if (!IsValid(Entry.ItemInstance))
 	{
-		DES_LOG_STR("OnItemAdded: Non-Valid ItemInstance!")
 		return;
 	}
-	// checkf(IsValid(Entry.ItemInstance), TEXT("OnItemAdded: Non-Valid ItemInstance!"))
-	
-	FillGrid(Entry.Position, Entry.ItemInstance->GetItemData()->Size, Entry.ItemInstance);
 	OnItemAddedDelegate.Broadcast(Entry);
-	OnAnyChanges();
+	bGridDirty = true;
 }
 
 void UDesItemContainerComponent::OnItemChanged(const FItemContainerEntry& Entry)
 {
 	if (!IsValid(Entry.ItemInstance))
 	{
-		DES_LOG_STR("OnItemChanged: Non-Valid ItemInstance!")
 		return;
 	}
-	// checkf(IsValid(Entry.ItemInstance), TEXT("OnItemChanged: Non-Valid ItemInstance!"))
-
-	FillGrid(Entry.Position, Entry.ItemInstance->GetItemData()->Size, Entry.ItemInstance);
 	OnItemChangedDelegate.Broadcast(Entry);
-	OnAnyChanges();
+	bGridDirty = true;
 }
 
 void UDesItemContainerComponent::OnItemRemoved(const FItemContainerEntry& Entry)
 {
 	if (!IsValid(Entry.ItemInstance))
 	{
-		DES_LOG_STR("OnItemRemoved: Non-Valid ItemInstance!")
 		return;
 	}
-	// checkf(IsValid(Entry.ItemInstance), TEXT("OnItemRemoved: Non-Valid ItemInstance!"))
-
-	FillGrid(Entry.Position, Entry.ItemInstance->GetItemData()->Size, nullptr);
 	OnItemRemovedDelegate.Broadcast(Entry);
-	OnAnyChanges();
+	bGridDirty = true;
 }
 
 void UDesItemContainerComponent::OnAnyChanges()
 {
+	RebuildGrid();
 	OnAnyChangesDelegate.Broadcast(GetItemsRef());
 }
 
 void UDesItemContainerComponent::FillGrid(const FIntVector2 Coords, const FIntVector2 Size,
-                                          UDesItemInstance* ItemInstance)
+                                          const int32 InIndex)
 {
 	for (auto X = Coords.X; X < Coords.X + Size.X; X++)
 	{
 		for (auto Y = Coords.Y; Y < Coords.Y + Size.Y; Y++)
 		{
-			const auto Index = (GridSize.X * Y) + X;
-			Grid[Y * GridSize.X + X] = ItemInstance;
+			Grid[Y * GridSize.X + X] = -InIndex;
+		}
+	}
+	Grid[Coords.Y * GridSize.X + Coords.X] = InIndex;
+}
+
+void UDesItemContainerComponent::RebuildGrid()
+{
+	Grid.SetNumZeroed(Grid.Num());
+	for (int Index = 0; Index < Array.Items.Num(); ++Index)
+	{
+		if (const auto& Entry = Array.Items[Index]; Entry.ItemInstance)
+		{
+			FillGrid(Entry.Position, Entry.ItemInstance->GetItemData()->Size, Index + 1);
 		}
 	}
 }
@@ -125,7 +140,6 @@ bool UDesItemContainerComponent::AddItemAuto(UDesItemInstance* InItemInstance)
 	/* @TODO: optimize */
 	for (auto GridIndex = 0; GridIndex < Grid.Num(); GridIndex++)
 	{
-		const auto CurrentCell = Grid[GridIndex];
 		const auto CurrentCellY = GridIndex / GridSize.X;
 		const auto CurrentCellX = GridIndex - (CurrentCellY * GridSize.X);
 		if (CurrentCellX + ItemData->Size.X > GridSize.X)
@@ -137,7 +151,7 @@ bool UDesItemContainerComponent::AddItemAuto(UDesItemInstance* InItemInstance)
 		{
 			return false;
 		}
-		if (!CurrentCell)
+		if (Grid[GridIndex] == 0)
 		{
 			bool bFree = true;
 			for (auto X = CurrentCellX; X < CurrentCellX + ItemData->Size.X; X++)
@@ -148,7 +162,7 @@ bool UDesItemContainerComponent::AddItemAuto(UDesItemInstance* InItemInstance)
 				}
 				for (auto Y = CurrentCellY; Y < CurrentCellY + ItemData->Size.Y; Y++)
 				{
-					if (const auto Cell = Grid[Y * GridSize.X + X])
+					if (Grid[Y * GridSize.X + X] != 0)
 					{
 						bFree = false;
 						break;
@@ -171,19 +185,68 @@ bool UDesItemContainerComponent::AddItemAuto(UDesItemInstance* InItemInstance)
 	return false;
 }
 
-void UDesItemContainerComponent::RemoveItem(UDesItemInstance* InItemInstance)
+void UDesItemContainerComponent::RemoveItemByInstance(UDesItemInstance* InItemInstance)
 {
 	for (auto ItemIter = GetItemsRef().CreateIterator(); ItemIter; ++ItemIter)
 	{
 		if (const FItemContainerEntry& Entry = *ItemIter; Entry.ItemInstance && Entry.ItemInstance == InItemInstance)
 		{
-			FillGrid(Entry.Position, Entry.ItemInstance->GetItemData()->Size, nullptr);
+			FillGrid(Entry.Position, Entry.ItemInstance->GetItemData()->Size, 0);
 			ItemIter.RemoveCurrent();
 			Array.MarkArrayDirty();
 			OnItemRemoved(Entry);
 			break;
 		}
 	}
+}
+
+void UDesItemContainerComponent::RemoveItemByEntry(const FItemContainerEntry& InEntry)
+{
+	check(IsValid(InEntry.ItemInstance));
+	for (auto ItemIter = Array.Items.CreateIterator(); ItemIter; ++ItemIter)
+	{
+		if (const auto& Entry = *ItemIter; Entry.ItemInstance && Entry.ItemInstance == InEntry.ItemInstance)
+		{
+			FillGrid(InEntry.Position, InEntry.ItemInstance->GetItemData()->Size, 0);
+			ItemIter.RemoveCurrent();
+			Array.MarkArrayDirty();
+			OnItemRemoved(InEntry);
+			break;
+		}
+	}
+}
+
+UDesItemInstance* UDesItemContainerComponent::GetItemInstance(const FIntVector2 Coords)
+{
+	if (const auto ItemIndex = GridCoordsToItemsIndex(Coords); Array.Items.IsValidIndex(ItemIndex))
+	{
+		return Array.Items[ItemIndex].ItemInstance;
+	}
+	return nullptr;
+}
+
+void UDesItemContainerComponent::ServerDestroyItem_Implementation(UDesItemInstance* InItemInstance)
+{
+	if (!InItemInstance)
+		return;
+
+	RemoveItemByInstance(InItemInstance);
+	GetWorld()->GetGameState<ADesGameState>()->DestroyItemInstance(InItemInstance);
+}
+
+int32 UDesItemContainerComponent::IntVectorToIndex(const FIntVector2 Coords) const
+{
+	return Coords.Y * GridSize.X + Coords.X;
+}
+
+int32 UDesItemContainerComponent::GridValueToItemsIndex(const int32 Value)
+{
+	return FMath::Abs(Value) - 1;
+}
+
+int32 UDesItemContainerComponent::GridCoordsToItemsIndex(FIntVector2 Coords) const
+{
+	return GridValueToItemsIndex(Grid[IntVectorToIndex(Coords)]);
 }
 
 void UDesItemContainerComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

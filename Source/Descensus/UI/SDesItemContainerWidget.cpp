@@ -1,18 +1,22 @@
 ﻿#include "SDesItemContainerWidget.h"
 
+#include "DesLogging.h"
 #include "DesStyle.h"
 #include "SDesItemWidget.h"
 #include "Types/PaintArgs.h"
 #include "Layout/ArrangedChildren.h"
 
-SLATE_IMPLEMENT_WIDGET(SDesItemContainerWidget)
-
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
+
+SLATE_IMPLEMENT_WIDGET(SDesItemContainerWidget)
 
 void SDesItemContainerWidget::PrivateRegisterAttributes(FSlateAttributeInitializer& AttributeInitializer)
 {
 	FSlateWidgetSlotAttributeInitializer Initializer = SLATE_ADD_PANELCHILDREN_DEFINITION(
 		AttributeInitializer, Children);
+	// SLATE_ADD_MEMBER_ATTRIBUTE_DEFINITION(AttributeInitializer, GridSizeAttribute, EInvalidateWidgetReason::Paint);
+	SLATE_ADD_MEMBER_ATTRIBUTE_DEFINITION_WITH_NAME(AttributeInitializer, "GridSize", GridSizeAttribute,
+	                                                EInvalidateWidgetReason::Paint);
 	FSlot::RegisterAttributes(Initializer);
 }
 
@@ -39,9 +43,9 @@ void SDesItemContainerWidget::FSlot::Construct(const FChildren& SlotOwner, FSlot
 	}
 }
 
-
 SDesItemContainerWidget::SDesItemContainerWidget()
 	: Children(this, GET_MEMBER_NAME_CHECKED(SDesItemContainerWidget, Children))
+	  , GridSizeAttribute(*this)
 {
 	SetCanTick(false);
 	bCanSupportFocus = false;
@@ -52,7 +56,12 @@ void SDesItemContainerWidget::Construct(const SDesItemContainerWidget::FArgument
 	const auto Style = FDesStyle::GetDefaultStyle();
 
 	TelegraphSize = FVector2D(Style->CellSize, Style->CellSize);
-	GridSize = InArgs._GridSize;
+	GridSizeAttribute.Assign(*this, InArgs._GridSize);
+	OnItemContainerClickedDelegate = InArgs._OnItemContainerClickedDelegate;
+	// if (InArgs._OnMouseButtonDown.IsBound())
+	// {
+	// 	SetOnMouseButtonDown(InArgs._OnMouseButtonDown);
+	// }
 	Children.AddSlots(MoveTemp(const_cast<TArray<FSlot::FSlotArguments>&>(InArgs._Slots)));
 }
 
@@ -64,16 +73,6 @@ SDesItemContainerWidget::FSlot::FSlotArguments SDesItemContainerWidget::Slot()
 SDesItemContainerWidget::FScopedWidgetSlotArguments SDesItemContainerWidget::AddSlot()
 {
 	return FScopedWidgetSlotArguments{MakeUnique<FSlot>(), Children, INDEX_NONE};
-}
-
-void SDesItemContainerWidget::ClearChildren()
-{
-	Children.Empty();
-}
-
-int32 SDesItemContainerWidget::RemoveSlot(const TSharedRef<SWidget>& SlotWidget)
-{
-	return Children.Remove(SlotWidget);
 }
 
 void SDesItemContainerWidget::OnArrangeChildren(const FGeometry& AllottedGeometry,
@@ -130,13 +129,21 @@ int32 SDesItemContainerWidget::OnPaint(const FPaintArgs& Args, const FGeometry& 
 		                             ESlateDrawEffect::None, Style->ItemGridColor, false, 1.0f);
 	}
 
-	if (bShowTelegraph)
-	{
-		const auto TelegraphGeometry = AllottedGeometry.MakeChild(TelegraphSize,
-		                                                          FSlateLayoutTransform(TelegraphPosition))
-		                                               .ToPaintGeometry();
-		FSlateDrawElement::MakeBox(OutDrawElements, LayerId, TelegraphGeometry, &Style->ItemContainerTelegraphBrush);
-	}
+	// if (true)
+	// {
+	// 	const auto TelegraphGeometry = AllottedGeometry.MakeChild(FVector2D{25, 25},
+	// 	                                                          FSlateLayoutTransform(FVector2D()))
+	// 	                                               .ToPaintGeometry();
+	// 	FSlateDrawElement::MakeBox(OutDrawElements, LayerId, TelegraphGeometry, &Style->ItemContainerTelegraphBrush);
+	// }
+
+	// if (bShowTelegraph)
+	// {
+	// 	const auto TelegraphGeometry = AllottedGeometry.MakeChild(TelegraphSize,
+	// 	                                                          FSlateLayoutTransform(TelegraphPosition))
+	// 	                                               .ToPaintGeometry();
+	// 	FSlateDrawElement::MakeBox(OutDrawElements, LayerId, TelegraphGeometry, &Style->ItemContainerTelegraphBrush);
+	// }
 
 	/* Canvas stuff. */
 
@@ -173,8 +180,8 @@ int32 SDesItemContainerWidget::OnPaint(const FPaintArgs& Args, const FGeometry& 
 
 FVector2D SDesItemContainerWidget::ComputeDesiredSize(float) const
 {
-	// Canvas widgets have no desired size -- their size is always determined by their container
-	return FVector2D::ZeroVector;
+	const auto Style = FDesStyle::GetDefaultStyle();
+	return FVector2D(GridSizeAttribute.Get().X * Style->CellSize, GridSizeAttribute.Get().Y * Style->CellSize);
 }
 
 FChildren* SDesItemContainerWidget::GetChildren()
@@ -195,7 +202,7 @@ void SDesItemContainerWidget::OnMouseLeave(const FPointerEvent& MouseEvent)
 
 FReply SDesItemContainerWidget::OnMouseMove(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
 {
-	FVector2D MouseLcal = MyGeometry.AbsoluteToLocal(MouseEvent.GetScreenSpacePosition());
+	const auto GridSize = GridSizeAttribute.Get();
 	FVector2D MouseLocal = MyGeometry.AbsoluteToLocal(MouseEvent.GetScreenSpacePosition());
 	MouseLocal /= MyGeometry.Size;
 	MouseLocal *= FVector2D(GridSize.X, GridSize.Y);
@@ -210,7 +217,26 @@ FReply SDesItemContainerWidget::OnMouseMove(const FGeometry& MyGeometry, const F
 	return SPanel::OnMouseMove(MyGeometry, MouseEvent);
 }
 
-void SDesItemContainerWidget::AddItem(FIntVector2 Position, FIntVector2 Size, const FSlateBrush* Texture)
+FReply SDesItemContainerWidget::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
+{
+	const auto GridSize = GridSizeAttribute.Get();
+	FVector2D MouseLocal = MyGeometry.AbsoluteToLocal(MouseEvent.GetScreenSpacePosition());
+	MouseLocal /= MyGeometry.Size;
+	MouseLocal *= FVector2D(GridSize.X, GridSize.Y);
+	const FIntVector2 Coords{static_cast<int>(MouseLocal.X), static_cast<int>(MouseLocal.Y)};
+	if (OnItemContainerClickedDelegate.ExecuteIfBound(Coords))
+	{
+		return FReply::Handled();
+	}
+	return FReply::Unhandled();
+}
+
+void SDesItemContainerWidget::SetGridSize(FIntVector InGridSize)
+{
+	GridSizeAttribute.Set(*this, InGridSize);
+}
+
+void SDesItemContainerWidget::AddItem(const FIntVector2 Position, const FDesItemWidgetData& Data)
 {
 	const auto Style = FDesStyle::GetDefaultStyle();
 	if (CurrentItemWidgetIndex >= Children.Num())
@@ -221,10 +247,10 @@ void SDesItemContainerWidget::AddItem(FIntVector2 Position, FIntVector2 Size, co
 		];
 	}
 	auto& Slot = Children[CurrentItemWidgetIndex];
-	Slot.SetSize(FVector2D(Size.X * Style->CellSize, Size.Y * Style->CellSize));
+	Slot.SetSize(FVector2D(Data.Size.X * Style->CellSize, Data.Size.Y * Style->CellSize));
 	Slot.SetPosition(FVector2D(Position.X * Style->CellSize, Position.Y * Style->CellSize));
 	const auto Child = StaticCastSharedRef<SDesItemWidget>(Slot.GetWidget());
-	Child->SetFromInstance(Position, Size, Texture);
+	Child->SetDataAndMakeVisible(Data);
 
 	CurrentItemWidgetIndex++;
 }

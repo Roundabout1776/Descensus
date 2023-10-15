@@ -40,8 +40,11 @@ public:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UDesShortcutsPanel> ShortcutsPanel;
 
+	// UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	// TObjectPtr<UDesCharacterScreen> CharacterScreen;
+	
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UDesCharacterScreen> CharacterScreen;
+	TObjectPtr<UDesItemContainerWidget> Inventory;
 	
 	void SetCrosshairVisible(bool bNewVisible) const;
 

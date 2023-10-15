@@ -7,17 +7,11 @@
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 
-FReply SDesItemWidget::OnMouseMove(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
-{
-	const auto FG = 10;
-	return FReply::Handled();
-}
-
 void SDesItemWidget::Construct(const FArguments& InArgs)
 {
 	const auto Style = FDesStyle::GetDefaultStyle();
 
-	SetVisibility(EVisibility::Visible);
+	SetVisibility(EVisibility::SelfHitTestInvisible);
 
 	ChildSlot
 	[
@@ -31,7 +25,7 @@ void SDesItemWidget::Construct(const FArguments& InArgs)
 			+ SOverlay::Slot()
 			  .VAlign(VAlign_Bottom)
 			  .HAlign(HAlign_Right)
-			  .Padding(0.0f, 0.0f, 5.0f, 0.0f)
+			  .Padding(0.0f, 0.0f, 5.0f, 2.0f)
 			[
 				SAssignNew(QuantityTextBlock, STextBlock)
 				.Justification(ETextJustify::Right)
@@ -42,26 +36,27 @@ void SDesItemWidget::Construct(const FArguments& InArgs)
 	];
 }
 
-void SDesItemWidget::SetFromInstance(FIntVector2 InPosition, FIntVector2 Size, const FSlateBrush* Brush)
+void SDesItemWidget::SetDataAndMakeVisible(const FDesItemWidgetData& Data)
 {
 	const auto Style = FDesStyle::GetDefaultStyle();
 
-	// Position = FVector2D(InPosition.X * Style->CellSize, InPosition.Y * Style->CellSize);
+	Box->SetHeightOverride(Data.Size.X * Style->CellSize);
+	Box->SetWidthOverride(Data.Size.Y * Style->CellSize);
 
-	Box->SetHeightOverride(Size.X * Style->CellSize);
-	Box->SetWidthOverride(Size.Y * Style->CellSize);
+	IconImage->SetImage(Data.Brush);
 
-	// IconImage->SetImage(&Style->TestBrush);
-	IconImage->SetImage(Brush);
+	if (Data.MaxQuantity > 1)
+	{
+		QuantityTextBlock->SetVisibility(EVisibility::SelfHitTestInvisible);
+		static FTextFormat QuantityFormat(INVTEXT("{0}/{1}"));
+		QuantityTextBlock->SetText(FText::Format(QuantityFormat, Data.Quantity, Data.MaxQuantity));
+	}
+	else
+	{
+		QuantityTextBlock->SetVisibility(EVisibility::Collapsed);
+	}
 
-	SetVisibility(EVisibility::Visible);
-
-	// ComputeDesiredSize()
-	// SetDesiredSize({Size.X * Style->CellSize, Size.Y * Style->CellSize});
-	// const auto B = ChildSlot.GetWidget()->GetDesiredSize();
-	// Invalidate(EInvalidateWidgetReason::Layout);
-
-	// QuantityTextBlock->SetText(FText::FromString(FString::FromInt(ItemInstance->Quantity)));
+	SetVisibility(EVisibility::SelfHitTestInvisible);
 }
 
 END_SLATE_FUNCTION_BUILD_OPTIMIZATION

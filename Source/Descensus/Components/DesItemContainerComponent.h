@@ -77,6 +77,8 @@ protected:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Replicated, Category="Descensus|Items")
 	FItemContainer Array;
 
+	bool bGridDirty;
+
 	virtual void BeginPlay() override;
 
 	void OnItemAdded(const FItemContainerEntry& Entry);
@@ -84,7 +86,8 @@ protected:
 	void OnItemRemoved(const FItemContainerEntry& Entry);
 
 	void OnAnyChanges();
-	void FillGrid(FIntVector2 Coords, FIntVector2 Size, UDesItemInstance* ItemInstance = nullptr);
+	void FillGrid(FIntVector2 Coords, FIntVector2 Size, int32 InIndex = 0);
+	void RebuildGrid();
 
 public:
 	DECLARE_MULTICAST_DELEGATE_OneParam(FOnItemAddedSignature, const FItemContainerEntry&)
@@ -105,13 +108,14 @@ public:
 
 	/* Locally maintained fast-access item grid. */
 	UPROPERTY()
-	TArray<TObjectPtr<UDesItemInstance>> Grid;
+	TArray<int32> Grid;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Descensus|Items")
 	TArray<TSubclassOf<UDesItemData>> DefaultItems;
 
 	UDesItemContainerComponent();
 	virtual void InitializeComponent() override;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	TArray<FItemContainerEntry>& GetItemsRef() { return Array.Items; }
 
@@ -119,5 +123,17 @@ public:
 	bool AddItemAuto(UDesItemInstance* InItemInstance);
 
 	UFUNCTION(BlueprintCallable)
-	void RemoveItem(UDesItemInstance* InItemInstance);
+	void RemoveItemByInstance(UDesItemInstance* InItemInstance);
+	
+	UFUNCTION(BlueprintCallable)
+	void RemoveItemByEntry(const FItemContainerEntry& InEntry);
+
+	UDesItemInstance* GetItemInstance(FIntVector2 Coords);
+	
+	UFUNCTION(Server, Reliable)
+	void ServerDestroyItem(UDesItemInstance* InItemInstance);
+
+	int32 IntVectorToIndex(FIntVector2 Coords) const;
+	static int32 GridValueToItemsIndex(int32 Value);
+	int32 GridCoordsToItemsIndex(FIntVector2 Coords) const;
 };

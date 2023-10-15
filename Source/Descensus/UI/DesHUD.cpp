@@ -9,9 +9,11 @@
 #include "Player/DesPlayerCharacter.h"
 #include "Player/DesPlayerController.h"
 #include "DesGenericTooltip.h"
+#include "DesItemContainerWidget.h"
 #include "DesTooltipData.h"
 #include "DesWidget.h"
 #include "DesMainUILayer.h"
+#include "Components/DesItemContainerComponent.h"
 #include "Components/Image.h"
 #include "Widgets/DeclarativeSyntaxSupport.h"
 
@@ -110,9 +112,9 @@ void ADesHUD::InitMainUILayer(const ADesPlayerCharacter* Character)
 
 	check(IsValid(MainUILayerClass));
 	MainUILayer = CreateWidget<UDesMainUILayer>(PlayerController, MainUILayerClass);
-	MainUILayer->InscriptionOverlay->SetBrushFromMaterial(InscriptionCanvas->GetInscriptionCanvasMaterial());
-	MainUILayer->CharacterScreen->InitForCharacter(Character);
 	MainUILayer->AddToPlayerScreen(0);
+	MainUILayer->InscriptionOverlay->SetBrushFromMaterial(InscriptionCanvas->GetInscriptionCanvasMaterial());
+	MainUILayer->Inventory->AttachToItemContainerComponent(Cast<UDesItemContainerComponent>(Character->Inventory));
 }
 
 void ADesHUD::LookStarted()

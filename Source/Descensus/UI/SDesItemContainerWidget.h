@@ -9,17 +9,24 @@
 #include "Widgets/DeclarativeSyntaxSupport.h"
 #include "Widgets/SPanel.h"
 
+struct FDesItemWidgetData;
 class FArrangedChildren;
 class FPaintArgs;
 class FSlateWindowElementList;
 
+DECLARE_DELEGATE_OneParam(FOnItemContainerClickedSignature, const FIntVector2&)
+
 class SDesItemContainerWidget : public SPanel
 {
-	SLATE_DECLARE_WIDGET_API(SDesItemContainerWidget, SPanel, DESCENSUS_API)
-
-public:
+	SLATE_DECLARE_WIDGET(SDesItemContainerWidget, SPanel)
 	class FSlot : public TWidgetSlotWithAttributeSupport<FSlot>
 	{
+		/** Position */
+		TSlateSlotAttribute<FVector2D> Position;
+
+		/** Size */
+		TSlateSlotAttribute<FVector2D> Size;
+
 	public:
 		SLATE_SLOT_BEGIN_ARGS(FSlot, TSlotBase<FSlot>)
 			SLATE_ATTRIBUTE(FVector2D, Position)
@@ -46,15 +53,6 @@ public:
 			return Size.Get();
 		}
 
-	public:
-#if WITH_EDITORONLY_DATA
-		UE_DEPRECATED(5.0, "Direct access to PositionAttr is now deprecated. Use the getter or setter.")
-		TSlateDeprecatedTAttribute<FVector2D> PositionAttr;
-		UE_DEPRECATED(5.0, "Direct access to SizeAttr is now deprecated. Use the getter or setter.")
-		TSlateDeprecatedTAttribute<FVector2D> SizeAttr;
-#endif
-
-	public:
 		/** Default values for a slot. */
 		FSlot()
 			: TWidgetSlotWithAttributeSupport<FSlot>()
@@ -65,31 +63,17 @@ public:
 
 		void Construct(const FChildren& SlotOwner, FSlotArguments&& InArg);
 		static void RegisterAttributes(FSlateWidgetSlotAttributeInitializer& AttributeInitializer);
-
-	private:
-		/** Position */
-		TSlateSlotAttribute<FVector2D> Position;
-
-		/** Size */
-		TSlateSlotAttribute<FVector2D> Size;
 	};
 
-	FIntVector GridSize{1, 1, 0};
+protected:
+	TPanelChildren<FSlot> Children;
+	TSlateAttribute<FIntVector> GridSizeAttribute;
+	int32 CurrentItemWidgetIndex{};
+	bool bShowTelegraph{};
+	FVector2D TelegraphPosition{};
+	FVector2D TelegraphSize{};
 
-	SLATE_BEGIN_ARGS(SDesItemContainerWidget)
-		{
-			_Visibility = EVisibility::Visible;
-		}
-
-		SLATE_ARGUMENT(FIntVector, GridSize)
-
-		SLATE_SLOT_ARGUMENT(FSlot, Slots)
-
-	SLATE_END_ARGS()
-
-	SDesItemContainerWidget();
-
-	void Construct(const FArguments& InArgs);
+	virtual FVector2D ComputeDesiredSize(float) const override;
 
 	static FSlot::FSlotArguments Slot();
 
@@ -97,9 +81,23 @@ public:
 
 	FScopedWidgetSlotArguments AddSlot();
 
-	int32 RemoveSlot(const TSharedRef<SWidget>& SlotWidget);
+public:
+	FOnItemContainerClickedSignature OnItemContainerClickedDelegate;
 
-	void ClearChildren();
+	SLATE_BEGIN_ARGS(SDesItemContainerWidget)
+			: _GridSize({1, 1, 0})
+		{
+			_Visibility = EVisibility::Visible;
+		}
+
+		SLATE_ATTRIBUTE(FIntVector, GridSize)
+		SLATE_EVENT(FOnItemContainerClickedSignature, OnItemContainerClickedDelegate)
+		SLATE_SLOT_ARGUMENT(FSlot, Slots)
+	SLATE_END_ARGS()
+
+	SDesItemContainerWidget();
+
+	void Construct(const FArguments& InArgs);
 
 	virtual void
 	OnArrangeChildren(const FGeometry& AllottedGeometry, FArrangedChildren& ArrangedChildren) const override;
@@ -110,16 +108,9 @@ public:
 	virtual void OnMouseEnter(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
 	virtual void OnMouseLeave(const FPointerEvent& MouseEvent) override;
 	virtual FReply OnMouseMove(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
+	virtual FReply OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
 
-	int32 CurrentItemWidgetIndex{};
-	bool bShowTelegraph{};
-	FVector2D TelegraphPosition{};
-	FVector2D TelegraphSize{};
-	void AddItem(FIntVector2 Position, FIntVector2 Size, const FSlateBrush* Texture);
+	void SetGridSize(FIntVector InGridSize);
+	void AddItem(FIntVector2 Position, const FDesItemWidgetData& Data);
 	void CollapseAllItems();
-
-protected:
-	virtual FVector2D ComputeDesiredSize(float) const override;
-
-	TPanelChildren<FSlot> Children;
 };

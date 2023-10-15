@@ -10,6 +10,14 @@ class STextBlock;
 class UTexture2D;
 class SBox;
 
+struct DESCENSUS_API FDesItemWidgetData
+{
+	FIntVector2 Size;
+	int32 Quantity;
+	int32 MaxQuantity;
+	const FSlateBrush* Brush;
+};
+
 class DESCENSUS_API SDesItemWidget : public SCompoundWidget
 {
 	// FIntVector2 Size{};
@@ -18,17 +26,13 @@ class DESCENSUS_API SDesItemWidget : public SCompoundWidget
 	TSharedPtr<STextBlock> QuantityTextBlock;
 
 public:
-	FVector2D Position{};
-	
 	SLATE_BEGIN_ARGS(SDesItemWidget)
 		{
 		}
 
 	SLATE_END_ARGS()
 	
-	virtual FReply OnMouseMove(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
-	
 	void Construct(const FArguments& InArgs);
 
-	void SetFromInstance(FIntVector2 InPosition, FIntVector2 Size, const FSlateBrush* Brush);
+	void SetDataAndMakeVisible(const FDesItemWidgetData& Data);
 };

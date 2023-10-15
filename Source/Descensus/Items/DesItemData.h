@@ -24,7 +24,7 @@ public:
 	FIntVector2 Size{1,1};
 	
 	UPROPERTY(EditDefaultsOnly, Category="Descensus|Item")
-	int MaxStackCount{1};
+	int MaxQuantity{1};
 	
 	UPROPERTY(EditDefaultsOnly, Category="Descensus|Item")
 	TSoftClassPtr<ADesActor> ActorClass;

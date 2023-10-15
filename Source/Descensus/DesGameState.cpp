@@ -11,6 +11,7 @@ UDesItemInstance* ADesGameState::CreateItemInstance(const TSubclassOf<UDesItemDa
 {
 	const auto ItemInstance = NewObject<UDesItemInstance>(this);
 	ItemInstance->ItemDataClass = ItemData;
+	ItemInstance->Quantity = 1;
 	AddReplicatedSubObject(ItemInstance);
 	return ItemInstance;
 }
