@@ -14,7 +14,7 @@ class FArrangedChildren;
 class FPaintArgs;
 class FSlateWindowElementList;
 
-DECLARE_DELEGATE_OneParam(FOnItemContainerClickedSignature, const FIntVector2&)
+DECLARE_DELEGATE_RetVal_ThreeParams(FReply, FOnItemContainerClickedSignature, const FGeometry&, const FPointerEvent&, const FIntVector2&)
 
 class SDesItemContainerWidget : public SPanel
 {

@@ -1,5 +1,6 @@
 ﻿#include "DesItemContainerWidget.h"
 
+#include "DesItemLayer.h"
 #include "DesLogging.h"
 #include "SDesItemContainerWidget.h"
 #include "SDesItemWidget.h"
@@ -27,6 +28,11 @@ void UDesItemContainerWidget::ReleaseSlateResources(bool bReleaseChildren)
 	Widget.Reset();
 }
 
+void UDesItemContainerWidget::SetItemLayer(UDesItemLayer* InItemLayer)
+{
+	ItemLayer = MakeWeakObjectPtr(InItemLayer);
+}
+
 void UDesItemContainerWidget::AttachToItemContainerComponent(UDesItemContainerComponent* InItemContainerComponent)
 {
 	check(InItemContainerComponent);
@@ -41,11 +47,7 @@ void UDesItemContainerWidget::AttachToItemContainerComponent(UDesItemContainerCo
 		{
 			if (const auto ItemInstance = Entry.ItemInstance)
 			{
-				const auto ItemData = ItemInstance->GetItemData();
-				Widget->AddItem(Entry.Position, FDesItemWidgetData{
-					                ItemInstance->GetItemData()->Size, Entry.ItemInstance->Quantity,
-					                ItemData->MaxQuantity, &ItemData->IconBrush
-				                });
+				Widget->AddItem(Entry.Position, GetItemWidgetData(ItemInstance));
 			}
 		}
 	});
@@ -54,14 +56,47 @@ void UDesItemContainerWidget::AttachToItemContainerComponent(UDesItemContainerCo
 	Widget->OnItemContainerClickedDelegate.BindUObject(this, &ThisClass::OnItemContainerClicked);
 }
 
-void UDesItemContainerWidget::OnItemContainerClicked(const FIntVector2& Coords) const
+FReply UDesItemContainerWidget::OnItemContainerClicked(const FGeometry& Geometry, const FPointerEvent& MouseEvent,
+                                                       const FIntVector2& Coords) const
 {
-	// DES_LOG_INTVECTOR2("ClickedCoords", Coords)
-	const auto ItemInstance = ItemContainerComponent->GetItemInstance(Coords);
+	if (const auto ItemInstance = ItemContainerComponent->GetItemInstance(Coords))
+	{
+		if (ItemLayer->IsItemDragDropActive())
+		{
+			DES_LOG_STR("TO SWAP")
+			ItemLayer->EndItemDragDrop();
+		}
+		else
+		{
+			ItemLayer->BeginItemDragDrop(GetItemWidgetData(ItemInstance), MouseEvent.GetScreenSpacePosition());
+		}
+		// return FReply::Handled().BeginDragDrop(FDesItemDragDropOperation::New(
+		// 	MouseEvent.GetPointerIndex(), FVector2D(), GetItemWidgetData(ItemInstance)));
+		// ItemContainerComponent->ServerDestroyItem(ItemInstance);
+	}
+	else
+	{
+		if (ItemLayer->IsItemDragDropActive())
+		{
+			DES_LOG_STR("TO MOVE")
+			ItemLayer->EndItemDragDrop();
+		}
+	}
+	return FReply::Handled();
+}
+
+FDesItemWidgetData UDesItemContainerWidget::GetItemWidgetData(const UDesItemInstance* ItemInstance)
+{
 	if (ItemInstance)
 	{
-		ItemContainerComponent->ServerDestroyItem(ItemInstance);
+		const auto ItemData = ItemInstance->GetItemData();
+
+		return FDesItemWidgetData{
+			ItemData->Size, ItemInstance->Quantity,
+			ItemData->MaxQuantity, &ItemData->IconBrush
+		};
 	}
+	return FDesItemWidgetData{};
 }
 
 const FText UDesItemContainerWidget::GetPaletteCategory()

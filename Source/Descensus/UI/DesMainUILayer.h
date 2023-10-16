@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "DesMainUILayer.generated.h"
 
+class UDesItemLayer;
 class UDesCharacterScreen;
 class UDesItemContainerWidget;
 class UDesInventoryComponent;
@@ -23,11 +24,13 @@ class DESCENSUS_API UDesMainUILayer : public UUserWidget
 
 protected:
 	virtual void NativeOnInitialized() override;
-	
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual FReply NativeOnMouseMove(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+
 public:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UOverlay> RootOverlay;
-
+	
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UImage> InscriptionOverlay;
 
@@ -42,6 +45,9 @@ public:
 
 	// UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	// TObjectPtr<UDesCharacterScreen> CharacterScreen;
+	
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UDesItemLayer> ItemLayer;
 	
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UDesItemContainerWidget> Inventory;

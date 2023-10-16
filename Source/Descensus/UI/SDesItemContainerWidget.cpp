@@ -224,11 +224,7 @@ FReply SDesItemContainerWidget::OnMouseButtonDown(const FGeometry& MyGeometry, c
 	MouseLocal /= MyGeometry.Size;
 	MouseLocal *= FVector2D(GridSize.X, GridSize.Y);
 	const FIntVector2 Coords{static_cast<int>(MouseLocal.X), static_cast<int>(MouseLocal.Y)};
-	if (OnItemContainerClickedDelegate.ExecuteIfBound(Coords))
-	{
-		return FReply::Handled();
-	}
-	return FReply::Unhandled();
+	return OnItemContainerClickedDelegate.Execute(MyGeometry, MouseEvent, Coords);
 }
 
 void SDesItemContainerWidget::SetGridSize(FIntVector InGridSize)
