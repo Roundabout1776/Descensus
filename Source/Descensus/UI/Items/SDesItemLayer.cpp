@@ -1,7 +1,7 @@
 ﻿#include "SDesItemLayer.h"
 
-#include "DesStyle.h"
 #include "SDesItemWidget.h"
+#include "UI/DesStyle.h"
 #include "Widgets/SCanvas.h"
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
@@ -12,49 +12,49 @@ void SDesItemLayer::Construct(const FArguments& InArgs)
 	[
 		SAssignNew(Canvas, SCanvas)
 		+ SCanvas::Slot()
-		.Expose(DragDropWidgetSlot)
+		.Expose(ItemWidgetSlot)
 		[
-			SAssignNew(DragDropWidget, SDesItemWidget)
+			SAssignNew(ItemWidget, SDesItemWidget)
 		]
 	];
 }
 
 void SDesItemLayer::HandlePointer(const FPointerEvent& PointerEvent) const
 {
-	if (IsItemDragDropActive())
+	if (IsItemMoveActive())
 	{
 		auto Position = this->GetTickSpaceGeometry().AbsoluteToLocal(PointerEvent.GetScreenSpacePosition());
 		Position -= DragDropOffset;
-		DragDropWidgetSlot->SetPosition(Position);
+		ItemWidgetSlot->SetPosition(Position);
 	}
 }
 
-void SDesItemLayer::BeginItemDragDrop(const FDesItemWidgetData& ItemWidgetData, const FVector2D ScreenSpacePosition)
+void SDesItemLayer::BeginItemMove(const FDesItemWidgetData& ItemWidgetData, const FVector2D ScreenSpacePosition)
 {
 	const auto Style = FDesStyle::GetDefaultStyle();
 	const auto Size = FVector2D(ItemWidgetData.Size.X * Style->CellSize,
 	                            ItemWidgetData.Size.Y * Style->CellSize);
-	DragDropWidgetSlot->SetSize(Size);
+	ItemWidgetSlot->SetSize(Size);
 	DragDropOffset = Size / 2.0;
-	DragDropWidget->SetDataAndMakeVisible(ItemWidgetData);
+	ItemWidget->SetDataAndMakeVisible(ItemWidgetData);
 
 	auto Position = this->GetTickSpaceGeometry().AbsoluteToLocal(ScreenSpacePosition);
 	Position -= DragDropOffset;
-	DragDropWidgetSlot->SetPosition(Position);
+	ItemWidgetSlot->SetPosition(Position);
 
 	SetVisibility(EVisibility::HitTestInvisible);
-	bIsItemDragDropActive = true;
+	bIsItemMoveActive = true;
 }
 
-void SDesItemLayer::EndItemDragDrop()
+void SDesItemLayer::EndItemMove()
 {
 	SetVisibility(EVisibility::Collapsed);
-	bIsItemDragDropActive = false;
+	bIsItemMoveActive = false;
 }
 
-bool SDesItemLayer::IsItemDragDropActive() const
+bool SDesItemLayer::IsItemMoveActive() const
 {
-	return bIsItemDragDropActive;
+	return bIsItemMoveActive;
 }
 
 END_SLATE_FUNCTION_BUILD_OPTIMIZATION

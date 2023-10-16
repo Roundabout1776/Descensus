@@ -1,11 +1,8 @@
 ﻿#include "DesCharacterScreen.h"
 
-#include "DesLogging.h"
 #include "DesStyle.h"
-#include "SDesItemContainerWidget.h"
 #include "Components/DesInventoryComponent.h"
-#include "Items/DesItemData.h"
-#include "Items/DesItemInstance.h"
+#include "Items/SDesItemContainerWidget.h"
 #include "Player/DesPlayerCharacter.h"
 
 #define LOCTEXT_NAMESPACE "Descensus"
@@ -14,7 +11,6 @@ TSharedRef<SWidget> UDesCharacterScreen::RebuildWidget()
 {
 	const auto Style = FDesStyle::GetDefaultStyle();
 
-	const auto GridSize = InventoryComponent.IsValid() ? InventoryComponent->GridSize : FIntVector();
 	SAssignNew(Root, SBorder)
 		.BorderImage(&Style->CommonBox)
 		.Padding(Style->Padding)

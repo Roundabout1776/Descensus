@@ -1,20 +1,21 @@
 #include "UI/DesMainUILayer.h"
 
-#include "DesItemContainerWidget.h"
-#include "DesItemLayer.h"
 #include "DesLogging.h"
 #include "EnhancedInputSubsystems.h"
+#include "Components/DesItemContainerComponent.h"
 #include "Components/Overlay.h"
+#include "Items/DesItemContainerWidget.h"
+#include "Items/DesItemLayer.h"
 #include "Player/DesPlayerController.h"
 #include "UI/DesShortcutsPanel.h"
 #include "Materials/MaterialInstanceDynamic.h"
 
 FReply UDesMainUILayer::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-	if (ItemLayer->IsItemDragDropActive())
+	if (ItemLayer->IsItemMoveActive())
 	{
-		DES_LOG_STR("TO DROP")
-		ItemLayer->EndItemDragDrop();
+		ItemLayer->GetContainerToMoveFrom()->ServerDestroyItem(ItemLayer->GetItemToMove());
+		ItemLayer->EndItemMove();
 		return FReply::Handled();
 	}
 	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);

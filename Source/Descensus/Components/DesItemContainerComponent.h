@@ -20,12 +20,7 @@ struct FItemContainerEntry : public FFastArraySerializerItem
 
 	UPROPERTY(VisibleInstanceOnly)
 	TObjectPtr<UDesItemInstance> ItemInstance;
-
-	// void PostReplicatedAdd(const struct FItemContainer& InArraySerializer);
-	// void PostReplicatedChange(const struct FItemContainer& InArraySerializer);
-	// void PreReplicatedRemove(const struct FItemContainer& InArraySerializer);
 };
-
 
 USTRUCT(BlueprintType)
 struct FItemContainer : public FFastArraySerializer
@@ -132,6 +127,9 @@ public:
 	
 	UFUNCTION(Server, Reliable)
 	void ServerDestroyItem(UDesItemInstance* InItemInstance);
+
+	UFUNCTION(Server, WithValidation, Reliable)
+	void ServerMoveItem(UDesItemInstance* InItemInstance, FIntVector2 Coords);
 
 	int32 IntVectorToIndex(FIntVector2 Coords) const;
 	static int32 GridValueToItemsIndex(int32 Value);

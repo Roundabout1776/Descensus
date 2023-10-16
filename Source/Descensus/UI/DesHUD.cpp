@@ -9,12 +9,12 @@
 #include "Player/DesPlayerCharacter.h"
 #include "Player/DesPlayerController.h"
 #include "DesGenericTooltip.h"
-#include "DesItemContainerWidget.h"
 #include "DesTooltipData.h"
 #include "DesWidget.h"
 #include "DesMainUILayer.h"
 #include "Components/DesItemContainerComponent.h"
 #include "Components/Image.h"
+#include "Items/DesItemContainerWidget.h"
 #include "Widgets/DeclarativeSyntaxSupport.h"
 
 FVector2D ADesHUD::GetDesiredTooltipPositionForActor(const AActor* Actor) const

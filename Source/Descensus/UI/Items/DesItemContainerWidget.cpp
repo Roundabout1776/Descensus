@@ -61,25 +61,24 @@ FReply UDesItemContainerWidget::OnItemContainerClicked(const FGeometry& Geometry
 {
 	if (const auto ItemInstance = ItemContainerComponent->GetItemInstance(Coords))
 	{
-		if (ItemLayer->IsItemDragDropActive())
+		if (ItemLayer->IsItemMoveActive())
 		{
 			DES_LOG_STR("TO SWAP")
-			ItemLayer->EndItemDragDrop();
+			ItemLayer->EndItemMove();
 		}
 		else
 		{
-			ItemLayer->BeginItemDragDrop(GetItemWidgetData(ItemInstance), MouseEvent.GetScreenSpacePosition());
+			ItemLayer->BeginItemMove(ItemContainerComponent.Get(), ItemInstance, GetItemWidgetData(ItemInstance),
+			                         MouseEvent.GetScreenSpacePosition());
 		}
-		// return FReply::Handled().BeginDragDrop(FDesItemDragDropOperation::New(
-		// 	MouseEvent.GetPointerIndex(), FVector2D(), GetItemWidgetData(ItemInstance)));
-		// ItemContainerComponent->ServerDestroyItem(ItemInstance);
 	}
 	else
 	{
-		if (ItemLayer->IsItemDragDropActive())
+		DES_LOG_STR("TO MOVE")
+		if (ItemLayer->IsItemMoveActive())
 		{
-			DES_LOG_STR("TO MOVE")
-			ItemLayer->EndItemDragDrop();
+			ItemContainerComponent->ServerMoveItem(ItemLayer->GetItemToMove(), Coords);
+			ItemLayer->EndItemMove();
 		}
 	}
 	return FReply::Handled();

@@ -7,7 +7,6 @@ class UDesItemInstance;
 class UDesItemData;
 class SImage;
 class STextBlock;
-class UTexture2D;
 class SBox;
 
 struct DESCENSUS_API FDesItemWidgetData
@@ -20,7 +19,6 @@ struct DESCENSUS_API FDesItemWidgetData
 
 class DESCENSUS_API SDesItemWidget final : public SCompoundWidget
 {
-	// FIntVector2 Size{};
 	TSharedPtr<SBox> Box;
 	TSharedPtr<SImage> IconImage;
 	TSharedPtr<STextBlock> QuantityTextBlock;

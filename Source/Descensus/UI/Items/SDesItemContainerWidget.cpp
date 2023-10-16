@@ -1,10 +1,9 @@
 ﻿#include "SDesItemContainerWidget.h"
 
-#include "DesLogging.h"
-#include "DesStyle.h"
 #include "SDesItemWidget.h"
 #include "Types/PaintArgs.h"
 #include "Layout/ArrangedChildren.h"
+#include "UI/DesStyle.h"
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 
