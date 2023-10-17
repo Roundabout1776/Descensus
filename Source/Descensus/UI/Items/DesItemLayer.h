@@ -38,7 +38,7 @@ public:
 	void Lock() { bIsLocked = true; }
 	const UDesItemInstance* GetEjectedItem() const;
 	bool IsLocked() const;
-	void HandlePointer(const FPointerEvent& PointerEvent, float DeltaTime) const;
+	void UpdateEjectedItemPosition(const FVector2D& MousePosition, float DeltaTime) const;
 	void OnEjectedItemChanged(const UDesItemInstance* DesItemInstance);
 	void AttachToInventory(UDesInventoryComponent* InInventoryComponent);
 

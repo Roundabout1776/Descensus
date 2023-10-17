@@ -23,11 +23,13 @@ class DESCENSUS_API UDesMainUILayer : public UUserWidget
 	GENERATED_BODY()
 
 protected:
-	FPointerEvent PolledPointerEvent;
+	UPROPERTY()
+	TWeakObjectPtr<ADesPlayerController> PlayerController;
+
+	TSharedPtr<FSlateUser> SlateUser;
 	
 	virtual void NativeOnInitialized() override;
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
-	virtual FReply NativeOnMouseMove(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 public:

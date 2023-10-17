@@ -13,23 +13,25 @@ void SDesItemLayer::Construct(const FArguments& InArgs)
 	[
 		SAssignNew(Canvas, SCanvas)
 		+ SCanvas::Slot()
-		.Expose(ItemWidgetSlot)
+		.Expose(EjectedItemWidgetSlot)
 		[
-			SAssignNew(ItemWidget, SDesItemWidget)
+			SAssignNew(EjectedItemWidget, SDesItemWidget)
 			.Visibility(EVisibility::Collapsed)
 		]
 	];
 }
 
-void SDesItemLayer::HandlePointer(const FPointerEvent& PointerEvent, const float DeltaTime)
+void SDesItemLayer::UpdateEjectedItemPosition(const FVector2D& MousePosition, const float DeltaTime)
 {
-	PointerPosition = this->GetTickSpaceGeometry().AbsoluteToLocal(PointerEvent.GetScreenSpacePosition());
-	if (ItemWidget->GetVisibility() != EVisibility::Collapsed)
-	{
-		const auto TargetPosition = PointerPosition - EjectedItemOffset;
+	MousePositionLocal = this->GetTickSpaceGeometry().AbsoluteToLocal(MousePosition);
 
-		ItemWidgetSlot->SetPosition(
-			FMath::InterpEaseIn(ItemWidgetSlot->GetPosition(), TargetPosition, FMath::Clamp(DeltaTime * 50.0, 0.0, 1.0), 2.0));
+	if (EjectedItemWidget->GetVisibility() != EVisibility::Collapsed)
+	{
+		const auto TargetPosition = MousePositionLocal - EjectedItemOffset;
+		EjectedItemWidgetSlot->SetPosition(
+			FMath::InterpEaseIn(EjectedItemWidgetSlot->GetPosition(), TargetPosition,
+			                    FMath::Clamp(DeltaTime * 50.0, 0.0, 1.0),
+			                    2.0));
 	}
 }
 
@@ -38,16 +40,16 @@ void SDesItemLayer::BeginItemMove(const FDesItemWidgetData& ItemWidgetData)
 	const auto Style = FDesStyle::GetDefaultStyle();
 	const auto Size = FVector2D(ItemWidgetData.Size.X * Style->CellSize,
 	                            ItemWidgetData.Size.Y * Style->CellSize);
-	ItemWidgetSlot->SetSize(Size);
+	EjectedItemWidgetSlot->SetSize(Size);
 	EjectedItemOffset = Size / 2.0;
-	ItemWidgetSlot->SetPosition(PointerPosition - EjectedItemOffset);
-	ItemWidget->SetData(ItemWidgetData);
-	ItemWidget->SetVisibility(EVisibility::HitTestInvisible);
+	EjectedItemWidgetSlot->SetPosition(MousePositionLocal - EjectedItemOffset);
+	EjectedItemWidget->SetData(ItemWidgetData);
+	EjectedItemWidget->SetVisibility(EVisibility::HitTestInvisible);
 }
 
 void SDesItemLayer::EndItemMove() const
 {
-	ItemWidget->SetVisibility(EVisibility::Collapsed);
+	EjectedItemWidget->SetVisibility(EVisibility::Collapsed);
 }
 
 END_SLATE_FUNCTION_BUILD_OPTIMIZATION

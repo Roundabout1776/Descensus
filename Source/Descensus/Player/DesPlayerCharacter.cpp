@@ -19,6 +19,7 @@ ADesPlayerCharacter::ADesPlayerCharacter(const FObjectInitializer& ObjectInitial
 	ObjectInitializer.SetDefaultSubobjectClass<UDesPlayerAttributeSet>(UDesCharacterAttributeSet::AttributeSetName))
 {
 	NetUpdateFrequency = 60.0f;
+	MinNetUpdateFrequency = 60.0f;
 
 	bReplicateUsingRegisteredSubObjectList = true;
 	

@@ -51,9 +51,9 @@ bool UDesItemLayer::IsLocked() const
 	return bIsLocked;
 }
 
-void UDesItemLayer::HandlePointer(const FPointerEvent& PointerEvent, const float DeltaTime) const
+void UDesItemLayer::UpdateEjectedItemPosition(const FVector2D& MousePosition, const float DeltaTime) const
 {
-	Widget->HandlePointer(PointerEvent, DeltaTime);
+	Widget->UpdateEjectedItemPosition(MousePosition, DeltaTime);
 }
 
 void UDesItemLayer::OnEjectedItemChanged(const UDesItemInstance* DesItemInstance)
