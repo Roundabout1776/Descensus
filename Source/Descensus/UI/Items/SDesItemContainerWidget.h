@@ -14,8 +14,6 @@ class FArrangedChildren;
 class FPaintArgs;
 class FSlateWindowElementList;
 
-DECLARE_DELEGATE_RetVal_ThreeParams(FReply, FOnItemContainerClickedSignature, const FGeometry&, const FPointerEvent&, const FIntVector2&)
-
 class SDesItemContainerWidget : public SPanel
 {
 	SLATE_DECLARE_WIDGET(SDesItemContainerWidget, SPanel)
@@ -69,7 +67,7 @@ protected:
 	TPanelChildren<FSlot> Children;
 	TSlateAttribute<FIntVector> GridSizeAttribute;
 	int32 CurrentItemWidgetIndex{};
-	bool bShowTelegraph{};
+	bool bIsTelegraphVisible{};
 	FVector2D TelegraphPosition{};
 	FVector2D TelegraphSize{};
 
@@ -82,8 +80,6 @@ protected:
 	FScopedWidgetSlotArguments AddSlot();
 
 public:
-	FOnItemContainerClickedSignature OnItemContainerClickedDelegate;
-
 	SLATE_BEGIN_ARGS(SDesItemContainerWidget)
 			: _GridSize({1, 1, 0})
 		{
@@ -91,7 +87,6 @@ public:
 		}
 
 		SLATE_ATTRIBUTE(FIntVector, GridSize)
-		SLATE_EVENT(FOnItemContainerClickedSignature, OnItemContainerClickedDelegate)
 		SLATE_SLOT_ARGUMENT(FSlot, Slots)
 	SLATE_END_ARGS()
 
@@ -105,12 +100,12 @@ public:
 	                      FSlateWindowElementList& OutDrawElements, int32 LayerId, const FWidgetStyle& InWidgetStyle,
 	                      bool bParentEnabled) const override;
 	virtual FChildren* GetChildren() override;
-	virtual void OnMouseEnter(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
-	virtual void OnMouseLeave(const FPointerEvent& MouseEvent) override;
-	virtual FReply OnMouseMove(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
-	virtual FReply OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
 
+	void SetTelegraphPosition(FVector2D Position);
+	void SetTelegraphSize(FVector2D Size);
+	void SetTelegraphVisible(bool bIsVisible);
 	void SetGridSize(FIntVector InGridSize);
+	FIntVector GetGridSize() const;
 	void AddItem(FIntVector2 Position, const FDesItemWidgetData& Data);
 	void CollapseAllItems();
 };

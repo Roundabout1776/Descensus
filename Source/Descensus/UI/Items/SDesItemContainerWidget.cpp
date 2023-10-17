@@ -56,11 +56,6 @@ void SDesItemContainerWidget::Construct(const SDesItemContainerWidget::FArgument
 
 	TelegraphSize = FVector2D(Style->CellSize, Style->CellSize);
 	GridSizeAttribute.Assign(*this, InArgs._GridSize);
-	OnItemContainerClickedDelegate = InArgs._OnItemContainerClickedDelegate;
-	// if (InArgs._OnMouseButtonDown.IsBound())
-	// {
-	// 	SetOnMouseButtonDown(InArgs._OnMouseButtonDown);
-	// }
 	Children.AddSlots(MoveTemp(const_cast<TArray<FSlot::FSlotArguments>&>(InArgs._Slots)));
 }
 
@@ -113,36 +108,28 @@ int32 SDesItemContainerWidget::OnPaint(const FPaintArgs& Args, const FGeometry& 
 		PointsTemp.Reset();
 		PointsTemp.Add({static_cast<float>(X), 0});
 		PointsTemp.Add({static_cast<float>(X), Size.Y});
-
+	
 		FSlateDrawElement::MakeLines(OutDrawElements, LayerId, PaintGeometry, PointsTemp,
 		                             ESlateDrawEffect::None, Style->ItemGridColor, false, 1.0f);
 	}
-
+	
 	for (int Y = 0; Y <= Size.Y; Y += Style->CellSize)
 	{
 		PointsTemp.Reset();
 		PointsTemp.Add({0, static_cast<float>(Y)});
 		PointsTemp.Add({Size.X, static_cast<float>(Y)});
-
+	
 		FSlateDrawElement::MakeLines(OutDrawElements, LayerId, PaintGeometry, PointsTemp,
 		                             ESlateDrawEffect::None, Style->ItemGridColor, false, 1.0f);
 	}
 
-	// if (true)
-	// {
-	// 	const auto TelegraphGeometry = AllottedGeometry.MakeChild(FVector2D{25, 25},
-	// 	                                                          FSlateLayoutTransform(FVector2D()))
-	// 	                                               .ToPaintGeometry();
-	// 	FSlateDrawElement::MakeBox(OutDrawElements, LayerId, TelegraphGeometry, &Style->ItemContainerTelegraphBrush);
-	// }
-
-	// if (bShowTelegraph)
-	// {
-	// 	const auto TelegraphGeometry = AllottedGeometry.MakeChild(TelegraphSize,
-	// 	                                                          FSlateLayoutTransform(TelegraphPosition))
-	// 	                                               .ToPaintGeometry();
-	// 	FSlateDrawElement::MakeBox(OutDrawElements, LayerId, TelegraphGeometry, &Style->ItemContainerTelegraphBrush);
-	// }
+	if (bIsTelegraphVisible)
+	{
+		const auto TelegraphGeometry = AllottedGeometry.MakeChild(TelegraphSize,
+		                                                          FSlateLayoutTransform(TelegraphPosition))
+		                                               .ToPaintGeometry();
+		FSlateDrawElement::MakeBox(OutDrawElements, LayerId, TelegraphGeometry, &Style->ItemContainerTelegraphBrush);
+	}
 
 	/* Canvas stuff. */
 
@@ -188,47 +175,29 @@ FChildren* SDesItemContainerWidget::GetChildren()
 	return &Children;
 }
 
-void SDesItemContainerWidget::OnMouseEnter(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
+void SDesItemContainerWidget::SetTelegraphPosition(FVector2D Position)
 {
-	SPanel::OnMouseEnter(MyGeometry, MouseEvent);
+	TelegraphPosition = Position;
 }
 
-void SDesItemContainerWidget::OnMouseLeave(const FPointerEvent& MouseEvent)
+void SDesItemContainerWidget::SetTelegraphSize(FVector2D Size)
 {
-	SPanel::OnMouseLeave(MouseEvent);
-	bShowTelegraph = false;
+	TelegraphSize = Size;
 }
 
-FReply SDesItemContainerWidget::OnMouseMove(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
+void SDesItemContainerWidget::SetTelegraphVisible(bool bIsVisible)
 {
-	const auto GridSize = GridSizeAttribute.Get();
-	FVector2D MouseLocal = MyGeometry.AbsoluteToLocal(MouseEvent.GetScreenSpacePosition());
-	MouseLocal /= MyGeometry.Size;
-	MouseLocal *= FVector2D(GridSize.X, GridSize.Y);
-	const FIntVector2 Coords{static_cast<int>(MouseLocal.X), static_cast<int>(MouseLocal.Y)};
-	bShowTelegraph = Coords.X >= 0 && Coords.X < GridSize.X && Coords.Y >= 0 && Coords.Y < GridSize.Y;
-	if (bShowTelegraph)
-	{
-		TelegraphPosition = FVector2D{
-			Coords.X * (MyGeometry.Size.X / GridSize.X), Coords.Y * (MyGeometry.Size.Y / GridSize.Y)
-		};
-	}
-	return SPanel::OnMouseMove(MyGeometry, MouseEvent);
-}
-
-FReply SDesItemContainerWidget::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
-{
-	const auto GridSize = GridSizeAttribute.Get();
-	FVector2D MouseLocal = MyGeometry.AbsoluteToLocal(MouseEvent.GetScreenSpacePosition());
-	MouseLocal /= MyGeometry.Size;
-	MouseLocal *= FVector2D(GridSize.X, GridSize.Y);
-	const FIntVector2 Coords{static_cast<int>(MouseLocal.X), static_cast<int>(MouseLocal.Y)};
-	return OnItemContainerClickedDelegate.Execute(MyGeometry, MouseEvent, Coords);
+	bIsTelegraphVisible = bIsVisible;
 }
 
 void SDesItemContainerWidget::SetGridSize(FIntVector InGridSize)
 {
 	GridSizeAttribute.Set(*this, InGridSize);
+}
+
+FIntVector SDesItemContainerWidget::GetGridSize() const
+{
+	return GridSizeAttribute.Get();
 }
 
 void SDesItemContainerWidget::AddItem(const FIntVector2 Position, const FDesItemWidgetData& Data)

@@ -32,7 +32,12 @@ public:
 
 	void SetItemLayer(UDesItemLayer* InItemLayer);
 	void AttachToItemContainerComponent(UDesItemContainerComponent* InItemContainerComponent);
-	FReply OnItemContainerClicked(const FGeometry& Geometry, const FPointerEvent& MouseEvent, const FIntVector2& Coords) const;
+	FReply HandleMouseButtonDown(const FGeometry& Geometry, const FPointerEvent& PointerEvent) const;
+	FReply HandleMouseMove(const FGeometry& Geometry, const FPointerEvent& PointerEvent) const;
+	FReply HandleMouseLeave(const FGeometry& Geometry, const FPointerEvent& PointerEvent) const;
+	FIntVector2 ClampCoords(const FIntVector2& InCoords) const;
+	FIntVector2 GetCoordsUnderPointerForSize(const FGeometry& Geometry, const FPointerEvent& PointerEvent, const FIntVector2& Size) const;
+	FIntVector2 GetCoordsUnderPointer(const FGeometry& Geometry, const FPointerEvent& PointerEvent) const;
 	static FDesItemWidgetData GetItemWidgetData(const UDesItemInstance* ItemInstance);
 
 #if WITH_EDITOR

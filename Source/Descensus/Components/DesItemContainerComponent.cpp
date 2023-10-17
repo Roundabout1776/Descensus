@@ -228,22 +228,6 @@ void UDesItemContainerComponent::RemoveItemByInstance(UDesItemInstance* InItemIn
 	}
 }
 
-void UDesItemContainerComponent::RemoveItemByEntry(const FItemContainerEntry& InEntry)
-{
-	check(IsValid(InEntry.ItemInstance));
-	for (auto ItemIter = Array.Items.CreateIterator(); ItemIter; ++ItemIter)
-	{
-		if (const auto& Entry = *ItemIter; Entry.ItemInstance && Entry.ItemInstance == InEntry.ItemInstance)
-		{
-			FillGrid(InEntry.Position, InEntry.ItemInstance->GetItemData()->Size, 0);
-			ItemIter.RemoveCurrent();
-			Array.MarkArrayDirty();
-			OnItemRemoved(InEntry);
-			break;
-		}
-	}
-}
-
 UDesItemInstance* UDesItemContainerComponent::GetItemInstance(const FIntVector2 Coords)
 {
 	if (const auto ItemIndex = GridCoordsToItemsIndex(Coords); Array.Items.IsValidIndex(ItemIndex))

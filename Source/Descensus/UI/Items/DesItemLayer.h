@@ -30,7 +30,7 @@ public:
 	void BeginItemMove(UDesItemContainerComponent* InContainerToMoveFrom, UDesItemInstance* InItemToMove, const FDesItemWidgetData& ItemWidgetData, FVector2D ScreenSpacePosition);
 	void EndItemMove();
 	bool IsItemMoveActive() const;
-
+	
 	void HandlePointer(const FPointerEvent& PointerEvent) const;
 
 	UDesItemInstance* GetItemToMove() const;

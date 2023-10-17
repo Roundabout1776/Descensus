@@ -14,7 +14,7 @@ TSharedRef<SWidget> UDesItemLayer::RebuildWidget()
 void UDesItemLayer::ReleaseSlateResources(bool bReleaseChildren)
 {
 	Super::ReleaseSlateResources(bReleaseChildren);
-
+	
 	Widget.Reset();
 }
 
@@ -24,6 +24,7 @@ void UDesItemLayer::BeginItemMove(UDesItemContainerComponent* InContainerToMoveF
 	ContainerToMoveFrom = MakeWeakObjectPtr(InContainerToMoveFrom);
 	ItemToMove = MakeWeakObjectPtr(InItemToMove);
 	Widget->BeginItemMove(ItemWidgetData, ScreenSpacePosition);
+	SetCursor(EMouseCursor::None);
 }
 
 void UDesItemLayer::EndItemMove()

@@ -40,10 +40,6 @@ struct FItemContainer : public FFastArraySerializer
 	}
 
 protected:
-	// FOnItemAddedSignature OnItemAddedDelegate;
-	// FOnItemChangedSignature OnItemChangedDelegate;
-	// FOnItemRemovedSignature OnItemRemovedDelegate;
-
 	UPROPERTY(VisibleInstanceOnly)
 	TArray<FItemContainerEntry> Items;
 
@@ -102,7 +98,6 @@ public:
 	FIntVector GridSize{5, 5, 0};
 
 	/* Locally maintained fast-access item grid. */
-	UPROPERTY()
 	TArray<int32> Grid;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Descensus|Items")
@@ -119,9 +114,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void RemoveItemByInstance(UDesItemInstance* InItemInstance);
-	
-	UFUNCTION(BlueprintCallable)
-	void RemoveItemByEntry(const FItemContainerEntry& InEntry);
 
 	UDesItemInstance* GetItemInstance(FIntVector2 Coords);
 	
