@@ -103,6 +103,7 @@ public:
 
 	void SetTelegraphPosition(FVector2D Position);
 	void SetTelegraphSize(FVector2D Size);
+	FORCEINLINE bool GetIsTelegraphVisible() const { return bIsTelegraphVisible; }
 	void SetTelegraphVisible(bool bIsVisible);
 	void SetGridSize(FIntVector InGridSize);
 	FIntVector GetGridSize() const;

@@ -1,8 +1,9 @@
 ﻿#include "DesItemLayer.h"
 
+#include "DesItemContainerWidget.h"
 #include "SDesItemLayer.h"
 #include "SDesItemWidget.h"
-#include "Components/DesItemContainerComponent.h"
+#include "Components/DesInventoryComponent.h"
 
 #define LOCTEXT_NAMESPACE "Descensus"
 
@@ -14,44 +15,64 @@ TSharedRef<SWidget> UDesItemLayer::RebuildWidget()
 void UDesItemLayer::ReleaseSlateResources(bool bReleaseChildren)
 {
 	Super::ReleaseSlateResources(bReleaseChildren);
-	
+
 	Widget.Reset();
+
+	if (InventoryComponent.IsValid())
+	{
+		InventoryComponent->OnEjectedItemChanged.Remove(OnItemEjectedChangedHandle);
+	}
 }
 
-void UDesItemLayer::BeginItemMove(UDesItemContainerComponent* InContainerToMoveFrom, UDesItemInstance* InItemToMove,
-	const FDesItemWidgetData& ItemWidgetData, const FVector2D ScreenSpacePosition)
+void UDesItemLayer::ShowEjectedItem(const UDesItemInstance* InItem)
 {
-	ContainerToMoveFrom = MakeWeakObjectPtr(InContainerToMoveFrom);
-	ItemToMove = MakeWeakObjectPtr(InItemToMove);
-	Widget->BeginItemMove(ItemWidgetData, ScreenSpacePosition);
-	SetCursor(EMouseCursor::None);
+	if (InItem)
+	{
+		bIsLocked = false;
+	}
+	if (bIsLocked)
+		return;
+	Widget->BeginItemMove(UDesItemContainerWidget::GetItemWidgetData(InItem));
 }
 
-void UDesItemLayer::EndItemMove()
+void UDesItemLayer::HideEjectedItem()
 {
-	ContainerToMoveFrom.Reset();
-	ItemToMove.Reset();
 	Widget->EndItemMove();
+	bIsLocked = false;
 }
 
-bool UDesItemLayer::IsItemMoveActive() const
+const UDesItemInstance* UDesItemLayer::GetEjectedItem() const
 {
-	return Widget && Widget->IsItemMoveActive();
+	return InventoryComponent->EjectedItem;
 }
 
-void UDesItemLayer::HandlePointer(const FPointerEvent& PointerEvent) const
+bool UDesItemLayer::IsLocked() const
 {
-	Widget->HandlePointer(PointerEvent);
+	return bIsLocked;
 }
 
-UDesItemInstance* UDesItemLayer::GetItemToMove() const
+void UDesItemLayer::HandlePointer(const FPointerEvent& PointerEvent, const float DeltaTime) const
 {
-	return ItemToMove.Get();
+	Widget->HandlePointer(PointerEvent, DeltaTime);
 }
 
-UDesItemContainerComponent* UDesItemLayer::GetContainerToMoveFrom() const
+void UDesItemLayer::OnEjectedItemChanged(const UDesItemInstance* DesItemInstance)
 {
-	return ContainerToMoveFrom.Get();
+	if (DesItemInstance)
+	{
+		ShowEjectedItem(DesItemInstance);
+	}
+	else
+	{
+		HideEjectedItem();
+	}
+}
+
+void UDesItemLayer::AttachToInventory(UDesInventoryComponent* InInventoryComponent)
+{
+	InventoryComponent = MakeWeakObjectPtr(InInventoryComponent);
+	OnItemEjectedChangedHandle = InventoryComponent->OnEjectedItemChanged.AddUObject(
+		this, &ThisClass::OnEjectedItemChanged);
 }
 
 const FText UDesItemLayer::GetPaletteCategory()

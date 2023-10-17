@@ -11,8 +11,6 @@ void SDesItemWidget::Construct(const FArguments& InArgs)
 {
 	const auto Style = FDesStyle::GetDefaultStyle();
 
-	SetVisibility(EVisibility::SelfHitTestInvisible);
-
 	ChildSlot
 	[
 		SAssignNew(Box, SBox)
@@ -36,7 +34,7 @@ void SDesItemWidget::Construct(const FArguments& InArgs)
 	];
 }
 
-void SDesItemWidget::SetDataAndMakeVisible(const FDesItemWidgetData& Data)
+void SDesItemWidget::SetData(const FDesItemWidgetData& Data) const
 {
 	const auto Style = FDesStyle::GetDefaultStyle();
 
@@ -55,8 +53,6 @@ void SDesItemWidget::SetDataAndMakeVisible(const FDesItemWidgetData& Data)
 	{
 		QuantityTextBlock->SetVisibility(EVisibility::Collapsed);
 	}
-
-	SetVisibility(EVisibility::SelfHitTestInvisible);
 }
 
 END_SLATE_FUNCTION_BUILD_OPTIMIZATION

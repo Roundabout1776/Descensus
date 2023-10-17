@@ -128,7 +128,8 @@ int32 SDesItemContainerWidget::OnPaint(const FPaintArgs& Args, const FGeometry& 
 		const auto TelegraphGeometry = AllottedGeometry.MakeChild(TelegraphSize,
 		                                                          FSlateLayoutTransform(TelegraphPosition))
 		                                               .ToPaintGeometry();
-		FSlateDrawElement::MakeBox(OutDrawElements, LayerId, TelegraphGeometry, &Style->ItemContainerTelegraphBrush);
+		const auto Tint = Style->ItemContainerTelegraphBrush.TintColor.GetSpecifiedColor();
+		FSlateDrawElement::MakeBox(OutDrawElements, LayerId, TelegraphGeometry, &Style->ItemContainerTelegraphBrush, ESlateDrawEffect::None, Tint);
 	}
 
 	/* Canvas stuff. */
@@ -214,7 +215,8 @@ void SDesItemContainerWidget::AddItem(const FIntVector2 Position, const FDesItem
 	Slot.SetSize(FVector2D(Data.Size.X * Style->CellSize, Data.Size.Y * Style->CellSize));
 	Slot.SetPosition(FVector2D(Position.X * Style->CellSize, Position.Y * Style->CellSize));
 	const auto Child = StaticCastSharedRef<SDesItemWidget>(Slot.GetWidget());
-	Child->SetDataAndMakeVisible(Data);
+	Child->SetData(Data);
+	Child->SetVisibility(EVisibility::HitTestInvisible);
 
 	CurrentItemWidgetIndex++;
 }

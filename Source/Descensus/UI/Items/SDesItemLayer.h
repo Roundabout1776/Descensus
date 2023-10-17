@@ -8,11 +8,11 @@ class SCanvas;
 class DESCENSUS_API SDesItemLayer final : public SCompoundWidget
 {
 protected:
-	FVector2D DragDropOffset;
+	FVector2D PointerPosition;
+	FVector2D EjectedItemOffset;
 	TSharedPtr<SCanvas> Canvas;
 	TSharedPtr<SDesItemWidget> ItemWidget;
 	SCanvas::FSlot* ItemWidgetSlot{};
-	bool bIsItemMoveActive{};
 
 public:
 	SLATE_BEGIN_ARGS(SDesItemLayer)
@@ -23,8 +23,7 @@ public:
 
 	void Construct(const FArguments& InArgs);
 
-	void HandlePointer(const FPointerEvent& PointerEvent) const;
-	void BeginItemMove(const FDesItemWidgetData& ItemWidgetData, FVector2D ScreenSpacePosition);
-	void EndItemMove();
-	bool IsItemMoveActive() const;
+	void HandlePointer(const FPointerEvent& PointerEvent, float DeltaTime);
+	void BeginItemMove(const FDesItemWidgetData& ItemWidgetData);
+	void EndItemMove() const;
 };

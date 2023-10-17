@@ -114,7 +114,7 @@ void ADesHUD::InitMainUILayer(const ADesPlayerCharacter* Character)
 	MainUILayer = CreateWidget<UDesMainUILayer>(PlayerController, MainUILayerClass);
 	MainUILayer->AddToPlayerScreen(0);
 	MainUILayer->InscriptionOverlay->SetBrushFromMaterial(InscriptionCanvas->GetInscriptionCanvasMaterial());
-	MainUILayer->Inventory->AttachToItemContainerComponent(Cast<UDesItemContainerComponent>(Character->Inventory));
+	MainUILayer->SetupItemSystem(Character->Inventory);
 }
 
 void ADesHUD::LookStarted()

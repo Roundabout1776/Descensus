@@ -34,5 +34,5 @@ public:
 	
 	void Construct(const FArguments& InArgs);
 
-	void SetDataAndMakeVisible(const FDesItemWidgetData& Data);
+	void SetData(const FDesItemWidgetData& Data) const;
 };

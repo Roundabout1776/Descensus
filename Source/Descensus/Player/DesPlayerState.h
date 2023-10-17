@@ -5,6 +5,7 @@
 #include "GameFramework/PlayerState.h"
 #include "DesPlayerState.generated.h"
 
+class UDesItemInstance;
 class UDesPlayerAttributeSet;
 class UDesAbilitySystemComponent;
 

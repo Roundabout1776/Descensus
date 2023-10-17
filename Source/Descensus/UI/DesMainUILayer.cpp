@@ -2,6 +2,7 @@
 
 #include "DesLogging.h"
 #include "EnhancedInputSubsystems.h"
+#include "Components/DesInventoryComponent.h"
 #include "Components/DesItemContainerComponent.h"
 #include "Components/Overlay.h"
 #include "Items/DesItemContainerWidget.h"
@@ -12,10 +13,11 @@
 
 FReply UDesMainUILayer::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-	if (ItemLayer->IsItemMoveActive())
+	if (!ItemLayer->IsLocked() && ItemLayer->GetEjectedItem())
 	{
-		ItemLayer->GetContainerToMoveFrom()->ServerDestroyItem(ItemLayer->GetItemToMove());
-		ItemLayer->EndItemMove();
+		SetCursor(EMouseCursor::None);
+		ItemLayer->Lock();
+		ItemLayer->InventoryComponent->ServerDestroyEjectedItem();
 		return FReply::Handled();
 	}
 	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
@@ -23,23 +25,27 @@ FReply UDesMainUILayer::NativeOnMouseButtonDown(const FGeometry& InGeometry, con
 
 FReply UDesMainUILayer::NativeOnMouseMove(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-	ItemLayer->HandlePointer(InMouseEvent);
-	return Super::NativeOnMouseMove(InGeometry, InMouseEvent);
+	PolledPointerEvent = InMouseEvent;
+	return FReply::Unhandled();
+}
+
+void UDesMainUILayer::NativeTick(const FGeometry& MyGeometry, const float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+	ItemLayer->HandlePointer(PolledPointerEvent, InDeltaTime);
 }
 
 void UDesMainUILayer::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 
-	if (const auto PlayerController = GetOwningPlayer<ADesPlayerController>())
-	{
-		const auto LocalPlayer = PlayerController->GetLocalPlayer();
-		const auto InputSystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+	const auto PlayerController = GetOwningPlayer<ADesPlayerController>();
+	checkf(PlayerController, TEXT("MainUILayer couldn't be initialized without valid PlayerController!"))
 
-		InputSystem->ControlMappingsRebuiltDelegate.AddDynamic(this, &ThisClass::HandleControlMappingsRebuilt);
-	}
+	const auto LocalPlayer = PlayerController->GetLocalPlayer();
+	const auto InputSystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
 
-	Inventory->SetItemLayer(ItemLayer);
+	InputSystem->ControlMappingsRebuiltDelegate.AddDynamic(this, &ThisClass::HandleControlMappingsRebuilt);
 }
 
 void UDesMainUILayer::SetCrosshairVisible(const bool bNewVisible) const
@@ -50,4 +56,25 @@ void UDesMainUILayer::SetCrosshairVisible(const bool bNewVisible) const
 void UDesMainUILayer::HandleControlMappingsRebuilt()
 {
 	ShortcutsPanel->UpdateInputMappings(GetOwningPlayer<ADesPlayerController>());
+}
+
+void UDesMainUILayer::SetupItemSystem(UDesInventoryComponent* InventoryComponent)
+{
+	Inventory->AttachToItemContainerComponent(Cast<UDesItemContainerComponent>(InventoryComponent));
+	Inventory->SetItemLayer(ItemLayer);
+
+	ItemLayer->AttachToInventory(InventoryComponent);
+
+	/* @TODO: force update cursor. */
+	InventoryComponent->OnEjectedItemChanged.AddWeakLambda(this, [this](const UDesItemInstance* EjectedItem)
+	{
+		if (EjectedItem)
+		{
+			SetCursor(EMouseCursor::None);
+		}
+		else
+		{
+			SetCursor(EMouseCursor::Default);
+		}
+	});
 }

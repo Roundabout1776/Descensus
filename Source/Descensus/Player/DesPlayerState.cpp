@@ -5,7 +5,7 @@
 
 ADesPlayerState::ADesPlayerState()
 {
-	NetUpdateFrequency = 100.0f;
+	NetUpdateFrequency = 60.0f;
 
 	AttributeSet = CreateDefaultSubobject<UDesPlayerAttributeSet>(UDesCharacterAttributeSet::AttributeSetName);
 

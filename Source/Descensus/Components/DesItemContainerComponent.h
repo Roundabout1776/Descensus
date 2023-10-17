@@ -60,8 +60,9 @@ UCLASS(Blueprintable, ClassGroup=(Descensus), meta=(BlueprintSpawnableComponent)
 class DESCENSUS_API UDesItemContainerComponent : public UActorComponent
 {
 	GENERATED_BODY()
-
+	
 	friend struct FItemContainer;
+	friend class UDesInventoryComponent;
 
 protected:
 	/* Replicated list of items. */
@@ -116,12 +117,8 @@ public:
 	void RemoveItemByInstance(UDesItemInstance* InItemInstance);
 
 	UDesItemInstance* GetItemInstance(FIntVector2 Coords);
-	
-	UFUNCTION(Server, Reliable)
-	void ServerDestroyItem(UDesItemInstance* InItemInstance);
 
-	UFUNCTION(Server, WithValidation, Reliable)
-	void ServerMoveItem(UDesItemInstance* InItemInstance, FIntVector2 Coords);
+	virtual bool CanInteractWithContainer(UDesItemContainerComponent* Container) { return Container == this; }
 
 	int32 IntVectorToIndex(FIntVector2 Coords) const;
 	static int32 GridValueToItemsIndex(int32 Value);

@@ -4,6 +4,7 @@
 #include "Components/Widget.h"
 #include "DesItemContainerWidget.generated.h"
 
+class ADesPlayerState;
 class UDesItemLayer;
 class UDesItemInstance;
 struct FDesItemWidgetData;
@@ -34,7 +35,7 @@ public:
 	void AttachToItemContainerComponent(UDesItemContainerComponent* InItemContainerComponent);
 	FReply HandleMouseButtonDown(const FGeometry& Geometry, const FPointerEvent& PointerEvent) const;
 	FReply HandleMouseMove(const FGeometry& Geometry, const FPointerEvent& PointerEvent) const;
-	FReply HandleMouseLeave(const FGeometry& Geometry, const FPointerEvent& PointerEvent) const;
+	void HandleMouseLeave(const FPointerEvent& PointerEvent) const;
 	FIntVector2 ClampCoords(const FIntVector2& InCoords) const;
 	FIntVector2 GetCoordsUnderPointerForSize(const FGeometry& Geometry, const FPointerEvent& PointerEvent, const FIntVector2& Size) const;
 	FIntVector2 GetCoordsUnderPointer(const FGeometry& Geometry, const FPointerEvent& PointerEvent) const;

@@ -6,6 +6,7 @@
 #include "Items/DesItemData.h"
 #include "Items/DesItemInstance.h"
 #include "Net/UnrealNetwork.h"
+#include "Player/DesPlayerState.h"
 
 void FItemContainer::PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize)
 {
@@ -219,7 +220,7 @@ void UDesItemContainerComponent::RemoveItemByInstance(UDesItemInstance* InItemIn
 	{
 		if (const FItemContainerEntry& Entry = *ItemIter; Entry.ItemInstance && Entry.ItemInstance == InItemInstance)
 		{
-			FillGrid(Entry.Position, Entry.ItemInstance->GetItemData()->Size, 0);
+			// FillGrid(Entry.Position, Entry.ItemInstance->GetItemData()->Size, 0);
 			ItemIter.RemoveCurrent();
 			Array.MarkArrayDirty();
 			OnItemRemoved(Entry);
@@ -235,70 +236,6 @@ UDesItemInstance* UDesItemContainerComponent::GetItemInstance(const FIntVector2 
 		return Array.Items[ItemIndex].ItemInstance;
 	}
 	return nullptr;
-}
-
-void UDesItemContainerComponent::ServerDestroyItem_Implementation(UDesItemInstance* InItemInstance)
-{
-	if (!InItemInstance)
-		return;
-
-	RemoveItemByInstance(InItemInstance);
-	GetWorld()->GetGameState<ADesGameState>()->DestroyItemInstance(InItemInstance);
-}
-
-void UDesItemContainerComponent::ServerMoveItem_Implementation(UDesItemInstance* InItemInstance,
-                                                               const FIntVector2 Coords)
-{
-	const auto Entry = Array.Items.FindByPredicate([InItemInstance](const FItemContainerEntry& Entry)
-	{
-		return Entry.ItemInstance == InItemInstance;
-	});
-
-	Entry->Position = Coords;
-	Array.MarkItemDirty(*Entry);
-	OnItemChanged(*Entry);
-}
-
-bool UDesItemContainerComponent::ServerMoveItem_Validate(UDesItemInstance* InItemInstance, const FIntVector2 Coords)
-{
-	if (!InItemInstance)
-		return false;
-
-	if (Array.Items.ContainsByPredicate([InItemInstance](const FItemContainerEntry& CurrentEntry)
-	{
-		return CurrentEntry.ItemInstance == InItemInstance;
-	}))
-	{
-		const auto ItemData = InItemInstance->GetItemData();
-
-		if (Coords.X + ItemData->Size.X > GridSize.X)
-		{
-			return false;
-		}
-		if (Coords.Y + ItemData->Size.Y - 1 >= GridSize.Y)
-		{
-			return false;
-		}
-
-		for (auto X = Coords.X; X < Coords.X + ItemData->Size.X; X++)
-		{
-			for (auto Y = Coords.Y; Y < Coords.Y + ItemData->Size.Y; Y++)
-			{
-				const auto GridValue = Grid[Y * GridSize.X + X];
-				if (GridValue == 0)
-				{
-					continue;
-				}
-				if (const auto CurrentEntry = Array.Items[GridValueToItemsIndex(GridValue)]; CurrentEntry.ItemInstance
-					!= InItemInstance)
-				{
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-	return false;
 }
 
 int32 UDesItemContainerComponent::IntVectorToIndex(const FIntVector2 Coords) const

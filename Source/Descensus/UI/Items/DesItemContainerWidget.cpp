@@ -4,6 +4,7 @@
 #include "DesLogging.h"
 #include "SDesItemContainerWidget.h"
 #include "SDesItemWidget.h"
+#include "Components/DesInventoryComponent.h"
 #include "Components/DesItemContainerComponent.h"
 #include "Items/DesItemData.h"
 #include "Items/DesItemInstance.h"
@@ -25,6 +26,7 @@ void UDesItemContainerWidget::SynchronizeProperties()
 	{
 		Widget->SetOnMouseButtonDown(BIND_UOBJECT_DELEGATE(FPointerEventHandler, HandleMouseButtonDown));
 		Widget->SetOnMouseMove(BIND_UOBJECT_DELEGATE(FPointerEventHandler, HandleMouseMove));
+		Widget->SetOnMouseLeave(BIND_UOBJECT_DELEGATE(FSimpleNoReplyPointerEventHandler, HandleMouseLeave));
 	}
 }
 
@@ -65,39 +67,50 @@ void UDesItemContainerWidget::AttachToItemContainerComponent(UDesItemContainerCo
 FReply UDesItemContainerWidget::HandleMouseButtonDown(const FGeometry& Geometry,
                                                       const FPointerEvent& PointerEvent) const
 {
-	const auto bIsItemMoveActive = ItemLayer->IsItemMoveActive();
-	
-	FIntVector2 Coords;
-	if (bIsItemMoveActive)
+	if (ItemLayer->IsLocked())
 	{
-		const auto Size = ItemLayer->GetItemToMove()->GetItemData()->Size;
+		return FReply::Handled();
+	}
+
+	const auto EjectedItem = ItemLayer->GetEjectedItem();
+
+	FIntVector2 Coords;
+	if (EjectedItem)
+	{
+		const auto Size = EjectedItem->GetItemData()->Size;
 		Coords = GetCoordsUnderPointerForSize(Geometry, PointerEvent, Size);
 	}
 	else
 	{
 		Coords = GetCoordsUnderPointer(Geometry, PointerEvent);
 	}
-	
+
 	if (const auto ItemInstance = ItemContainerComponent->GetItemInstance(Coords))
 	{
-		if (bIsItemMoveActive)
+		if (EjectedItem)
 		{
-			DES_LOG_STR("TO SWAP")
-			ItemLayer->EndItemMove();
+			/* Swap item. */
+
+			// ItemContainerComponent->ServerMoveItem(ItemLayer->GetItemToMove(), Coords);
+			// ItemLayer->EndItemMove();
 		}
 		else
 		{
-			ItemLayer->BeginItemMove(ItemContainerComponent.Get(), ItemInstance, GetItemWidgetData(ItemInstance),
-			                         PointerEvent.GetScreenSpacePosition());
+			/* Eject item. */
+			ItemLayer->Lock();
+			ItemLayer->InventoryComponent->ServerEjectItem(ItemContainerComponent.Get(), ItemInstance);
+			// ItemLayer->BeginItemMove(ItemContainerComponent.Get(), ItemInstance, GetItemWidgetData(ItemInstance),
+			//                          PointerEvent.GetScreenSpacePosition());
 		}
 	}
 	else
 	{
-		DES_LOG_STR("TO MOVE")
-		if (bIsItemMoveActive)
+		/* Move item. */
+		if (EjectedItem && Widget->GetIsTelegraphVisible())
 		{
-			ItemContainerComponent->ServerMoveItem(ItemLayer->GetItemToMove(), Coords);
-			ItemLayer->EndItemMove();
+			ItemLayer->Lock();
+			ItemLayer->InventoryComponent->ServerMoveEjectedItem(ItemContainerComponent.Get(), Coords);
+			// ItemLayer->EndItemMove();
 		}
 	}
 	return FReply::Handled();
@@ -106,26 +119,32 @@ FReply UDesItemContainerWidget::HandleMouseButtonDown(const FGeometry& Geometry,
 FReply UDesItemContainerWidget::HandleMouseMove(const FGeometry& Geometry, const FPointerEvent& PointerEvent) const
 {
 	bool bIsTelegraphVisible = false;
-	if (ItemLayer->IsItemMoveActive())
+	if (ItemLayer->GetEjectedItem())
 	{
-		bIsTelegraphVisible = true;
-		const FIntVector2 ItemSize = ItemLayer->GetItemToMove()->GetItemData()->Size;
+		const FIntVector2 ItemSize = ItemLayer->GetEjectedItem()->GetItemData()->Size;
 		const auto Coords = GetCoordsUnderPointerForSize(Geometry, PointerEvent, ItemSize);
 		const auto GridSize = Widget->GetGridSize();
-		const auto Style = FDesStyle::GetDefaultStyle();
-		Widget->SetTelegraphSize(FVector2D(ItemSize.X * Style->CellSize, ItemSize.Y * Style->CellSize));
-		Widget->SetTelegraphPosition(FVector2D{
-			Coords.X * (Geometry.Size.X / GridSize.X), Coords.Y * (Geometry.Size.Y / GridSize.Y)
-		});
+
+		if (Coords.X + ItemSize.X - 1 >= GridSize.X || Coords.Y + ItemSize.Y - 1 >= GridSize.Y)
+		{
+		}
+		else
+		{
+			bIsTelegraphVisible = true;
+			const auto Style = FDesStyle::GetDefaultStyle();
+			Widget->SetTelegraphSize(FVector2D(ItemSize.X * Style->CellSize, ItemSize.Y * Style->CellSize));
+			Widget->SetTelegraphPosition(FVector2D{
+				Coords.X * (Geometry.Size.X / GridSize.X), Coords.Y * (Geometry.Size.Y / GridSize.Y)
+			});
+		}
 	}
 	Widget->SetTelegraphVisible(bIsTelegraphVisible);
 	return FReply::Unhandled();
 }
 
-FReply UDesItemContainerWidget::HandleMouseLeave(const FGeometry& Geometry, const FPointerEvent& PointerEvent) const
+void UDesItemContainerWidget::HandleMouseLeave(const FPointerEvent& PointerEvent) const
 {
 	Widget->SetTelegraphVisible(false);
-	return FReply::Unhandled();
 }
 
 FIntVector2 UDesItemContainerWidget::ClampCoords(const FIntVector2& InCoords) const
