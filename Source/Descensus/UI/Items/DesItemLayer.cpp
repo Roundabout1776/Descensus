@@ -3,7 +3,8 @@
 #include "DesItemContainerWidget.h"
 #include "SDesItemLayer.h"
 #include "SDesItemWidget.h"
-#include "Components/DesInventoryComponent.h"
+#include "Player/DesInventoryComponent.h"
+#include "Items/DesItemData.h"
 
 #define LOCTEXT_NAMESPACE "Descensus"
 
@@ -20,35 +21,24 @@ void UDesItemLayer::ReleaseSlateResources(bool bReleaseChildren)
 
 	if (InventoryComponent.IsValid())
 	{
+		InventoryComponent->OnAnyChangesDelegate.Remove(OnAnyChangesHandle);
 		InventoryComponent->OnEjectedItemChanged.Remove(OnItemEjectedChangedHandle);
 	}
 }
 
 void UDesItemLayer::ShowEjectedItem(const UDesItemInstance* InItem)
 {
-	if (InItem)
-	{
-		bIsLocked = false;
-	}
-	if (bIsLocked)
-		return;
-	Widget->BeginItemMove(UDesItemContainerWidget::GetItemWidgetData(InItem));
+	Widget->ShowEjectedItem(UDesItemContainerWidget::GetItemWidgetData(InItem));
 }
 
 void UDesItemLayer::HideEjectedItem()
 {
-	Widget->EndItemMove();
-	bIsLocked = false;
+	Widget->HideEjectedItem();
 }
 
 const UDesItemInstance* UDesItemLayer::GetEjectedItem() const
 {
-	return InventoryComponent->EjectedItem;
-}
-
-bool UDesItemLayer::IsLocked() const
-{
-	return bIsLocked;
+	return InventoryComponent->GetEjectedItem();
 }
 
 void UDesItemLayer::UpdateEjectedItemPosition(const FVector2D& MousePosition, const float DeltaTime) const
@@ -56,11 +46,11 @@ void UDesItemLayer::UpdateEjectedItemPosition(const FVector2D& MousePosition, co
 	Widget->UpdateEjectedItemPosition(MousePosition, DeltaTime);
 }
 
-void UDesItemLayer::OnEjectedItemChanged(const UDesItemInstance* DesItemInstance)
+void UDesItemLayer::OnEjectedItemChanged(const UDesItemInstance* ItemInstance)
 {
-	if (DesItemInstance)
+	if (ItemInstance)
 	{
-		ShowEjectedItem(DesItemInstance);
+		ShowEjectedItem(ItemInstance);
 	}
 	else
 	{
@@ -68,11 +58,21 @@ void UDesItemLayer::OnEjectedItemChanged(const UDesItemInstance* DesItemInstance
 	}
 }
 
+void UDesItemLayer::OnAnyChanges(const TArray<FItemContainerEntry>& ItemContainerEntries) const
+{
+	if (const auto EjectedItem = GetEjectedItem())
+	{
+		Widget->UpdateEjectedItemQuantity(EjectedItem->GetQuantity(), EjectedItem->GetItemData()->MaxQuantity);
+	}
+}
+
 void UDesItemLayer::AttachToInventory(UDesInventoryComponent* InInventoryComponent)
 {
 	InventoryComponent = MakeWeakObjectPtr(InInventoryComponent);
+
 	OnItemEjectedChangedHandle = InventoryComponent->OnEjectedItemChanged.AddUObject(
 		this, &ThisClass::OnEjectedItemChanged);
+	OnAnyChangesHandle = InventoryComponent->OnAnyChangesDelegate.AddUObject(this, &ThisClass::OnAnyChanges);
 }
 
 const FText UDesItemLayer::GetPaletteCategory()

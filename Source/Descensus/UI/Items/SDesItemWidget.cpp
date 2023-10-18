@@ -42,12 +42,17 @@ void SDesItemWidget::SetData(const FDesItemWidgetData& Data) const
 	Box->SetWidthOverride(Data.Size.Y * Style->CellSize);
 
 	IconImage->SetImage(Data.Brush);
+	
+	SetQuantity(Data.Quantity, Data.MaxQuantity);
+}
 
-	if (Data.MaxQuantity > 1)
+void SDesItemWidget::SetQuantity(const int32 Quantity, const int32 MaxQuantity) const
+{
+	if (MaxQuantity > 1)
 	{
 		QuantityTextBlock->SetVisibility(EVisibility::SelfHitTestInvisible);
 		static FTextFormat QuantityFormat(INVTEXT("{0}/{1}"));
-		QuantityTextBlock->SetText(FText::Format(QuantityFormat, Data.Quantity, Data.MaxQuantity));
+		QuantityTextBlock->SetText(FText::Format(QuantityFormat, Quantity, MaxQuantity));
 	}
 	else
 	{

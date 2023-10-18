@@ -16,7 +16,7 @@ public:
 	ADesGameState();
 
 	UFUNCTION(BlueprintCallable, Category="Descensus|Items")
-	UDesItemInstance* CreateItemInstance(TSubclassOf<UDesItemData> ItemData);
+	UDesItemInstance* CreateItemInstance(TSubclassOf<UDesItemData> ItemData, int32 Quantity = 1);
 
 	UFUNCTION(BlueprintCallable, Category="Descensus|Items")
 	void DestroyItemInstance(UDesItemInstance* ItemInstance);

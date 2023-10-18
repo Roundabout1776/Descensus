@@ -1,8 +1,8 @@
 ﻿#include "DesCharacterScreen.h"
 
 #include "DesStyle.h"
-#include "Components/DesInventoryComponent.h"
 #include "Items/SDesItemContainerWidget.h"
+#include "Player/DesInventoryComponent.h"
 #include "Player/DesPlayerCharacter.h"
 
 #define LOCTEXT_NAMESPACE "Descensus"

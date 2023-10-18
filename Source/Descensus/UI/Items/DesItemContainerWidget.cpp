@@ -4,7 +4,7 @@
 #include "DesLogging.h"
 #include "SDesItemContainerWidget.h"
 #include "SDesItemWidget.h"
-#include "Components/DesInventoryComponent.h"
+#include "Player/DesInventoryComponent.h"
 #include "Components/DesItemContainerComponent.h"
 #include "Items/DesItemData.h"
 #include "Items/DesItemInstance.h"
@@ -67,11 +67,6 @@ void UDesItemContainerWidget::AttachToItemContainerComponent(UDesItemContainerCo
 FReply UDesItemContainerWidget::HandleMouseButtonDown(const FGeometry& Geometry,
                                                       const FPointerEvent& PointerEvent) const
 {
-	if (ItemLayer->IsLocked())
-	{
-		return FReply::Handled();
-	}
-
 	const auto EjectedItem = ItemLayer->GetEjectedItem();
 
 	FIntVector2 Coords;
@@ -90,14 +85,11 @@ FReply UDesItemContainerWidget::HandleMouseButtonDown(const FGeometry& Geometry,
 		if (EjectedItem)
 		{
 			/* Swap item. */
-
-			// ItemContainerComponent->ServerMoveItem(ItemLayer->GetItemToMove(), Coords);
-			// ItemLayer->EndItemMove();
+			ItemLayer->InventoryComponent->ServerMoveEjectedItem(ItemContainerComponent.Get(), Coords);
 		}
 		else
 		{
 			/* Eject item. */
-			ItemLayer->Lock();
 			ItemLayer->InventoryComponent->ServerEjectItem(ItemContainerComponent.Get(), ItemInstance);
 			// ItemLayer->BeginItemMove(ItemContainerComponent.Get(), ItemInstance, GetItemWidgetData(ItemInstance),
 			//                          PointerEvent.GetScreenSpacePosition());
@@ -108,7 +100,6 @@ FReply UDesItemContainerWidget::HandleMouseButtonDown(const FGeometry& Geometry,
 		/* Move item. */
 		if (EjectedItem && Widget->GetIsTelegraphVisible())
 		{
-			ItemLayer->Lock();
 			ItemLayer->InventoryComponent->ServerMoveEjectedItem(ItemContainerComponent.Get(), Coords);
 			// ItemLayer->EndItemMove();
 		}
@@ -183,7 +174,7 @@ FDesItemWidgetData UDesItemContainerWidget::GetItemWidgetData(const UDesItemInst
 		const auto ItemData = ItemInstance->GetItemData();
 
 		return FDesItemWidgetData{
-			ItemData->Size, ItemInstance->Quantity,
+			ItemData->Size, ItemInstance->GetQuantity(),
 			ItemData->MaxQuantity, &ItemData->IconBrush
 		};
 	}

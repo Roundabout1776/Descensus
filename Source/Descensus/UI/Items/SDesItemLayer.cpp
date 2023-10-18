@@ -35,7 +35,12 @@ void SDesItemLayer::UpdateEjectedItemPosition(const FVector2D& MousePosition, co
 	}
 }
 
-void SDesItemLayer::BeginItemMove(const FDesItemWidgetData& ItemWidgetData)
+void SDesItemLayer::UpdateEjectedItemQuantity(const int32 Quantity, const int32 MaxQuantity) const
+{
+	EjectedItemWidget->SetQuantity(Quantity, MaxQuantity);
+}
+
+void SDesItemLayer::ShowEjectedItem(const FDesItemWidgetData& ItemWidgetData)
 {
 	const auto Style = FDesStyle::GetDefaultStyle();
 	const auto Size = FVector2D(ItemWidgetData.Size.X * Style->CellSize,
@@ -47,7 +52,7 @@ void SDesItemLayer::BeginItemMove(const FDesItemWidgetData& ItemWidgetData)
 	EjectedItemWidget->SetVisibility(EVisibility::HitTestInvisible);
 }
 
-void SDesItemLayer::EndItemMove() const
+void SDesItemLayer::HideEjectedItem() const
 {
 	EjectedItemWidget->SetVisibility(EVisibility::Collapsed);
 }

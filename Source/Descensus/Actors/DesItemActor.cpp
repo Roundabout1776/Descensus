@@ -20,8 +20,8 @@ void ADesItemActor::BeginPlay()
 	{
 		if (!IsValid(ItemInstance) && IsValid(ItemDataClass))
 		{
-			ItemInstance = GetWorld()->GetGameState<ADesGameState>()->CreateItemInstance(ItemDataClass);
-			ItemInstance->Quantity = 1;
+			ItemInstance = GetWorld()->GetGameState<ADesGameState>()->CreateItemInstance(
+				ItemDataClass, ItemDataClass->GetDefaultObject<UDesItemData>()->MaxQuantity);
 		}
 	}
 }
@@ -33,7 +33,7 @@ void ADesItemActor::Tick(float DeltaTime)
 
 void ADesItemActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
-    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-    DOREPLIFETIME(ADesItemActor, ItemInstance);
+	DOREPLIFETIME(ADesItemActor, ItemInstance);
 }

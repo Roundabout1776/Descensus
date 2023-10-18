@@ -35,4 +35,5 @@ public:
 	void Construct(const FArguments& InArgs);
 
 	void SetData(const FDesItemWidgetData& Data) const;
+	void SetQuantity(int32 Quantity, int32 MaxQuantity) const;
 };

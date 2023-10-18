@@ -24,6 +24,7 @@ public:
 	void Construct(const FArguments& InArgs);
 
 	void UpdateEjectedItemPosition(const FVector2D& MousePosition, float DeltaTime);
-	void BeginItemMove(const FDesItemWidgetData& ItemWidgetData);
-	void EndItemMove() const;
+	void UpdateEjectedItemQuantity(int32 Quantity, int32 MaxQuantity) const;
+	void ShowEjectedItem(const FDesItemWidgetData& ItemWidgetData);
+	void HideEjectedItem() const;
 };

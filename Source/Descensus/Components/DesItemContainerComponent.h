@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 #include "Components/ActorComponent.h"
+#include "Items/DesItemChangesListenerInterface.h"
 #include "Net/Serialization/FastArraySerializer.h"
 
 #include "DesItemContainerComponent.generated.h"
@@ -44,7 +45,7 @@ protected:
 	TArray<FItemContainerEntry> Items;
 
 	UPROPERTY(NotReplicated)
-	TObjectPtr<UDesItemContainerComponent> OwnerComponent;
+	TWeakObjectPtr<UDesItemContainerComponent> OwnerComponent;
 };
 
 template <>
@@ -57,7 +58,7 @@ struct TStructOpsTypeTraits<FItemContainer> : TStructOpsTypeTraitsBase2<FItemCon
 };
 
 UCLASS(Blueprintable, ClassGroup=(Descensus), meta=(BlueprintSpawnableComponent))
-class DESCENSUS_API UDesItemContainerComponent : public UActorComponent
+class DESCENSUS_API UDesItemContainerComponent : public UActorComponent, public IDesItemChangesListenerInterface
 {
 	GENERATED_BODY()
 	
@@ -109,6 +110,8 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	TArray<FItemContainerEntry>& GetItemsRef() { return Array.Items; }
+	
+	void AddItem(UDesItemInstance* InItemInstance, const FIntVector2 Coords);
 
 	UFUNCTION(BlueprintCallable)
 	bool AddItemAuto(UDesItemInstance* InItemInstance);
@@ -119,6 +122,8 @@ public:
 	UDesItemInstance* GetItemInstance(FIntVector2 Coords);
 
 	virtual bool CanInteractWithContainer(UDesItemContainerComponent* Container) { return Container == this; }
+
+	virtual void OnQuantityChanged(const UDesItemInstance* ItemInstance, int32 OldQuantity, int32 NewQuantity) override;
 
 	int32 IntVectorToIndex(FIntVector2 Coords) const;
 	static int32 GridValueToItemsIndex(int32 Value);

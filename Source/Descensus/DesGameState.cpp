@@ -4,14 +4,16 @@
 
 ADesGameState::ADesGameState()
 {
+	NetUpdateFrequency = 30.0;
+	MinNetUpdateFrequency = 15.0;
 	bReplicateUsingRegisteredSubObjectList = true;
 }
 
-UDesItemInstance* ADesGameState::CreateItemInstance(const TSubclassOf<UDesItemData> ItemData)
+UDesItemInstance* ADesGameState::CreateItemInstance(const TSubclassOf<UDesItemData> ItemData, const int32 Quantity)
 {
 	const auto ItemInstance = NewObject<UDesItemInstance>(this);
 	ItemInstance->ItemDataClass = ItemData;
-	ItemInstance->Quantity = 1;
+	ItemInstance->SetQuantity(Quantity);
 	AddReplicatedSubObject(ItemInstance);
 	return ItemInstance;
 }

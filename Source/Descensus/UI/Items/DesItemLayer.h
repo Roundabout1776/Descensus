@@ -5,6 +5,7 @@
 #include "Items/DesItemInstance.h"
 #include "DesItemLayer.generated.h"
 
+struct FItemContainerEntry;
 class UDesInventoryComponent;
 class ADesPlayerState;
 class UDesItemInstance;
@@ -21,8 +22,8 @@ class DESCENSUS_API UDesItemLayer : public UWidget
 protected:
 	// TArray<TSharedPtr<SDesItemWidget>> ItemWidgetPool;
 	FDelegateHandle OnItemEjectedChangedHandle;
+	FDelegateHandle OnAnyChangesHandle;
 	TSharedPtr<SDesItemLayer> Widget;
-	bool bIsLocked;
 
 	virtual TSharedRef<SWidget> RebuildWidget() override;
 	
@@ -35,11 +36,10 @@ public:
 
 	virtual void ReleaseSlateResources(bool bReleaseChildren) override;
 
-	void Lock() { bIsLocked = true; }
 	const UDesItemInstance* GetEjectedItem() const;
-	bool IsLocked() const;
 	void UpdateEjectedItemPosition(const FVector2D& MousePosition, float DeltaTime) const;
-	void OnEjectedItemChanged(const UDesItemInstance* DesItemInstance);
+	void OnEjectedItemChanged(const UDesItemInstance* ItemInstance);
+	void OnAnyChanges(const TArray<FItemContainerEntry>& ItemContainerEntries) const;
 	void AttachToInventory(UDesInventoryComponent* InInventoryComponent);
 
 #if WITH_EDITOR

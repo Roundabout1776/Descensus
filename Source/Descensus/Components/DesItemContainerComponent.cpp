@@ -37,13 +37,14 @@ UDesItemContainerComponent::UDesItemContainerComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 	SetIsReplicatedByDefault(true);
 	bWantsInitializeComponent = true;
-	Array.OwnerComponent = this;
+	Array.OwnerComponent = MakeWeakObjectPtr(this);
 }
 
 void UDesItemContainerComponent::InitializeComponent()
 {
-	/* @TODO: investigate CDO behavior */
+	/* @TODO: investigate CDO behavior. */
 	Grid.SetNumZeroed(GridSize.X * GridSize.Y);
+	Array.Items.Empty();
 	Array.Items.Reserve(GridSize.X * GridSize.Y);
 	Array.MarkArrayDirty();
 }
@@ -76,31 +77,34 @@ void UDesItemContainerComponent::BeginPlay()
 
 void UDesItemContainerComponent::OnItemAdded(const FItemContainerEntry& Entry)
 {
-	bGridDirty = true;
 	if (!IsValid(Entry.ItemInstance))
 	{
 		return;
 	}
+	bGridDirty = true;
+	Entry.ItemInstance->ChangesListener = Cast<IDesItemChangesListenerInterface>(this);
 	OnItemAddedDelegate.Broadcast(Entry);
 }
 
 void UDesItemContainerComponent::OnItemChanged(const FItemContainerEntry& Entry)
 {
-	bGridDirty = true;
 	if (!IsValid(Entry.ItemInstance))
 	{
 		return;
 	}
+	bGridDirty = true;
+	Entry.ItemInstance->ChangesListener = Cast<IDesItemChangesListenerInterface>(this);
 	OnItemChangedDelegate.Broadcast(Entry);
 }
 
 void UDesItemContainerComponent::OnItemRemoved(const FItemContainerEntry& Entry)
 {
-	bGridDirty = true;
 	if (!IsValid(Entry.ItemInstance))
 	{
 		return;
 	}
+	bGridDirty = true;
+	Entry.ItemInstance->ChangesListener = nullptr;
 	OnItemRemovedDelegate.Broadcast(Entry);
 }
 
@@ -138,6 +142,16 @@ void UDesItemContainerComponent::RebuildGrid()
 	}
 }
 
+void UDesItemContainerComponent::AddItem(UDesItemInstance* InItemInstance, const FIntVector2 Coords)
+{
+	auto& Items = Array.Items;
+	FItemContainerEntry& Entry = Items.AddDefaulted_GetRef();
+	Entry.Position = Coords;
+	Entry.ItemInstance = InItemInstance;
+	Array.MarkItemDirty(Entry);
+	OnItemAdded(Entry);
+}
+
 bool UDesItemContainerComponent::AddItemAuto(UDesItemInstance* InItemInstance)
 {
 	const auto ItemData = InItemInstance->GetItemData();
@@ -145,23 +159,23 @@ bool UDesItemContainerComponent::AddItemAuto(UDesItemInstance* InItemInstance)
 	/* Stack if possible. */
 	for (auto ItemIter = Array.Items.CreateIterator(); ItemIter; ++ItemIter)
 	{
-		if (auto& Entry = *ItemIter; Entry.ItemInstance->GetItemData() == InItemInstance->GetItemData())
+		if (auto& Entry = *ItemIter; Entry.ItemInstance && Entry.ItemInstance->GetItemData() == InItemInstance->
+			GetItemData())
 		{
-			if (ItemData->MaxQuantity > 1 && Entry.ItemInstance->Quantity < ItemData->MaxQuantity)
+			const auto MaxQuantity = ItemData->MaxQuantity;
+			if (MaxQuantity > 1 && Entry.ItemInstance->GetQuantity() < MaxQuantity)
 			{
-				if (const auto Remainder = Entry.ItemInstance->Quantity + InItemInstance->Quantity - ItemData->
+				if (const auto Remainder = Entry.ItemInstance->GetQuantity() + InItemInstance->GetQuantity() -
 					MaxQuantity; Remainder > 0)
 				{
-					Entry.ItemInstance->Quantity = ItemData->MaxQuantity;
+					Entry.ItemInstance->SetQuantity(MaxQuantity);
 					Array.MarkItemDirty(Entry);
 					OnItemChanged(Entry);
 
-					InItemInstance->Quantity = Remainder;
+					InItemInstance->SetQuantity(Remainder);
 					continue;
 				}
-				Entry.ItemInstance->Quantity += InItemInstance->Quantity;
-				Array.MarkItemDirty(Entry);
-				OnItemChanged(Entry);
+				Entry.ItemInstance->SetQuantity(Entry.ItemInstance->GetQuantity() + InItemInstance->GetQuantity());
 				GetWorld()->GetGameState<ADesGameState>()->DestroyItemInstance(InItemInstance);
 				return true;
 			}
@@ -200,12 +214,7 @@ bool UDesItemContainerComponent::AddItemAuto(UDesItemInstance* InItemInstance)
 			}
 			if (bFree)
 			{
-				auto& Items = Array.Items;
-				FItemContainerEntry& Entry = Items.AddDefaulted_GetRef();
-				Entry.Position = {CurrentCellX, CurrentCellY};
-				Entry.ItemInstance = InItemInstance;
-				Array.MarkItemDirty(Entry);
-				OnItemAdded(Entry);
+				AddItem(InItemInstance, {CurrentCellX, CurrentCellY});
 				return true;
 			}
 		}
@@ -216,6 +225,8 @@ bool UDesItemContainerComponent::AddItemAuto(UDesItemInstance* InItemInstance)
 
 void UDesItemContainerComponent::RemoveItemByInstance(UDesItemInstance* InItemInstance)
 {
+	if (!InItemInstance)
+		return;
 	for (auto ItemIter = GetItemsRef().CreateIterator(); ItemIter; ++ItemIter)
 	{
 		if (const FItemContainerEntry& Entry = *ItemIter; Entry.ItemInstance && Entry.ItemInstance == InItemInstance)
@@ -236,6 +247,12 @@ UDesItemInstance* UDesItemContainerComponent::GetItemInstance(const FIntVector2 
 		return Array.Items[ItemIndex].ItemInstance;
 	}
 	return nullptr;
+}
+
+void UDesItemContainerComponent::OnQuantityChanged(const UDesItemInstance* ItemInstance, int32 OldQuantity,
+                                                   int32 NewQuantity)
+{
+	bGridDirty = true;
 }
 
 int32 UDesItemContainerComponent::IntVectorToIndex(const FIntVector2 Coords) const
