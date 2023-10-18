@@ -1,12 +1,9 @@
 ﻿#include "DesItemContainerComponent.h"
 
 #include "DesGameState.h"
-#include "DesLogging.h"
-#include "IDetailTreeNode.h"
 #include "Items/DesItemData.h"
 #include "Items/DesItemInstance.h"
 #include "Net/UnrealNetwork.h"
-#include "Player/DesPlayerState.h"
 
 void FItemContainer::PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize)
 {
@@ -82,7 +79,7 @@ void UDesItemContainerComponent::OnItemAdded(const FItemContainerEntry& Entry)
 		return;
 	}
 	bGridDirty = true;
-	Entry.ItemInstance->ChangesListener = Cast<IDesItemChangesListenerInterface>(this);
+	Entry.ItemInstance->ChangesListener = this;
 	OnItemAddedDelegate.Broadcast(Entry);
 }
 
@@ -93,7 +90,7 @@ void UDesItemContainerComponent::OnItemChanged(const FItemContainerEntry& Entry)
 		return;
 	}
 	bGridDirty = true;
-	Entry.ItemInstance->ChangesListener = Cast<IDesItemChangesListenerInterface>(this);
+	Entry.ItemInstance->ChangesListener = this;
 	OnItemChangedDelegate.Broadcast(Entry);
 }
 

@@ -26,8 +26,8 @@ public:
 	UPROPERTY(VisibleInstanceOnly, Replicated)
 	TWeakObjectPtr<ADesItemActor> ItemActor;
 
-	// UPROPERTY(VisibleInstanceOnly, Transient)
-	IDesItemChangesListenerInterface* ChangesListener;
+	UPROPERTY(Transient)
+	TScriptInterface<IDesItemChangesListenerInterface> ChangesListener;
 
 	TObjectPtr<UDesItemData> GetItemData() const;
 
