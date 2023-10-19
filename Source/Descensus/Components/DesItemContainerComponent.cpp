@@ -5,6 +5,13 @@
 #include "Items/DesItemInstance.h"
 #include "Net/UnrealNetwork.h"
 
+static TAutoConsoleVariable<int32> CVarGridAlwaysDirty(
+	TEXT("Des.GridAlwaysDirty"),
+	0,
+	TEXT("Forces container grids to be updated each frame."),
+	ECVF_Cheat
+);
+
 void FItemContainer::PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize)
 {
 	for (const auto Index : AddedIndices)
@@ -53,8 +60,10 @@ void UDesItemContainerComponent::TickComponent(float DeltaTime, ELevelTick TickT
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	/* Item quantity replication workaround. */
-	// bGridDirty = true;
+	if (CVarGridAlwaysDirty.GetValueOnAnyThread())
+	{
+		bGridDirty = true;
+	}
 
 	if (bGridDirty)
 	{

@@ -1,6 +1,10 @@
 ﻿#include "SDesItemLayer.h"
 
+#include "DesItemContainerWidget.h"
 #include "SDesItemWidget.h"
+#include "Items/DesItemData.h"
+#include "Items/DesItemInstance.h"
+#include "Player/DesInventoryComponent.h"
 #include "UI/DesStyle.h"
 #include "Widgets/SCanvas.h"
 
@@ -8,30 +12,27 @@ BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 
 void SDesItemLayer::Construct(const FArguments& InArgs)
 {
-	SetVisibility(EVisibility::HitTestInvisible);
+	SetVisibility(EVisibility::Hidden);
+
 	ChildSlot
-	[
-		SAssignNew(Canvas, SCanvas)
-		+ SCanvas::Slot()
-		.Expose(EjectedItemWidgetSlot)
+		.HAlign(HAlign_Left)
+		.VAlign(VAlign_Top)
 		[
 			SAssignNew(EjectedItemWidget, SDesItemWidget)
-			.Visibility(EVisibility::Collapsed)
-		]
-	];
+		];
 }
 
-void SDesItemLayer::UpdateEjectedItemPosition(const FVector2D& MousePosition, const float DeltaTime)
+void SDesItemLayer::SetEjectedItemPosition(const FVector2D& MousePosition)
 {
-	MousePositionLocal = this->GetTickSpaceGeometry().AbsoluteToLocal(MousePosition);
+	CachedMousePosition = MousePosition;
 
-	if (EjectedItemWidget->GetVisibility() != EVisibility::Collapsed)
+	if (GetVisibility() == EVisibility::HitTestInvisible)
 	{
-		const auto TargetPosition = MousePositionLocal - EjectedItemOffset;
-		EjectedItemWidgetSlot->SetPosition(
-			FMath::InterpEaseIn(EjectedItemWidgetSlot->GetPosition(), TargetPosition,
-			                    FMath::Clamp(DeltaTime * 50.0, 0.0, 1.0),
-			                    2.0));
+		const auto TargetPosition = CachedMousePosition - EjectedItemOffset;
+
+		FSlateRenderTransform Transform;
+		Transform.SetTranslation(TargetPosition);
+		SetRenderTransform(Transform);
 	}
 }
 
@@ -45,16 +46,55 @@ void SDesItemLayer::ShowEjectedItem(const FDesItemWidgetData& ItemWidgetData)
 	const auto Style = FDesStyle::GetDefaultStyle();
 	const auto Size = FVector2D(ItemWidgetData.Size.X * Style->CellSize,
 	                            ItemWidgetData.Size.Y * Style->CellSize);
-	EjectedItemWidgetSlot->SetSize(Size);
+	
 	EjectedItemOffset = Size / 2.0;
-	EjectedItemWidgetSlot->SetPosition(MousePositionLocal - EjectedItemOffset);
+
+	FSlateRenderTransform Transform;
+	Transform.SetTranslation(CachedMousePosition - EjectedItemOffset);
+	SetRenderTransform(Transform);
+
 	EjectedItemWidget->SetData(ItemWidgetData);
-	EjectedItemWidget->SetVisibility(EVisibility::HitTestInvisible);
+	SetVisibility(EVisibility::HitTestInvisible);
 }
 
-void SDesItemLayer::HideEjectedItem() const
+void SDesItemLayer::HideEjectedItem()
 {
-	EjectedItemWidget->SetVisibility(EVisibility::Collapsed);
+	SetVisibility(EVisibility::Hidden);
+}
+
+const UDesItemInstance* SDesItemLayer::GetEjectedItem() const
+{
+	return InventoryComponent->GetEjectedItem();
+}
+
+UDesInventoryComponent* SDesItemLayer::GetInventoryComponent() const
+{
+	return InventoryComponent.Get();
+}
+
+void SDesItemLayer::OnEjectedItemChanged(const UDesItemInstance* ItemInstance)
+{
+	if (ItemInstance)
+	{
+		ShowEjectedItem(UDesItemContainerWidget::GetItemWidgetData(ItemInstance));
+	}
+	else
+	{
+		HideEjectedItem();
+	}
+}
+
+void SDesItemLayer::OnAnyChanges(const TArray<FItemContainerEntry>& ItemContainerEntries) const
+{
+	if (const auto EjectedItem = GetEjectedItem())
+	{
+		UpdateEjectedItemQuantity(EjectedItem->GetQuantity(), EjectedItem->GetItemData()->MaxQuantity);
+	}
+}
+
+void SDesItemLayer::SetInventoryComponent(UDesInventoryComponent* InInventoryComponent)
+{
+	InventoryComponent = MakeWeakObjectPtr(InInventoryComponent);
 }
 
 END_SLATE_FUNCTION_BUILD_OPTIMIZATION

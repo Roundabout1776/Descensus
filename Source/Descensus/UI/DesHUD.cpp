@@ -16,6 +16,8 @@
 #include "Components/DesItemContainerComponent.h"
 #include "Components/Image.h"
 #include "Items/DesItemContainerWidget.h"
+#include "Items/SDesItemLayer.h"
+#include "Player/DesInventoryComponent.h"
 #include "Widgets/DeclarativeSyntaxSupport.h"
 #include "Widgets/SWeakWidget.h"
 
@@ -43,6 +45,24 @@ void ADesHUD::CreateSlateWidgetAndAddToViewport(const TSharedRef<SWidget>& Widge
 {
 	const auto LocalPlayer = GetOwningPlayerController()->GetLocalPlayer();
 	LocalPlayer->ViewportClient->AddViewportWidgetContent(Widget, ZOrder);
+}
+
+ADesHUD::ADesHUD()
+{
+	PrimaryActorTick.bCanEverTick = true;
+}
+
+void ADesHUD::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if (ItemLayer.IsValid())
+	{
+		const FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(
+			GetOwningPlayerController());
+
+		ItemLayer->SetEjectedItemPosition(MousePosition);
+	}
 }
 
 void ADesHUD::NewWidgetUnderCursor(UDesWidget* Widget)
@@ -105,6 +125,7 @@ void ADesHUD::HideTooltip()
 
 void ADesHUD::InitForCharacter(const ADesPlayerCharacter* Character)
 {
+	const auto InventoryComponent = Character->Inventory;
 	const auto PlayerController = Cast<ADesPlayerController>(GetOwningPlayerController());
 
 	check(IsValid(InscriptionCanvasClass));
@@ -113,13 +134,38 @@ void ADesHUD::InitForCharacter(const ADesPlayerCharacter* Character)
 	InscriptionCanvas = GetWorld()->SpawnActor<ADesInscriptionCanvas>(InscriptionCanvasClass, Parameters);
 	InscriptionCanvas->DoInitialSetup(PlayerController->GetLocalPlayer()->ViewportClient->Viewport);
 
+	const auto LocalPlayer = PlayerController->GetLocalPlayer();
+	SlateUser = LocalPlayer->GetSlateUser();
+
+	CreateSlateWidgetAndAddToViewport(SAssignNew(ItemLayer, SDesItemLayer), ItemLayerZ);
+	ItemLayer->SetInventoryComponent(InventoryComponent);
+
+	CreateSlateWidgetAndAddToViewport(SAssignNew(TooltipLayer, SDesTooltipLayer), TooltipLayerZ);
+
 	check(IsValid(MainUILayerClass));
 	MainUILayer = CreateWidget<UDesMainUILayer>(PlayerController, MainUILayerClass);
 	MainUILayer->AddToPlayerScreen(MainLayerZ);
 	MainUILayer->InscriptionOverlay->SetBrushFromMaterial(InscriptionCanvas->GetInscriptionCanvasMaterial());
-	MainUILayer->SetupItemSystem(Character->Inventory);
+	MainUILayer->SetupItemSystem(ItemLayer.ToSharedRef(), Character->Inventory);
 
-	CreateSlateWidgetAndAddToViewport(SAssignNew(TooltipLayer, SDesTooltipLayer), TooltipLayerZ);
+	InventoryComponent->OnEjectedItemChanged.AddWeakLambda(this, [this](const UDesItemInstance* EjectedItem)
+	{
+		ItemLayer->OnEjectedItemChanged(EjectedItem);
+
+		if (EjectedItem)
+		{
+			SlateUser->SetCursorVisibility(false);
+		}
+		else
+		{
+			SlateUser->SetCursorVisibility(true);
+		}
+	});
+	InventoryComponent->OnAnyChangesDelegate.AddWeakLambda(
+		this, [this](const TArray<FItemContainerEntry>& ItemContainerEntries)
+		{
+			ItemLayer->OnAnyChanges(ItemContainerEntries);
+		});
 }
 
 void ADesHUD::LookStarted()

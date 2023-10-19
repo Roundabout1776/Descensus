@@ -1,8 +1,7 @@
 ﻿#include "DesItemContainerWidget.h"
 
-#include "DesItemLayer.h"
-#include "DesLogging.h"
 #include "SDesItemContainerWidget.h"
+#include "SDesItemLayer.h"
 #include "SDesItemWidget.h"
 #include "Player/DesInventoryComponent.h"
 #include "Components/DesItemContainerComponent.h"
@@ -41,9 +40,9 @@ void UDesItemContainerWidget::ReleaseSlateResources(bool bReleaseChildren)
 	Widget.Reset();
 }
 
-void UDesItemContainerWidget::SetItemLayer(UDesItemLayer* InItemLayer)
+void UDesItemContainerWidget::SetItemLayer(const TSharedRef<SDesItemLayer>& InItemLayer)
 {
-	ItemLayer = MakeWeakObjectPtr(InItemLayer);
+	ItemLayer = InItemLayer.ToSharedPtr();
 }
 
 void UDesItemContainerWidget::AttachToItemContainerComponent(UDesItemContainerComponent* InItemContainerComponent)
@@ -107,12 +106,12 @@ FReply UDesItemContainerWidget::HandleMouseButtonDown(const FGeometry& Geometry,
 		if (EjectedItem)
 		{
 			/* Swap item. */
-			ItemLayer->InventoryComponent->ServerMoveEjectedItem(ItemContainerComponent.Get(), Coords);
+			ItemLayer->GetInventoryComponent()->ServerMoveEjectedItem(ItemContainerComponent.Get(), Coords);
 		}
 		else
 		{
 			/* Eject item. */
-			ItemLayer->InventoryComponent->ServerEjectItem(ItemContainerComponent.Get(), ItemInstance);
+			ItemLayer->GetInventoryComponent()->ServerEjectItem(ItemContainerComponent.Get(), ItemInstance);
 			// ItemLayer->BeginItemMove(ItemContainerComponent.Get(), ItemInstance, GetItemWidgetData(ItemInstance),
 			//                          PointerEvent.GetScreenSpacePosition());
 		}
@@ -122,7 +121,7 @@ FReply UDesItemContainerWidget::HandleMouseButtonDown(const FGeometry& Geometry,
 		/* Move item. */
 		if (EjectedItem && Widget->GetIsTelegraphVisible())
 		{
-			ItemLayer->InventoryComponent->ServerMoveEjectedItem(ItemContainerComponent.Get(), Coords);
+			ItemLayer->GetInventoryComponent()->ServerMoveEjectedItem(ItemContainerComponent.Get(), Coords);
 			// ItemLayer->EndItemMove();
 		}
 	}

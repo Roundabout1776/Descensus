@@ -4,6 +4,7 @@
 #include "GameFramework/HUD.h"
 #include "DesHUD.generated.h"
 
+class SDesItemLayer;
 class SDesTooltipLayer;
 class UImage;
 class ADesInscriptionCanvas;
@@ -34,9 +35,13 @@ class DESCENSUS_API ADesHUD : public AHUD
 
 protected:
 	static inline constexpr int32 MainLayerZ = 0;
-	static inline constexpr int32 TooltipLayerZ = 4;
+	static inline constexpr int32 ItemLayerZ = 4;
+	static inline constexpr int32 TooltipLayerZ = 5;
 	
+	TSharedPtr<SDesItemLayer> ItemLayer;
 	TSharedPtr<SDesTooltipLayer> TooltipLayer;
+	
+	TSharedPtr<FSlateUser> SlateUser;
 
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UDesMainUILayer> MainUILayer;
@@ -56,6 +61,9 @@ protected:
 public:
 	UPROPERTY(BlueprintReadOnly)
 	ECursorTarget CurrentCursorTarget = ECursorTarget::None;
+
+	ADesHUD();
+	virtual void Tick(float DeltaSeconds) override;
 
 	void NewWidgetUnderCursor(UDesWidget* Widget);
 	void UpdateWidgetUnderCursor(UDesWidget* Widget);

@@ -1,11 +1,9 @@
 #include "UI/DesMainUILayer.h"
 
-#include "DesLogging.h"
 #include "EnhancedInputSubsystems.h"
 #include "Components/DesItemContainerComponent.h"
 #include "Components/Overlay.h"
 #include "Items/DesItemContainerWidget.h"
-#include "Items/DesItemLayer.h"
 #include "Player/DesPlayerController.h"
 #include "Player/DesInventoryComponent.h"
 #include "UI/DesShortcutsPanel.h"
@@ -13,19 +11,12 @@
 
 FReply UDesMainUILayer::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-	if (ItemLayer->GetEjectedItem())
-	{
-		ItemLayer->InventoryComponent->ServerDestroyEjectedItem();
-		return FReply::Handled();
-	}
+	// if (ItemLayer->GetEjectedItem())
+	// {
+	// 	ItemLayer->InventoryComponent->ServerDestroyEjectedItem();
+	// 	return FReply::Handled();
+	// }
 	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
-}
-
-void UDesMainUILayer::NativeTick(const FGeometry& MyGeometry, const float InDeltaTime)
-{
-	Super::NativeTick(MyGeometry, InDeltaTime);
-
-	ItemLayer->UpdateEjectedItemPosition(SlateUser->GetCursorPosition(), InDeltaTime);
 }
 
 void UDesMainUILayer::NativeOnInitialized()
@@ -36,9 +27,6 @@ void UDesMainUILayer::NativeOnInitialized()
 	checkf(PlayerController.Get(), TEXT("MainUILayer couldn't be initialized without valid PlayerController!"))
 
 	const auto LocalPlayer = PlayerController->GetLocalPlayer();
-
-	SlateUser = LocalPlayer->GetSlateUser();
-
 	const auto InputSystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
 	InputSystem->ControlMappingsRebuiltDelegate.AddDynamic(this, &ThisClass::HandleControlMappingsRebuilt);
 }
@@ -53,27 +41,13 @@ void UDesMainUILayer::HandleControlMappingsRebuilt()
 	ShortcutsPanel->UpdateInputMappings(PlayerController.Get());
 }
 
-void UDesMainUILayer::SetupItemSystem(UDesInventoryComponent* InventoryComponent)
+void UDesMainUILayer::SetupItemSystem(const TSharedRef<SDesItemLayer>& InItemLayer, UDesInventoryComponent* InventoryComponent)
 {
-	ItemLayer->AttachToInventory(InventoryComponent);
-
 	Inventory->AttachToItemContainerComponent(Cast<UDesItemContainerComponent>(InventoryComponent));
-	Inventory->SetItemLayer(ItemLayer);
+	Inventory->SetItemLayer(InItemLayer);
 
-	CurrentContainer->SetItemLayer(ItemLayer);
+	CurrentContainer->SetItemLayer(InItemLayer);
 	CurrentContainer->SetVisibility(ESlateVisibility::Collapsed);
-
-	InventoryComponent->OnEjectedItemChanged.AddWeakLambda(this, [this](const UDesItemInstance* EjectedItem)
-	{
-		if (EjectedItem)
-		{
-			SlateUser->SetCursorVisibility(false);
-		}
-		else
-		{
-			SlateUser->SetCursorVisibility(true);
-		}
-	});
 }
 
 void UDesMainUILayer::SetCurrentContainer(UDesItemContainerComponent* ItemContainerComponent)

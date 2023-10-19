@@ -4,6 +4,8 @@
 #include "DesStyle.h"
 #include "DesTooltipData.h"
 
+BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
+
 void SDesTooltipLayer::Construct(const FArguments& InArgs)
 {
 	const auto Style = FDesStyle::GetDefaultStyle();
@@ -59,3 +61,5 @@ void SDesTooltipLayer::SetTooltipPosition(const FVector2D& InPosition, bool bSho
 	Transform.SetTranslation(ActualPosition);
 	SetRenderTransform(Transform);
 }
+
+END_SLATE_FUNCTION_BUILD_OPTIMIZATION

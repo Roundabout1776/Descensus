@@ -79,6 +79,8 @@ void UDesInventoryComponent::ServerMoveEjectedItem_Implementation(UDesItemContai
 		{
 			if (const auto GridValue = Container->Grid[Y * InGridSize.X + X]; GridValue != 0)
 			{
+				if (GridValueToItemsIndex(GridValue) == GridValueToItemsIndex(SoleItemGridValue))
+					continue;
 				if (SoleItemGridValue != 0)
 				{
 					return;
@@ -125,7 +127,6 @@ void UDesInventoryComponent::ServerMoveEjectedItem_Implementation(UDesItemContai
 			}
 		}
 	}
-
 
 	if (SoleItemGridValue != 0)
 	{

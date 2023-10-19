@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "DesMainUILayer.generated.h"
 
+class SDesItemLayer;
 class UDesItemContainerComponent;
 class UDesItemLayer;
 class UDesCharacterScreen;
@@ -27,11 +28,8 @@ protected:
 	UPROPERTY()
 	TWeakObjectPtr<ADesPlayerController> PlayerController;
 
-	TSharedPtr<FSlateUser> SlateUser;
-	
 	virtual void NativeOnInitialized() override;
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
-	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 public:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
@@ -51,10 +49,7 @@ public:
 
 	// UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	// TObjectPtr<UDesCharacterScreen> CharacterScreen;
-	
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UDesItemLayer> ItemLayer;
-	
+
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UDesItemContainerWidget> Inventory;
 	
@@ -66,7 +61,7 @@ public:
 	UFUNCTION()
 	void HandleControlMappingsRebuilt();
 
-	void SetupItemSystem(UDesInventoryComponent* InventoryComponent);
+	void SetupItemSystem(const TSharedRef<SDesItemLayer>& InItemLayer, UDesInventoryComponent* InventoryComponent);
 
 	void SetCurrentContainer(UDesItemContainerComponent* ItemContainerComponent);
 };

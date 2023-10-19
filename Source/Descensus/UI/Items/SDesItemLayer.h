@@ -1,18 +1,23 @@
 ﻿#pragma once
+
 #include "Widgets/SCanvas.h"
 
+struct FItemContainerEntry;
 struct FDesItemWidgetData;
+class UDesItemContainerComponent;
+class UDesItemInstance;
+class UDesInventoryComponent;
 class SDesItemWidget;
 class SCanvas;
 
 class DESCENSUS_API SDesItemLayer final : public SCompoundWidget
 {
 protected:
-	FVector2D MousePositionLocal;
+	TWeakObjectPtr<UDesInventoryComponent> InventoryComponent;
+	// TArray<TSharedPtr<SDesItemWidget>> ItemWidgetPool;
+	FVector2D CachedMousePosition;
 	FVector2D EjectedItemOffset;
-	TSharedPtr<SCanvas> Canvas;
 	TSharedPtr<SDesItemWidget> EjectedItemWidget;
-	SCanvas::FSlot* EjectedItemWidgetSlot{};
 
 public:
 	SLATE_BEGIN_ARGS(SDesItemLayer)
@@ -23,8 +28,13 @@ public:
 
 	void Construct(const FArguments& InArgs);
 
-	void UpdateEjectedItemPosition(const FVector2D& MousePosition, float DeltaTime);
+	void SetEjectedItemPosition(const FVector2D& MousePosition);
 	void UpdateEjectedItemQuantity(int32 Quantity, int32 MaxQuantity) const;
 	void ShowEjectedItem(const FDesItemWidgetData& ItemWidgetData);
-	void HideEjectedItem() const;
+	void HideEjectedItem();
+	const UDesItemInstance* GetEjectedItem() const;
+	UDesInventoryComponent* GetInventoryComponent() const;
+	void OnEjectedItemChanged(const UDesItemInstance* ItemInstance);
+	void OnAnyChanges(const TArray<FItemContainerEntry>& ItemContainerEntries) const;
+	void SetInventoryComponent(UDesInventoryComponent* InInventoryComponent);
 };

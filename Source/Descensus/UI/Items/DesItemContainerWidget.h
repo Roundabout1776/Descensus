@@ -4,6 +4,7 @@
 #include "Components/Widget.h"
 #include "DesItemContainerWidget.generated.h"
 
+class SDesItemLayer;
 struct FItemContainerEntry;
 class ADesPlayerState;
 class UDesItemLayer;
@@ -27,8 +28,7 @@ protected:
 	UPROPERTY(Transient)
 	TWeakObjectPtr<UDesItemContainerComponent> ItemContainerComponent;
 	
-	UPROPERTY(Transient)
-	TWeakObjectPtr<UDesItemLayer> ItemLayer;
+	TSharedPtr<SDesItemLayer> ItemLayer;
 	
 	TSharedPtr<SDesItemContainerWidget> Widget;
 	
@@ -38,7 +38,7 @@ public:
 	virtual void SynchronizeProperties() override;
 	virtual void ReleaseSlateResources(bool bReleaseChildren) override;
 
-	void SetItemLayer(UDesItemLayer* InItemLayer);
+	void SetItemLayer(const TSharedRef<SDesItemLayer>& InItemLayer);
 	void AttachToItemContainerComponent(UDesItemContainerComponent* InItemContainerComponent);
 	void DetachFromItemContainerComponent();
 	void OnyAnyChanges(const TArray<FItemContainerEntry>& ItemContainerEntries) const;
