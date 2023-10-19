@@ -1,4 +1,4 @@
-#include "UI/DesHUD.h"
+#include "DesHUD.h"
 
 #include "DesCharacterScreen.h"
 #include "Components/DesMetaComponent.h"
@@ -11,6 +11,7 @@
 #include "DesTooltipData.h"
 #include "DesWidget.h"
 #include "DesMainUILayer.h"
+#include "SDesHUDLayer.h"
 #include "SDesTooltipLayer.h"
 #include "Blueprint/GameViewportSubsystem.h"
 #include "Components/DesItemContainerComponent.h"
@@ -134,8 +135,9 @@ void ADesHUD::InitForCharacter(const ADesPlayerCharacter* Character)
 	InscriptionCanvas = GetWorld()->SpawnActor<ADesInscriptionCanvas>(InscriptionCanvasClass, Parameters);
 	InscriptionCanvas->DoInitialSetup(PlayerController->GetLocalPlayer()->ViewportClient->Viewport);
 
-	const auto LocalPlayer = PlayerController->GetLocalPlayer();
-	SlateUser = LocalPlayer->GetSlateUser();
+	SlateUser = PlayerController->GetLocalPlayer()->GetSlateUser();
+
+	CreateSlateWidgetAndAddToViewport(SAssignNew(HUDLayer, SDesHUDLayer), HUDLayerZ);
 
 	CreateSlateWidgetAndAddToViewport(SAssignNew(ItemLayer, SDesItemLayer), ItemLayerZ);
 	ItemLayer->SetInventoryComponent(InventoryComponent);
@@ -171,10 +173,10 @@ void ADesHUD::InitForCharacter(const ADesPlayerCharacter* Character)
 void ADesHUD::LookStarted()
 {
 	HideTooltip();
-	MainUILayer->SetCrosshairVisible(true);
+	HUDLayer->SetCrosshairVisible(true);
 }
 
 void ADesHUD::LookCompleted()
 {
-	MainUILayer->SetCrosshairVisible(false);
+	HUDLayer->SetCrosshairVisible(false);
 }

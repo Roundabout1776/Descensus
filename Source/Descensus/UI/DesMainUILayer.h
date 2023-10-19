@@ -39,9 +39,6 @@ public:
 	TObjectPtr<UImage> InscriptionOverlay;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UUserWidget> Crosshair;
-
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UDesStatusBar> StatusBar;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
@@ -56,8 +53,6 @@ public:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UDesItemContainerWidget> CurrentContainer;
 	
-	void SetCrosshairVisible(bool bNewVisible) const;
-
 	UFUNCTION()
 	void HandleControlMappingsRebuilt();
 

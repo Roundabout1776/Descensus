@@ -31,11 +31,6 @@ void UDesMainUILayer::NativeOnInitialized()
 	InputSystem->ControlMappingsRebuiltDelegate.AddDynamic(this, &ThisClass::HandleControlMappingsRebuilt);
 }
 
-void UDesMainUILayer::SetCrosshairVisible(const bool bNewVisible) const
-{
-	Crosshair->SetVisibility(bNewVisible ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
-}
-
 void UDesMainUILayer::HandleControlMappingsRebuilt()
 {
 	ShortcutsPanel->UpdateInputMappings(PlayerController.Get());
