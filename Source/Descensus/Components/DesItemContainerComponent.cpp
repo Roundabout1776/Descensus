@@ -31,6 +31,7 @@ void FItemContainer::PreReplicatedRemove(const TArrayView<int32> RemovedIndices,
 
 UDesItemContainerComponent::UDesItemContainerComponent()
 {
+	bReplicateUsingRegisteredSubObjectList = true;
 	PrimaryComponentTick.bCanEverTick = true;
 	bWantsInitializeComponent = true;
 	SetIsReplicatedByDefault(true);

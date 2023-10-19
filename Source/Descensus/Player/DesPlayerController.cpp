@@ -19,6 +19,7 @@
 
 ADesPlayerController::ADesPlayerController(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
+	bReplicateUsingRegisteredSubObjectList = true;
 	HitResultTraceDistance = 250;
 	bShowMouseCursor = true;
 	bEnableMouseOverEvents = true;

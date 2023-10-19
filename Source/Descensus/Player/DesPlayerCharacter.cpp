@@ -21,7 +21,7 @@ ADesPlayerCharacter::ADesPlayerCharacter(const FObjectInitializer& ObjectInitial
 	MinNetUpdateFrequency = 60.0f;
 
 	Inventory = CreateDefaultSubobject<UDesInventoryComponent>(TEXT("Inventory"));
-	AddReplicatedSubObject(Inventory);
+	AddReplicatedSubObject(Inventory, COND_OwnerOnly);
 
 	MetaComponent->Name = FText::FromString(TEXT("PC"));
 

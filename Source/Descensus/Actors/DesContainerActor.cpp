@@ -7,7 +7,9 @@ ADesContainerActor::ADesContainerActor()
 	NetUpdateFrequency = 30.0f;
 	MinNetUpdateFrequency = 15.0f;
 	bReplicates = true;
+	
 	ItemContainer = CreateDefaultSubobject<UDesItemContainerComponent>(TEXT("ItemContainer"));
+	AddReplicatedSubObject(ItemContainer, COND_Never);
 }
 
 void ADesContainerActor::BeginPlay()
