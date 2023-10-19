@@ -67,6 +67,8 @@ public:
 	void ShowTooltip(FDesTooltipData TooltipData, FVector2D DesiredPosition, bool bShouldAddVerticalOffset);
 	void HideTooltip();
 
+	FORCEINLINE UDesMainUILayer* GetMainUILayer() const { return MainUILayer; }
+
 	FORCEINLINE ADesInscriptionCanvas* GetInscriptionCanvas() const { return InscriptionCanvas; }
 
 	void InitMainUILayer(const ADesPlayerCharacter* Character);

@@ -12,7 +12,10 @@
 #include "Player/DesPlayerCharacter.h"
 #include "Character/Ability/DesGameplayAbilityPrimaryBase.h"
 #include "AbilitySystem/DesAbilitySystemComponent.h"
+#include "Actors/DesContainerActor.h"
+#include "Net/UnrealNetwork.h"
 #include "Slate/SceneViewport.h"
+#include "UI/DesMainUILayer.h"
 
 ADesPlayerController::ADesPlayerController(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -196,7 +199,19 @@ void ADesPlayerController::InputPrimaryCompleted()
 	}
 	else
 	{
-		ASC->ReleaseAbilitiesByTag(FGameplayTagContainer(TAG_Ability_PlayerGrab), true);
+		if (CurrentClickablePrimitive.IsValid())
+		{
+			/* Attempt to interact with a container. */
+			if (const auto ContainerActor = Cast<ADesContainerActor>(CurrentClickablePrimitive->GetOwner()))
+			{
+				ServerOpenContainer(ContainerActor);
+			}
+			else
+			{
+				/* Otherwise, attempt to grab. */
+				ASC->ReleaseAbilitiesByTag(FGameplayTagContainer(TAG_Ability_PlayerGrab), true);
+			}
+		}
 	}
 }
 
@@ -207,4 +222,40 @@ UPrimitiveComponent* ADesPlayerController::GetCurrentClickablePrimitive(const bo
 		return nullptr;
 	}
 	return CurrentClickablePrimitive.Get();
+}
+
+bool ADesPlayerController::CheckIfCanInteractWithActor(const AActor* Actor)
+{
+	const auto Length = (Actor->GetActorLocation() - GetPawn()->GetActorLocation()).Length();
+	return Length < HitResultTraceDistance;
+}
+
+void ADesPlayerController::OnRep_CurrentContainer() const
+{
+	if (IsLocalController())
+	{
+		const auto MainUILayer = DesHUD->GetMainUILayer();
+		MainUILayer->SetCurrentContainer(CurrentContainer);
+	}
+}
+
+void ADesPlayerController::ServerOpenContainer_Implementation(ADesContainerActor* ContainerActor)
+{
+	if (!ContainerActor)
+		return;
+
+	if (!CheckIfCanInteractWithActor(ContainerActor))
+		return;
+
+	ContainerActor->SetOpened();
+
+	CurrentContainer = ContainerActor->ItemContainer;
+	OnRep_CurrentContainer();
+}
+
+void ADesPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ADesPlayerController, CurrentContainer);
 }

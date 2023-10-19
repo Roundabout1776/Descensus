@@ -4,6 +4,7 @@
 #include "Components/Widget.h"
 #include "DesItemContainerWidget.generated.h"
 
+struct FItemContainerEntry;
 class ADesPlayerState;
 class UDesItemLayer;
 class UDesItemInstance;
@@ -17,6 +18,12 @@ class DESCENSUS_API UDesItemContainerWidget : public UWidget
 	GENERATED_BODY()
 
 protected:
+	FDelegateHandle OnAnyChangesDelegateHandle;
+#if WITH_EDITORONLY_DATA
+	UPROPERTY(EditInstanceOnly)
+	FIntVector PreviewGridSize;
+#endif
+	
 	UPROPERTY(Transient)
 	TWeakObjectPtr<UDesItemContainerComponent> ItemContainerComponent;
 	
@@ -33,6 +40,8 @@ public:
 
 	void SetItemLayer(UDesItemLayer* InItemLayer);
 	void AttachToItemContainerComponent(UDesItemContainerComponent* InItemContainerComponent);
+	void DetachFromItemContainerComponent();
+	void OnyAnyChanges(const TArray<FItemContainerEntry>& ItemContainerEntries) const;
 	FReply HandleMouseButtonDown(const FGeometry& Geometry, const FPointerEvent& PointerEvent) const;
 	FReply HandleMouseMove(const FGeometry& Geometry, const FPointerEvent& PointerEvent) const;
 	void HandleMouseLeave(const FPointerEvent& PointerEvent) const;

@@ -121,8 +121,6 @@ public:
 
 	UDesItemInstance* GetItemInstance(FIntVector2 Coords);
 
-	virtual bool CanInteractWithContainer(UDesItemContainerComponent* Container) { return Container == this; }
-
 	virtual void OnQuantityChanged(const UDesItemInstance* ItemInstance, int32 OldQuantity, int32 NewQuantity) override;
 
 	int32 IntVectorToIndex(FIntVector2 Coords) const;

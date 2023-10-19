@@ -55,10 +55,13 @@ void UDesMainUILayer::HandleControlMappingsRebuilt()
 
 void UDesMainUILayer::SetupItemSystem(UDesInventoryComponent* InventoryComponent)
 {
+	ItemLayer->AttachToInventory(InventoryComponent);
+
 	Inventory->AttachToItemContainerComponent(Cast<UDesItemContainerComponent>(InventoryComponent));
 	Inventory->SetItemLayer(ItemLayer);
 
-	ItemLayer->AttachToInventory(InventoryComponent);
+	CurrentContainer->SetItemLayer(ItemLayer);
+	CurrentContainer->SetVisibility(ESlateVisibility::Collapsed);
 
 	InventoryComponent->OnEjectedItemChanged.AddWeakLambda(this, [this](const UDesItemInstance* EjectedItem)
 	{
@@ -71,4 +74,18 @@ void UDesMainUILayer::SetupItemSystem(UDesInventoryComponent* InventoryComponent
 			SlateUser->SetCursorVisibility(true);
 		}
 	});
+}
+
+void UDesMainUILayer::SetCurrentContainer(UDesItemContainerComponent* ItemContainerComponent)
+{
+	if (ItemContainerComponent)
+	{
+		CurrentContainer->AttachToItemContainerComponent(ItemContainerComponent);
+		CurrentContainer->SetVisibility(ESlateVisibility::Visible);
+	}
+	else
+	{
+		CurrentContainer->DetachFromItemContainerComponent();
+		CurrentContainer->SetVisibility(ESlateVisibility::Collapsed);
+	}
 }

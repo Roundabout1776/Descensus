@@ -9,7 +9,6 @@
 #include "Player/DesHeadBobComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Input/DesEnhancedInputComponent.h"
-#include "Net/UnrealNetwork.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "Player/DesPlayerAttributeSet.h"
 #include "Player/Ability/Inscribe/DesGameplayAbilityPlayerInscribe.h"
@@ -21,8 +20,6 @@ ADesPlayerCharacter::ADesPlayerCharacter(const FObjectInitializer& ObjectInitial
 	NetUpdateFrequency = 60.0f;
 	MinNetUpdateFrequency = 60.0f;
 
-	bReplicateUsingRegisteredSubObjectList = true;
-	
 	Inventory = CreateDefaultSubobject<UDesInventoryComponent>(TEXT("Inventory"));
 	AddReplicatedSubObject(Inventory);
 
@@ -176,9 +173,7 @@ UAttributeSet* ADesPlayerCharacter::GetAttributeSet() const
 	return nullptr;
 }
 
-void ADesPlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(ADesPlayerCharacter, Inventory);
-}
+// void ADesPlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+// {
+// 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+// }

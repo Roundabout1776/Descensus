@@ -5,6 +5,7 @@
 #include "DesGameState.h"
 #include "DesLogging.h"
 #include "DesPlayerCharacter.h"
+#include "DesPlayerController.h"
 #include "Net/UnrealNetwork.h"
 
 UDesInventoryComponent::UDesInventoryComponent()
@@ -19,12 +20,10 @@ void UDesInventoryComponent::InitializeComponent()
 	CharacterOwner = MakeWeakObjectPtr(GetOwner<ADesPlayerCharacter>());
 }
 
-void UDesInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType,
-                                           FActorComponentTickFunction* ThisTickFunction)
+bool UDesInventoryComponent::CanInteractWithContainer(const UDesItemContainerComponent* Container)
 {
-	/* Item quantity replication workaround. */
-	// bGridDirty = true;
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	const auto PC = CharacterOwner->GetController<ADesPlayerController>();
+	return PC->CheckIfCanInteractWithActor(Container->GetOwner());
 }
 
 void UDesInventoryComponent::ServerDestroyItem_Implementation(UDesItemInstance* InItemInstance)
@@ -130,16 +129,16 @@ void UDesInventoryComponent::ServerMoveEjectedItem_Implementation(UDesItemContai
 
 	if (SoleItemGridValue != 0)
 	{
-		const auto EntryToSwap = GetItemsRef()[GridValueToItemsIndex(SoleItemGridValue)];
+		const auto EntryToSwap = Container->GetItemsRef()[GridValueToItemsIndex(SoleItemGridValue)];
 		Container->RemoveItemByInstance(EntryToSwap.ItemInstance);
 
-		AddItem(EjectedItem, Coords);
+		Container->AddItem(EjectedItem, Coords);
 
 		SetEjectedItem(EntryToSwap.ItemInstance);
 	}
 	else
 	{
-		AddItem(EjectedItem, Coords);
+		Container->AddItem(EjectedItem, Coords);
 
 		SetEjectedItem(nullptr);
 	}

@@ -32,8 +32,9 @@ void FItemContainer::PreReplicatedRemove(const TArrayView<int32> RemovedIndices,
 UDesItemContainerComponent::UDesItemContainerComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
-	SetIsReplicatedByDefault(true);
 	bWantsInitializeComponent = true;
+	SetIsReplicatedByDefault(true);
+
 	Array.OwnerComponent = MakeWeakObjectPtr(this);
 }
 
@@ -50,6 +51,9 @@ void UDesItemContainerComponent::TickComponent(float DeltaTime, ELevelTick TickT
                                                FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	/* Item quantity replication workaround. */
+	// bGridDirty = true;
 
 	if (bGridDirty)
 	{
@@ -142,6 +146,7 @@ void UDesItemContainerComponent::RebuildGrid()
 void UDesItemContainerComponent::AddItem(UDesItemInstance* InItemInstance, const FIntVector2 Coords)
 {
 	auto& Items = Array.Items;
+	FillGrid(Coords, InItemInstance->GetItemData()->Size, Items.Num() + 1);
 	FItemContainerEntry& Entry = Items.AddDefaulted_GetRef();
 	Entry.Position = Coords;
 	Entry.ItemInstance = InItemInstance;
@@ -228,7 +233,7 @@ void UDesItemContainerComponent::RemoveItemByInstance(UDesItemInstance* InItemIn
 	{
 		if (const FItemContainerEntry& Entry = *ItemIter; Entry.ItemInstance && Entry.ItemInstance == InItemInstance)
 		{
-			// FillGrid(Entry.Position, Entry.ItemInstance->GetItemData()->Size, 0);
+			FillGrid(Entry.Position, Entry.ItemInstance->GetItemData()->Size, 0);
 			ItemIter.RemoveCurrent();
 			Array.MarkArrayDirty();
 			OnItemRemoved(Entry);

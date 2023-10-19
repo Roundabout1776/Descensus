@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "DesMainUILayer.generated.h"
 
+class UDesItemContainerComponent;
 class UDesItemLayer;
 class UDesCharacterScreen;
 class UDesItemContainerWidget;
@@ -57,10 +58,15 @@ public:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UDesItemContainerWidget> Inventory;
 	
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UDesItemContainerWidget> CurrentContainer;
+	
 	void SetCrosshairVisible(bool bNewVisible) const;
 
 	UFUNCTION()
 	void HandleControlMappingsRebuilt();
 
 	void SetupItemSystem(UDesInventoryComponent* InventoryComponent);
+
+	void SetCurrentContainer(UDesItemContainerComponent* ItemContainerComponent);
 };

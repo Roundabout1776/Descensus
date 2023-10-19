@@ -19,6 +19,6 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Actor")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Descensus|Actor")
 	TObjectPtr<UDesMetaComponent> MetaComponent;
 };

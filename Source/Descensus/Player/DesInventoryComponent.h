@@ -24,8 +24,8 @@ public:
 	
 	UDesInventoryComponent();
 	virtual void InitializeComponent() override;
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
-	                           FActorComponentTickFunction* ThisTickFunction) override;
+
+	bool CanInteractWithContainer(const UDesItemContainerComponent* Container);
 
 	UFUNCTION(Server, Reliable)
 	void ServerDestroyItem(UDesItemInstance* InItemInstance);

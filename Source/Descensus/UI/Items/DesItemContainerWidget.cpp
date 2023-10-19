@@ -24,6 +24,10 @@ void UDesItemContainerWidget::SynchronizeProperties()
 
 	if (Widget.IsValid())
 	{
+#if WITH_EDITORONLY_DATA
+		Widget->SetGridSize(PreviewGridSize);
+#endif
+
 		Widget->SetOnMouseButtonDown(BIND_UOBJECT_DELEGATE(FPointerEventHandler, HandleMouseButtonDown));
 		Widget->SetOnMouseMove(BIND_UOBJECT_DELEGATE(FPointerEventHandler, HandleMouseMove));
 		Widget->SetOnMouseLeave(BIND_UOBJECT_DELEGATE(FSimpleNoReplyPointerEventHandler, HandleMouseLeave));
@@ -46,22 +50,40 @@ void UDesItemContainerWidget::AttachToItemContainerComponent(UDesItemContainerCo
 {
 	check(InItemContainerComponent);
 
+	DetachFromItemContainerComponent();
+
 	ItemContainerComponent = MakeWeakObjectPtr(InItemContainerComponent);
 
-	/* @TODO: Unbind! */
-	ItemContainerComponent->OnAnyChangesDelegate.AddWeakLambda(this, [&](const TArray<FItemContainerEntry>& Items)
-	{
-		Widget->CollapseAllItems();
-		for (auto& Entry : Items)
-		{
-			if (const auto ItemInstance = Entry.ItemInstance)
-			{
-				Widget->AddItem(Entry.Position, GetItemWidgetData(ItemInstance));
-			}
-		}
-	});
+	OnAnyChangesDelegateHandle = ItemContainerComponent->OnAnyChangesDelegate.AddUObject(
+		this, &ThisClass::OnyAnyChanges);
+
 
 	Widget->SetGridSize(ItemContainerComponent->GridSize);
+
+	OnyAnyChanges(InItemContainerComponent->GetItemsRef());
+}
+
+void UDesItemContainerWidget::DetachFromItemContainerComponent()
+{
+	if (!ItemContainerComponent.IsValid())
+		return;
+
+	ItemContainerComponent->OnAnyChangesDelegate.Remove(OnAnyChangesDelegateHandle);
+	ItemContainerComponent.Reset();
+
+	Widget->CollapseAllItems();
+}
+
+void UDesItemContainerWidget::OnyAnyChanges(const TArray<FItemContainerEntry>& ItemContainerEntries) const
+{
+	Widget->CollapseAllItems();
+	for (auto& Entry : ItemContainerEntries)
+	{
+		if (const auto ItemInstance = Entry.ItemInstance)
+		{
+			Widget->AddItem(Entry.Position, GetItemWidgetData(ItemInstance));
+		}
+	}
 }
 
 FReply UDesItemContainerWidget::HandleMouseButtonDown(const FGeometry& Geometry,

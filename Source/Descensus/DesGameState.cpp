@@ -23,5 +23,6 @@ void ADesGameState::DestroyItemInstance(UDesItemInstance* ItemInstance)
 	if (ItemInstance)
 	{
 		RemoveReplicatedSubObject(ItemInstance);
+		ItemInstance->MarkAsGarbage();
 	}
 }
