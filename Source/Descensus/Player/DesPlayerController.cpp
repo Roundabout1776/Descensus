@@ -36,7 +36,7 @@ void ADesPlayerController::AcknowledgePossession(APawn* InPawn)
 	PlayerCharacter->GetAbilitySystemComponent()->InitAbilityActorInfo(PlayerCharacter.Get(), PlayerCharacter.Get());
 
 	DesHUD = MakeWeakObjectPtr(GetHUD<ADesHUD>());
-	DesHUD->InitMainUILayer(PlayerCharacter.Get());
+	DesHUD->InitForCharacter(PlayerCharacter.Get());
 
 	const auto LocalPlayer = GetLocalPlayer();
 	const auto InputSystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();

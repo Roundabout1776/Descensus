@@ -15,7 +15,7 @@ const FDesTooltipData& UDesStatusBarResource::GetTooltipData(bool bSetNotDirty)
 {
 	if (IsTooltipDirty())
 	{
-		CachedTooltipData.Name = FText::Format(Text, FMath::RoundToFloat(Value), FMath::RoundToFloat(MaxValue));
+		CachedTooltipData.Header = FText::Format(Text, FMath::RoundToFloat(Value), FMath::RoundToFloat(MaxValue));
 	}
 	if (bSetNotDirty)
 	{

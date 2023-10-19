@@ -4,6 +4,7 @@
 #include "GameFramework/HUD.h"
 #include "DesHUD.generated.h"
 
+class SDesTooltipLayer;
 class UImage;
 class ADesInscriptionCanvas;
 class ADesPlayerCharacter;
@@ -32,14 +33,10 @@ class DESCENSUS_API ADesHUD : public AHUD
 	FVector2D GetDesiredTooltipPositionForActor(const AActor* Actor) const;
 
 protected:
-	virtual void BeginPlay() override;
-
-	/* Widgets */
-	UPROPERTY(BlueprintReadOnly)
-	TObjectPtr<UDesGenericTooltip> GenericTooltip;
-
-	UPROPERTY(EditDefaultsOnly, Category="Descensus|UI")
-	TSubclassOf<UDesGenericTooltip> GenericTooltipClass;
+	static inline constexpr int32 MainLayerZ = 0;
+	static inline constexpr int32 TooltipLayerZ = 4;
+	
+	TSharedPtr<SDesTooltipLayer> TooltipLayer;
 
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UDesMainUILayer> MainUILayer;
@@ -53,6 +50,8 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category="Descensus|Inscription")
 	TSubclassOf<ADesInscriptionCanvas> InscriptionCanvasClass;
+
+	void CreateSlateWidgetAndAddToViewport(const TSharedRef<SWidget>& Widget, const int32 ZOrder) const;
 
 public:
 	UPROPERTY(BlueprintReadOnly)
@@ -71,7 +70,7 @@ public:
 
 	FORCEINLINE ADesInscriptionCanvas* GetInscriptionCanvas() const { return InscriptionCanvas; }
 
-	void InitMainUILayer(const ADesPlayerCharacter* Character);
+	void InitForCharacter(const ADesPlayerCharacter* Character);
 
 	void LookStarted();
 	void LookCompleted();

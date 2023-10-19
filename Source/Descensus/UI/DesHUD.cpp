@@ -8,14 +8,16 @@
 #include "Player/DesInscriptionCanvas.h"
 #include "Player/DesPlayerCharacter.h"
 #include "Player/DesPlayerController.h"
-#include "DesGenericTooltip.h"
 #include "DesTooltipData.h"
 #include "DesWidget.h"
 #include "DesMainUILayer.h"
+#include "SDesTooltipLayer.h"
+#include "Blueprint/GameViewportSubsystem.h"
 #include "Components/DesItemContainerComponent.h"
 #include "Components/Image.h"
 #include "Items/DesItemContainerWidget.h"
 #include "Widgets/DeclarativeSyntaxSupport.h"
+#include "Widgets/SWeakWidget.h"
 
 FVector2D ADesHUD::GetDesiredTooltipPositionForActor(const AActor* Actor) const
 {
@@ -28,11 +30,19 @@ FVector2D ADesHUD::GetDesiredTooltipPositionForActor(const AActor* Actor) const
 	FVector2D MousePosition;
 	UWidgetLayoutLibrary::GetMousePositionScaledByDPI(PlayerController, MousePosition.X,
 	                                                  MousePosition.Y);
+	// MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(PlayerController);
+	// PlayerController->GetMousePosition(MousePosition.X, MousePosition.Y);
 	FVector2D DesiredPosition;
 	DesiredPosition.X = MousePosition.X;
 	DesiredPosition.Y = TopLeftOut.Y;
 
 	return DesiredPosition;
+}
+
+void ADesHUD::CreateSlateWidgetAndAddToViewport(const TSharedRef<SWidget>& Widget, const int32 ZOrder) const
+{
+	const auto LocalPlayer = GetOwningPlayerController()->GetLocalPlayer();
+	LocalPlayer->ViewportClient->AddViewportWidgetContent(Widget, ZOrder);
 }
 
 void ADesHUD::NewWidgetUnderCursor(UDesWidget* Widget)
@@ -56,7 +66,7 @@ void ADesHUD::UpdateWidgetUnderCursor(UDesWidget* Widget)
 	}
 	else
 	{
-		GenericTooltip->UpdateTooltipPosition(MousePosition, true);
+		TooltipLayer->SetTooltipPosition(MousePosition, true);
 	}
 }
 
@@ -75,32 +85,25 @@ void ADesHUD::NewActorUnderCursor(const AActor* Actor, const UDesMetaComponent* 
 
 void ADesHUD::UpdateActorUnderCursor(const AActor* Actor) const
 {
-	GenericTooltip->UpdateTooltipPosition(GetDesiredTooltipPositionForActor(Actor), false);
-}
-
-void ADesHUD::BeginPlay()
-{
-	Super::BeginPlay();
-
-	check(IsValid(GenericTooltipClass));
-	GenericTooltip = CreateWidget<UDesGenericTooltip>(GetOwningPlayerController(), GenericTooltipClass);
-	GenericTooltip->AddToPlayerScreen(1000);
+	// const auto ViewportSize = UWidgetLayoutLibrary::GetViewportSize(this) /
+	// 	UWidgetLayoutLibrary::GetViewportScale(this);
+	TooltipLayer->SetTooltipPosition(GetDesiredTooltipPositionForActor(Actor), false);
 }
 
 void ADesHUD::ShowTooltip(FDesTooltipData TooltipData, FVector2D DesiredPosition, bool bShouldAddVerticalOffset)
 {
-	GenericTooltip->SetTooltipData(TooltipData);
-	GenericTooltip->SetVisibility(ESlateVisibility::HitTestInvisible);
-	GenericTooltip->UpdateTooltipPosition(DesiredPosition, bShouldAddVerticalOffset);
+	TooltipLayer->SetTooltipData(TooltipData);
+	TooltipLayer->SetVisibility(EVisibility::HitTestInvisible);
+	TooltipLayer->SetTooltipPosition(DesiredPosition, bShouldAddVerticalOffset);
 }
 
 void ADesHUD::HideTooltip()
 {
-	GenericTooltip->SetVisibility(ESlateVisibility::Hidden);
+	TooltipLayer->SetVisibility(EVisibility::Hidden);
 	CurrentCursorTarget = ECursorTarget::None;
 }
 
-void ADesHUD::InitMainUILayer(const ADesPlayerCharacter* Character)
+void ADesHUD::InitForCharacter(const ADesPlayerCharacter* Character)
 {
 	const auto PlayerController = Cast<ADesPlayerController>(GetOwningPlayerController());
 
@@ -112,9 +115,11 @@ void ADesHUD::InitMainUILayer(const ADesPlayerCharacter* Character)
 
 	check(IsValid(MainUILayerClass));
 	MainUILayer = CreateWidget<UDesMainUILayer>(PlayerController, MainUILayerClass);
-	MainUILayer->AddToPlayerScreen(0);
+	MainUILayer->AddToPlayerScreen(MainLayerZ);
 	MainUILayer->InscriptionOverlay->SetBrushFromMaterial(InscriptionCanvas->GetInscriptionCanvasMaterial());
 	MainUILayer->SetupItemSystem(Character->Inventory);
+
+	CreateSlateWidgetAndAddToViewport(SAssignNew(TooltipLayer, SDesTooltipLayer), TooltipLayerZ);
 }
 
 void ADesHUD::LookStarted()

@@ -6,19 +6,19 @@
 USTRUCT(BlueprintType)
 struct DESCENSUS_API FDesTooltipData
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
 	FDesTooltipData()
 	{
 	}
 
-	FDesTooltipData(const FText& Name)
-		: Name(Name)
+	FDesTooltipData(const FText& InHeader)
+		: Header(InHeader)
 	{
 	}
 
 	UPROPERTY()
-	FText Name;
+	FText Header;
 
 	UPROPERTY()
 	TArray<FText> Content;

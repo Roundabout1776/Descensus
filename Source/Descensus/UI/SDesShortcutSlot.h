@@ -9,7 +9,7 @@ class SImage;
 class STextBlock;
 class UTexture2D;
 
-class DESCENSUS_API SDesShortcutSlot : public SCompoundWidget
+class DESCENSUS_API SDesShortcutSlot final : public SCompoundWidget
 {
 	FSlateBrush IconSlateBrush;
 	TSharedPtr<SImage> IconImage;
