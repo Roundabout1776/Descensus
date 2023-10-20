@@ -28,13 +28,13 @@ class DESCENSUS_API UDesHumanoidAnimInstance : public UAnimInstance
 protected:
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly)
 	float StrafeAxis;
-	
+
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly)
 	float RunAxis;
-	
+
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly)
 	FGameplayTagContainer Tags;
-	
+
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly)
 	uint8 bSomethingInHands : 1;
 

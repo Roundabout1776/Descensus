@@ -10,14 +10,21 @@
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 
+void SDesShortcutSlot::UpdateCachedTooltipData()
+{
+	auto& Data = GetCachedTooltipDataMutable();
+
+	Data.Header = INVTEXT("Simple Header");
+}
+
 void SDesShortcutSlot::Construct(const FArguments& InArgs)
 {
 	InputAction = MakeWeakObjectPtr(InArgs._InputAction.Get());
-
+	
 	const auto SizeOverride = InArgs._SizeOverride.Get();
 
 	const auto Style = FDesStyle::GetDefaultStyle();
-
+	
 	ChildSlot.SetPadding(FMargin(0.0f, 0.0f, 7.0f, 0.0f));
 	ChildSlot
 	[
@@ -53,6 +60,8 @@ void SDesShortcutSlot::Construct(const FArguments& InArgs)
 	];
 
 	SetImageFromTexture(InArgs._FixedIconTexture.Get());
+	
+	AddTooltipMetaData(this);
 }
 
 void SDesShortcutSlot::SetImageFromTexture(UTexture2D* Texture)
@@ -69,7 +78,7 @@ void SDesShortcutSlot::SetImageFromTexture(UTexture2D* Texture)
 	}
 }
 
-void SDesShortcutSlot::UpdateInputText(const UEnhancedInputLocalPlayerSubsystem* InputSystem) const
+void SDesShortcutSlot::UpdateInputText(const UEnhancedInputLocalPlayerSubsystem* InputSystem)
 {
 	if (InputTextBlock.IsValid())
 	{

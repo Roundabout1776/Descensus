@@ -20,7 +20,7 @@ void ADesNPC::BeginPlay()
 
 	GiveDefaultAbilities();
 	ApplyDefaultEffects();
-	
+
 	Super::BeginPlay();
 }
 

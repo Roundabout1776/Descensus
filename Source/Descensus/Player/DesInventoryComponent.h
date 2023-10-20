@@ -16,12 +16,12 @@ class DESCENSUS_API UDesInventoryComponent : public UDesItemContainerComponent
 protected:
 	UPROPERTY(EditAnywhere, ReplicatedUsing=OnRep_EjectedItem, Category="Descensus|Character")
 	TObjectPtr<UDesItemInstance> EjectedItem;
-	
+
 	TWeakObjectPtr<ADesPlayerCharacter> CharacterOwner;
-	
+
 public:
 	FOnItemToMoveChangedSignature OnEjectedItemChanged;
-	
+
 	UDesInventoryComponent();
 	virtual void InitializeComponent() override;
 
@@ -29,16 +29,16 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void ServerDestroyItem(UDesItemInstance* InItemInstance);
-	
+
 	UFUNCTION(Server, Reliable)
 	void ServerDestroyEjectedItem();
 
 	UFUNCTION(Server, Reliable)
 	void ServerMoveEjectedItem(UDesItemContainerComponent* Container, FIntVector2 Coords);
-	
+
 	UFUNCTION(Server, Reliable)
 	void ServerEjectItem(UDesItemContainerComponent* Container, UDesItemInstance* InItemInstance);
-	
+
 	UFUNCTION()
 	void OnRep_EjectedItem();
 

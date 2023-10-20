@@ -1,6 +1,8 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "DesTooltipData.h"
+#include "SDesTooltipLayer.h"
 #include "Widgets/SCompoundWidget.h"
 
 class UEnhancedInputLocalPlayerSubsystem;
@@ -9,13 +11,16 @@ class SImage;
 class STextBlock;
 class UTexture2D;
 
-class DESCENSUS_API SDesShortcutSlot final : public SCompoundWidget
+class DESCENSUS_API SDesShortcutSlot final : public SCompoundWidget, public IDesTooltip
 {
 	FSlateBrush IconSlateBrush;
 	TSharedPtr<SImage> IconImage;
 	TSharedPtr<STextBlock> InputTextBlock;
 	TWeakObjectPtr<UInputAction> InputAction;
 
+protected:
+	virtual void UpdateCachedTooltipData() override;
+	
 public:
 	SLATE_BEGIN_ARGS(SDesShortcutSlot)
 		{
@@ -30,5 +35,5 @@ public:
 	void Construct(const FArguments& InArgs);
 
 	void SetImageFromTexture(UTexture2D* Texture);
-	void UpdateInputText(const UEnhancedInputLocalPlayerSubsystem* InputSystem) const;
+	void UpdateInputText(const UEnhancedInputLocalPlayerSubsystem* InputSystem);
 };

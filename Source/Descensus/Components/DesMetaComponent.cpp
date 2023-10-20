@@ -8,7 +8,7 @@ UDesMetaComponent::UDesMetaComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	Name = FText::FromString(TEXT("Default Name"));
-	
+
 	SetIsReplicatedByDefault(true);
 }
 

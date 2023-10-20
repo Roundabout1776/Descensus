@@ -18,14 +18,18 @@ void UDesHumanoidAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	Super::NativeUpdateAnimation(DeltaSeconds);
 
 	if (!Character.IsValid())
+	{
 		return;
+	}
 
 	StrafeAxis = FVector::DotProduct(Character->GetActorRightVector(), Character->GetVelocity().GetSafeNormal());
 	RunAxis = FVector::DotProduct(Character->GetActorForwardVector(), Character->GetVelocity().GetSafeNormal());
 
 	const auto ASC = Character->GetAbilitySystemComponent();
 	if (!ASC)
+	{
 		return;
+	}
 
 	ASC->GetOwnedGameplayTags(Tags);
 

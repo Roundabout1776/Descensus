@@ -13,7 +13,7 @@ struct DESCENSUS_API FDesSlateWidgetStyle : public FSlateWidgetStyle
 
 	UPROPERTY(EditDefaultsOnly)
 	float Padding = 19.0f;
-	
+
 	UPROPERTY(EditDefaultsOnly)
 	FTextBlockStyle DefaultTextStyle;
 
@@ -28,7 +28,7 @@ struct DESCENSUS_API FDesSlateWidgetStyle : public FSlateWidgetStyle
 
 	UPROPERTY(EditDefaultsOnly)
 	FLinearColor ItemGridColor = FLinearColor::White;
-	
+
 	static const FName TypeName;
 
 	virtual const FName GetTypeName() const override
@@ -58,7 +58,7 @@ class DESCENSUS_API UDesWidgetStyleCatalog : public USlateWidgetStyleContainerBa
 protected:
 	UPROPERTY(EditDefaultsOnly, meta = (ShowOnlyInnerProperties))
 	FDesSlateWidgetStyle WidgetStyle;
-	
+
 public:
 	virtual const FSlateWidgetStyle* const GetStyle() const override
 	{

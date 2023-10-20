@@ -46,7 +46,7 @@ void SDesItemLayer::ShowEjectedItem(const FDesItemWidgetData& ItemWidgetData)
 	const auto Style = FDesStyle::GetDefaultStyle();
 	const auto Size = FVector2D(ItemWidgetData.Size.X * Style->CellSize,
 	                            ItemWidgetData.Size.Y * Style->CellSize);
-	
+
 	EjectedItemOffset = Size / 2.0;
 
 	FSlateRenderTransform Transform;

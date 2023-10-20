@@ -36,7 +36,8 @@ void UDesMainUILayer::HandleControlMappingsRebuilt()
 	ShortcutsPanel->UpdateInputMappings(PlayerController.Get());
 }
 
-void UDesMainUILayer::SetupItemSystem(const TSharedRef<SDesItemLayer>& InItemLayer, UDesInventoryComponent* InventoryComponent)
+void UDesMainUILayer::SetupItemSystem(const TSharedRef<SDesItemLayer>& InItemLayer,
+                                      UDesInventoryComponent* InventoryComponent)
 {
 	Inventory->AttachToItemContainerComponent(Cast<UDesItemContainerComponent>(InventoryComponent));
 	Inventory->SetItemLayer(InItemLayer);

@@ -17,7 +17,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category="Descensus|Rune")
 	TArray<FDesGesture> Templates;
-	
+
 	explicit UDesRuneData(const FObjectInitializer& ObjectInitializer);
 	virtual FPrimaryAssetType GetPrimaryAssetType() const override;
 };

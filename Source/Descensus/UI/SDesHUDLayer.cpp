@@ -5,13 +5,13 @@
 void SDesHUDLayer::Construct(const FArguments& InArgs)
 {
 	SetVisibility(EVisibility::SelfHitTestInvisible);
-	
+
 	ChildSlot
 	[
 		SNew(SOverlay)
 		+ SOverlay::Slot()
-		.HAlign(HAlign_Center)
-		.VAlign(VAlign_Center)
+		  .HAlign(HAlign_Center)
+		  .VAlign(VAlign_Center)
 		[
 			SAssignNew(Crosshair, SDesCrosshair)
 			.Size(20.0)

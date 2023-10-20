@@ -19,7 +19,7 @@ USTRUCT(BlueprintType)
 struct FDesStepSound
 {
 	GENERATED_BODY()
-	
+
 	float Time;
 	bool bSkip;
 
@@ -34,7 +34,7 @@ struct FDesStepSound
 
 	UPROPERTY(EditDefaultsOnly, meta = (EditCondition="bEnableStepSound"))
 	float TimeWalking = 435.0f;
-	
+
 	UPROPERTY(EditDefaultsOnly, meta = (EditCondition="bEnableStepSound"))
 	float TimeRunning = 335.0f;
 };

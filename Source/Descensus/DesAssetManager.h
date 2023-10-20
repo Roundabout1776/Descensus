@@ -12,6 +12,6 @@ class DESCENSUS_API UDesAssetManager : public UAssetManager
 public:
 	static const FPrimaryAssetType ItemDataType;
 	static const FPrimaryAssetType RuneDataType;
-	
+
 	virtual void StartInitialLoading() override;
 };

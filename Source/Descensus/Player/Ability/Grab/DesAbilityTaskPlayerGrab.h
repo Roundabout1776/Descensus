@@ -12,13 +12,12 @@ UCLASS()
 class DESCENSUS_API UDesAbilityTaskPlayerGrab : public UAbilityTask
 {
 	GENERATED_UCLASS_BODY()
-
 	UPROPERTY()
 	TWeakObjectPtr<ADesPlayerCharacter> Character;
 
 public:
 	virtual void TickTask(float DeltaTime) override;
-	
+
 	static UDesAbilityTaskPlayerGrab* PlayerGrab(UGameplayAbility* OwningAbility,
-	                                                     ADesPlayerCharacter* InCharacter);
+	                                             ADesPlayerCharacter* InCharacter);
 };

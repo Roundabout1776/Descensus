@@ -31,7 +31,7 @@ public:
 		SLATE_ARGUMENT(FDesItemWidgetData, Data)
 
 	SLATE_END_ARGS()
-	
+
 	void Construct(const FArguments& InArgs);
 
 	void SetData(const FDesItemWidgetData& Data) const;

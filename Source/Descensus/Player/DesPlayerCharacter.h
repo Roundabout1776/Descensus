@@ -35,17 +35,9 @@ protected:
 	void SetFirstPersonMode(bool bFirstPerson) const;
 
 public:
-	ADesPlayerCharacter(const FObjectInitializer& ObjectInitializer);
-
-	virtual void PossessedBy(AController* NewController) override;
-	virtual void UnPossessed() override;
-	virtual void Tick(float DeltaTime) override;
-	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
-	virtual void OnRep_PlayerState() override;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Descensus|PlayerCharacter")
 	TObjectPtr<UDesInventoryComponent> Inventory;
-	
+
 	UPROPERTY(EditDefaultsOnly, Category = "Descensus|PlayerCharacter")
 	TObjectPtr<UPhysicsHandleComponent> PhysicsHandle;
 
@@ -66,7 +58,15 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Descensus|Input")
 	UDesInputConfig* InputConfig;
-	
+
+	explicit ADesPlayerCharacter(const FObjectInitializer& ObjectInitializer);
+
+	virtual void PossessedBy(AController* NewController) override;
+	virtual void UnPossessed() override;
+	virtual void Tick(float DeltaTime) override;
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+	virtual void OnRep_PlayerState() override;
+
 	FORCEINLINE virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	FORCEINLINE virtual UAttributeSet* GetAttributeSet() const override;
 };

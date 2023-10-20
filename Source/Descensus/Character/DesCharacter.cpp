@@ -62,7 +62,9 @@ void ADesCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	if (IsNetMode(NM_DedicatedServer))
+	{
 		return;
+	}
 
 	TickStepSound(DeltaTime);
 }
@@ -70,14 +72,20 @@ void ADesCharacter::Tick(float DeltaTime)
 void ADesCharacter::TickStepSound(float DeltaTime)
 {
 	if (!StepSound.bEnableStepSound)
+	{
 		return;
+	}
 
 	StepSound.Time = FMath::Max(0, StepSound.Time - (1000.0f * DeltaTime));
 	if (StepSound.Time > 0)
+	{
 		return;
+	}
 
 	if (!GetCharacterMovement()->IsMovingOnGround())
+	{
 		return;
+	}
 
 	const auto Speed = FVector::DistXY(FVector::ZeroVector, GetCharacterMovement()->Velocity);
 	const auto bIsMovingFastEnough = Speed >= StepSound.MinSpeed;
@@ -163,7 +171,9 @@ void ADesCharacter::GiveDefaultAbilities()
 	for (const auto& AbilityClass : DefaultAbilities)
 	{
 		if (!IsValid(AbilityClass))
+		{
 			continue;
+		}
 		CustomASC->GiveAbility(FGameplayAbilitySpec(AbilityClass, 1,
 		                                            static_cast<int32>(AbilityClass.
 		                                                               GetDefaultObject()->AbilityInputID), this));
@@ -180,7 +190,9 @@ void ADesCharacter::ApplyDefaultEffects()
 	for (const auto& EffectClass : DefaultEffects)
 	{
 		if (!IsValid(EffectClass))
+		{
 			continue;
+		}
 
 		auto EffectContextHandle = CustomASC->MakeEffectContext();
 		EffectContextHandle.AddSourceObject(this);

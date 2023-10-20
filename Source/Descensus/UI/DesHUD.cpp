@@ -1,6 +1,6 @@
 #include "DesHUD.h"
 
-#include "DesCharacterScreen.h"
+#include "DesLogging.h"
 #include "Components/DesMetaComponent.h"
 #include "UI/DesUIUtilities.h"
 #include "Blueprint/UserWidget.h"
@@ -9,18 +9,15 @@
 #include "Player/DesPlayerCharacter.h"
 #include "Player/DesPlayerController.h"
 #include "DesTooltipData.h"
-#include "DesWidget.h"
 #include "DesMainUILayer.h"
 #include "SDesHUDLayer.h"
+#include "SDesShortcutSlot.h"
 #include "SDesTooltipLayer.h"
-#include "Blueprint/GameViewportSubsystem.h"
 #include "Components/DesItemContainerComponent.h"
 #include "Components/Image.h"
-#include "Items/DesItemContainerWidget.h"
 #include "Items/SDesItemLayer.h"
 #include "Player/DesInventoryComponent.h"
 #include "Widgets/DeclarativeSyntaxSupport.h"
-#include "Widgets/SWeakWidget.h"
 
 FVector2D ADesHUD::GetDesiredTooltipPositionForActor(const AActor* Actor) const
 {
@@ -57,37 +54,64 @@ void ADesHUD::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
+	const FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(
+		GetOwningPlayerController());
+
 	if (ItemLayer.IsValid())
 	{
-		const FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(
-			GetOwningPlayerController());
-
 		ItemLayer->SetEjectedItemPosition(MousePosition);
 	}
-}
 
-void ADesHUD::NewWidgetUnderCursor(UDesWidget* Widget)
-{
-	const FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(
-		GetOwningPlayerController());
-
-	ShowTooltip(Widget->GetTooltipData(true), MousePosition, true);
-
-	CurrentCursorTarget = ECursorTarget::Widget;
-}
-
-void ADesHUD::UpdateWidgetUnderCursor(UDesWidget* Widget)
-{
-	const FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(
-		GetOwningPlayerController());
-
-	if (Widget->IsTooltipDirty())
+	if (SlateUser.IsValid())
 	{
-		ShowTooltip(Widget->GetTooltipData(true), MousePosition, true);
-	}
-	else
-	{
-		TooltipLayer->SetTooltipPosition(MousePosition, true);
+		IDesTooltip* Tooltip{};
+		bool bNewTooltipWidget{};
+		for (auto& WidgetWeak : SlateUser->GetLastWidgetsUnderCursor().Widgets)
+		{
+			const auto WidgetPinned = WidgetWeak.Pin();
+			if (WidgetPinned.IsValid())
+			{
+				const auto MetaData = WidgetPinned->GetMetaData<FDesTooltipMetaData>();
+				if (MetaData.IsValid())
+				{
+					if (!MetaData->Tooltip->ShouldShowTooltip())
+					{
+						continue;
+					}
+					
+					if (!LastTooltipWidgetUnderCursor.HasSameObject(WidgetPinned.Get()))
+					{
+						bNewTooltipWidget = true;
+						LastTooltipWidgetUnderCursor = WidgetWeak;
+					}
+
+					Tooltip = MetaData->Tooltip;
+					break;
+				}
+			}
+		}
+
+		if (Tooltip)
+		{
+			if (bNewTooltipWidget)
+			{
+				ShowTooltip(Tooltip->GetCachedTooltipData(), MousePosition, true);
+			}
+			else
+			{
+				TooltipLayer->SetTooltipPosition(MousePosition, true);
+			}
+
+			CurrentCursorTarget = ECursorTarget::Widget;
+		}
+		else
+		{
+			LastTooltipWidgetUnderCursor.Reset();
+			if (CurrentCursorTarget != ECursorTarget::Actor)
+			{
+				HideTooltip();
+			}
+		}
 	}
 }
 
@@ -106,8 +130,6 @@ void ADesHUD::NewActorUnderCursor(const AActor* Actor, const UDesMetaComponent* 
 
 void ADesHUD::UpdateActorUnderCursor(const AActor* Actor) const
 {
-	// const auto ViewportSize = UWidgetLayoutLibrary::GetViewportSize(this) /
-	// 	UWidgetLayoutLibrary::GetViewportScale(this);
 	TooltipLayer->SetTooltipPosition(GetDesiredTooltipPositionForActor(Actor), false);
 }
 

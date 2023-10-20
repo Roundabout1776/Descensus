@@ -18,10 +18,10 @@ protected:
 public:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Replicated)
 	TObjectPtr<UDesItemInstance> ItemInstance;
-	
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Descensus|Item")
 	TSubclassOf<UDesItemData> ItemDataClass;
-	
+
 	ADesItemActor();
 	virtual void Tick(float DeltaTime) override;
 };

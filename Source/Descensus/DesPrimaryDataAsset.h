@@ -8,11 +8,11 @@ UCLASS(Abstract, BlueprintType)
 class DESCENSUS_API UDesPrimaryDataAsset : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
-	
+
 public:
 	UPROPERTY(EditDefaultsOnly, Category="Descensus|PrimaryDataAsset")
 	FName UniqueId;
-	
+
 	UPROPERTY(EditDefaultsOnly, Category="Descensus|PrimaryDataAsset")
 	FText DisplayName;
 

@@ -61,7 +61,7 @@ UCLASS(Blueprintable, ClassGroup=(Descensus), meta=(BlueprintSpawnableComponent)
 class DESCENSUS_API UDesItemContainerComponent : public UActorComponent, public IDesItemChangesListenerInterface
 {
 	GENERATED_BODY()
-	
+
 	friend struct FItemContainer;
 	friend class UDesInventoryComponent;
 
@@ -107,10 +107,11 @@ public:
 
 	UDesItemContainerComponent();
 	virtual void InitializeComponent() override;
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
+	                           FActorComponentTickFunction* ThisTickFunction) override;
 
 	TArray<FItemContainerEntry>& GetItemsRef() { return Array.Items; }
-	
+
 	void AddItem(UDesItemInstance* InItemInstance, const FIntVector2 Coords);
 
 	UFUNCTION(BlueprintCallable)

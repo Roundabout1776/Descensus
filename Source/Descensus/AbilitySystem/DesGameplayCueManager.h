@@ -10,7 +10,7 @@ class DESCENSUS_API UDesGameplayCueManager : public UGameplayCueManager
 	GENERATED_BODY()
 
 	virtual bool ShouldAsyncLoadRuntimeObjectLibraries() const override
-    {
-    	return false;
-    }
+	{
+		return false;
+	}
 };

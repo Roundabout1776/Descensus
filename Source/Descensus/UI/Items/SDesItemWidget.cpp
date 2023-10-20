@@ -42,7 +42,7 @@ void SDesItemWidget::SetData(const FDesItemWidgetData& Data) const
 	Box->SetWidthOverride(Data.Size.Y * Style->CellSize);
 
 	IconImage->SetImage(Data.Brush);
-	
+
 	SetQuantity(Data.Quantity, Data.MaxQuantity);
 }
 

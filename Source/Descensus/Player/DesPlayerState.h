@@ -17,12 +17,12 @@ class DESCENSUS_API ADesPlayerState : public APlayerState, public IAbilitySystem
 public:
 	UPROPERTY(VisibleInstanceOnly, Category="Descensus|Character")
 	TObjectPtr<UDesPlayerAttributeSet> AttributeSet;
-	
+
 	UPROPERTY(VisibleAnywhere, Category="Descensus|Character")
 	TObjectPtr<UDesAbilitySystemComponent> ASC;
-	
+
 	ADesPlayerState();
-	
+
 	FORCEINLINE virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	FORCEINLINE virtual UDesPlayerAttributeSet* GetAttributeSet() const;
 };

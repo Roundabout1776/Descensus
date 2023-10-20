@@ -13,7 +13,7 @@ class DESCENSUS_API ADesNPC : public ADesCharacter
 
 	UPROPERTY(VisibleInstanceOnly, Category="Descensus|Character")
 	TObjectPtr<UDesCharacterAttributeSet> AttributeSet;
-	
+
 	UPROPERTY(VisibleAnywhere, Category="Descensus|Character")
 	TObjectPtr<UDesAbilitySystemComponent> ASC;
 

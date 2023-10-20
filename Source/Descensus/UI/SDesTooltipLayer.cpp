@@ -13,19 +13,19 @@ void SDesTooltipLayer::Construct(const FArguments& InArgs)
 	SetVisibility(EVisibility::Hidden);
 
 	ChildSlot
-	.HAlign(HAlign_Left)
-	.VAlign(VAlign_Top)
-	[
-		 SAssignNew(Tooltip, SBorder)
+		.HAlign(HAlign_Left)
+		.VAlign(VAlign_Top)
+		[
+			SAssignNew(Tooltip, SBorder)
 		 .Padding(Style->Padding)
 		 .BorderImage(&Style->CommonBox)
-		 [
-			 SAssignNew(TooltipHeader, STextBlock)
+			[
+				SAssignNew(TooltipHeader, STextBlock)
 			 .Justification(ETextJustify::Center)
 			 .TextStyle(&Style->DefaultTextStyle)
 			 .Text(INVTEXT("Tooltip Header"))
-		 ]
-	];
+			]
+		];
 }
 
 void SDesTooltipLayer::SetTooltipData(const FDesTooltipData& TooltipData)
@@ -37,14 +37,14 @@ void SDesTooltipLayer::SetTooltipData(const FDesTooltipData& TooltipData)
 void SDesTooltipLayer::SetTooltipPosition(const FVector2D& InPosition, bool bShouldAddVerticalOffset)
 {
 	const auto TooltipDesiredSize = GetDesiredSize();
-	
+
 	auto ActualPosition = InPosition;
 	ActualPosition.Y -= TooltipDesiredSize.Y;
 	ActualPosition.X -= TooltipDesiredSize.X / 2.0;
 
 	ActualPosition.X = FMath::Clamp(ActualPosition.X, 0,
 	                                CachedViewportSize.X - TooltipDesiredSize.X);
-	
+
 	if (bShouldAddVerticalOffset)
 	{
 		ActualPosition.Y -= TooltipDesiredSize.Y / 4.0;
@@ -53,10 +53,10 @@ void SDesTooltipLayer::SetTooltipPosition(const FVector2D& InPosition, bool bSho
 			ActualPosition.Y += TooltipDesiredSize.Y * 2.5;
 		}
 	}
-	
+
 	ActualPosition.Y = FMath::Clamp(ActualPosition.Y, 0,
 	                                CachedViewportSize.Y - TooltipDesiredSize.Y);
-	
+
 	FSlateRenderTransform Transform;
 	Transform.SetTranslation(ActualPosition);
 	SetRenderTransform(Transform);

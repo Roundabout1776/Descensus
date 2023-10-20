@@ -24,16 +24,16 @@ protected:
 	UPROPERTY(EditInstanceOnly)
 	FIntVector PreviewGridSize;
 #endif
-	
+
 	UPROPERTY(Transient)
 	TWeakObjectPtr<UDesItemContainerComponent> ItemContainerComponent;
-	
+
 	TSharedPtr<SDesItemLayer> ItemLayer;
-	
+
 	TSharedPtr<SDesItemContainerWidget> Widget;
-	
+
 	virtual TSharedRef<SWidget> RebuildWidget() override;
-	
+
 public:
 	virtual void SynchronizeProperties() override;
 	virtual void ReleaseSlateResources(bool bReleaseChildren) override;
@@ -46,7 +46,8 @@ public:
 	FReply HandleMouseMove(const FGeometry& Geometry, const FPointerEvent& PointerEvent) const;
 	void HandleMouseLeave(const FPointerEvent& PointerEvent) const;
 	FIntVector2 ClampCoords(const FIntVector2& InCoords) const;
-	FIntVector2 GetCoordsUnderPointerForSize(const FGeometry& Geometry, const FPointerEvent& PointerEvent, const FIntVector2& Size) const;
+	FIntVector2 GetCoordsUnderPointerForSize(const FGeometry& Geometry, const FPointerEvent& PointerEvent,
+	                                         const FIntVector2& Size) const;
 	FIntVector2 GetCoordsUnderPointer(const FGeometry& Geometry, const FPointerEvent& PointerEvent) const;
 	static FDesItemWidgetData GetItemWidgetData(const UDesItemInstance* ItemInstance);
 

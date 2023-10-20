@@ -22,8 +22,8 @@ ADesPlayerController::ADesPlayerController(const FObjectInitializer& ObjectIniti
 	bReplicateUsingRegisteredSubObjectList = true;
 	HitResultTraceDistance = 250;
 	bShowMouseCursor = true;
-	bEnableMouseOverEvents = true;
 
+	bEnableMouseOverEvents = false;
 	bEnableTouchEvents = false;
 	bEnableTouchOverEvents = false;
 }
@@ -104,14 +104,29 @@ void ADesPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
 
+	if (!IsLocalController())
+		return;
+
 	if (!DesHUD.IsValid())
 	{
 		return;
 	}
 
-	/* Handle stuff under cursor */
+	/* Handle actor under cursor. */
 	if (!bIsLooking)
 	{
+		FVector2D MousePosition;
+		FHitResult HitResult;
+		bool bHit = false;
+
+		if (const UGameViewportClient* ViewportClient = Cast<ULocalPlayer>(Player)->ViewportClient; ViewportClient->
+			GetMousePosition(MousePosition))
+		{
+			bHit = GetHitResultAtScreenPosition(MousePosition, CurrentClickTraceChannel, true, HitResult);
+		}
+
+		CurrentClickablePrimitive = bHit ? HitResult.Component.Get() : nullptr;
+
 		if (DesHUD->CurrentCursorTarget == ECursorTarget::Widget)
 		{
 			MetaComponentUnderCursor.Reset();
@@ -243,10 +258,14 @@ void ADesPlayerController::OnRep_CurrentContainer() const
 void ADesPlayerController::ServerOpenContainer_Implementation(ADesContainerActor* ContainerActor)
 {
 	if (!ContainerActor)
+	{
 		return;
+	}
 
 	if (!CheckIfCanInteractWithActor(ContainerActor))
+	{
 		return;
+	}
 
 	ContainerActor->SetOpened();
 

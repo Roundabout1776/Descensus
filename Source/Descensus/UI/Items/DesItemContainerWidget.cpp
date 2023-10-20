@@ -65,7 +65,9 @@ void UDesItemContainerWidget::AttachToItemContainerComponent(UDesItemContainerCo
 void UDesItemContainerWidget::DetachFromItemContainerComponent()
 {
 	if (!ItemContainerComponent.IsValid())
+	{
 		return;
+	}
 
 	ItemContainerComponent->OnAnyChangesDelegate.Remove(OnAnyChangesDelegateHandle);
 	ItemContainerComponent.Reset();

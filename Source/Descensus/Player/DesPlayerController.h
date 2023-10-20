@@ -47,11 +47,8 @@ protected:
 
 public:
 	explicit ADesPlayerController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
-
 	virtual void AcknowledgePossession(APawn* InPawn) override;
-
 	virtual void PlayerTick(float DeltaTime) override;
-
 	virtual bool ShouldShowMouseCursor() const override;
 
 	UFUNCTION(BlueprintCallable)
@@ -62,7 +59,7 @@ public:
 	UPrimitiveComponent* GetCurrentClickablePrimitive(bool bForGrab) const;
 
 	bool CheckIfCanInteractWithActor(const AActor* Actor);
-	
+
 	UFUNCTION(Server, Unreliable)
 	void ServerOpenContainer(ADesContainerActor* ContainerActor);
 

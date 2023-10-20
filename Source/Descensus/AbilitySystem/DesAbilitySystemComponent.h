@@ -12,7 +12,7 @@ class DESCENSUS_API UDesAbilitySystemComponent : public UAbilitySystemComponent
 public:
 	bool bDefaultAbilitiesGiven = false;
 	bool bDefaultEffectsApplied = false;
-	
+
 	virtual void PressAbilityClass(TSubclassOf<UGameplayAbility> AbilityClass);
 	virtual void ReleaseAbilityClass(TSubclassOf<UGameplayAbility> AbilityClass);
 	virtual void PressAbilitySpec(FGameplayAbilitySpec& Spec);

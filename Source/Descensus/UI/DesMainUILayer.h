@@ -34,7 +34,7 @@ protected:
 public:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UOverlay> RootOverlay;
-	
+
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UImage> InscriptionOverlay;
 
@@ -49,10 +49,10 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UDesItemContainerWidget> Inventory;
-	
+
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UDesItemContainerWidget> CurrentContainer;
-	
+
 	UFUNCTION()
 	void HandleControlMappingsRebuilt();
 

@@ -50,13 +50,15 @@ SDesItemContainerWidget::SDesItemContainerWidget()
 	bCanSupportFocus = false;
 }
 
-void SDesItemContainerWidget::Construct(const SDesItemContainerWidget::FArguments& InArgs)
+void SDesItemContainerWidget::Construct(const FArguments& InArgs)
 {
 	const auto Style = FDesStyle::GetDefaultStyle();
 
 	TelegraphSize = FVector2D(Style->CellSize, Style->CellSize);
 	GridSizeAttribute.Assign(*this, InArgs._GridSize);
 	Children.AddSlots(MoveTemp(const_cast<TArray<FSlot::FSlotArguments>&>(InArgs._Slots)));
+
+	AddTooltipMetaData(this);
 }
 
 SDesItemContainerWidget::FSlot::FSlotArguments SDesItemContainerWidget::Slot()
@@ -69,6 +71,13 @@ SDesItemContainerWidget::FScopedWidgetSlotArguments SDesItemContainerWidget::Add
 	return FScopedWidgetSlotArguments{MakeUnique<FSlot>(), Children, INDEX_NONE};
 }
 
+void SDesItemContainerWidget::UpdateCachedTooltipData()
+{
+	auto& Data = GetCachedTooltipDataMutable();
+
+	Data.Header = INVTEXT("Complex Header");
+}
+
 void SDesItemContainerWidget::OnArrangeChildren(const FGeometry& AllottedGeometry,
                                                 FArrangedChildren& ArrangedChildren) const
 {
@@ -76,7 +85,7 @@ void SDesItemContainerWidget::OnArrangeChildren(const FGeometry& AllottedGeometr
 	{
 		for (int32 ChildIndex = 0; ChildIndex < Children.Num(); ++ChildIndex)
 		{
-			const SDesItemContainerWidget::FSlot& CurChild = Children[ChildIndex];
+			const FSlot& CurChild = Children[ChildIndex];
 			const FVector2D Size = CurChild.GetSize();
 
 			// Add the information about this child to the output list (ArrangedChildren)
@@ -108,17 +117,17 @@ int32 SDesItemContainerWidget::OnPaint(const FPaintArgs& Args, const FGeometry& 
 		PointsTemp.Reset();
 		PointsTemp.Add({static_cast<float>(X), 0});
 		PointsTemp.Add({static_cast<float>(X), Size.Y});
-	
+
 		FSlateDrawElement::MakeLines(OutDrawElements, LayerId, PaintGeometry, PointsTemp,
 		                             ESlateDrawEffect::None, Style->ItemGridColor, false, 1.0f);
 	}
-	
+
 	for (int Y = 0; Y <= Size.Y; Y += Style->CellSize)
 	{
 		PointsTemp.Reset();
 		PointsTemp.Add({0, static_cast<float>(Y)});
 		PointsTemp.Add({Size.X, static_cast<float>(Y)});
-	
+
 		FSlateDrawElement::MakeLines(OutDrawElements, LayerId, PaintGeometry, PointsTemp,
 		                             ESlateDrawEffect::None, Style->ItemGridColor, false, 1.0f);
 	}
@@ -129,7 +138,8 @@ int32 SDesItemContainerWidget::OnPaint(const FPaintArgs& Args, const FGeometry& 
 		                                                          FSlateLayoutTransform(TelegraphPosition))
 		                                               .ToPaintGeometry();
 		const auto Tint = Style->ItemContainerTelegraphBrush.TintColor.GetSpecifiedColor();
-		FSlateDrawElement::MakeBox(OutDrawElements, LayerId, TelegraphGeometry, &Style->ItemContainerTelegraphBrush, ESlateDrawEffect::None, Tint);
+		FSlateDrawElement::MakeBox(OutDrawElements, LayerId, TelegraphGeometry, &Style->ItemContainerTelegraphBrush,
+		                           ESlateDrawEffect::None, Tint);
 	}
 
 	/* Canvas stuff. */

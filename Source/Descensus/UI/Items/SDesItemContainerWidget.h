@@ -6,6 +6,7 @@
 #include "SlotBase.h"
 #include "Widgets/SWidget.h"
 #include "Layout/Children.h"
+#include "UI/SDesTooltipLayer.h"
 #include "Widgets/DeclarativeSyntaxSupport.h"
 #include "Widgets/SPanel.h"
 
@@ -14,7 +15,7 @@ class FArrangedChildren;
 class FPaintArgs;
 class FSlateWindowElementList;
 
-class SDesItemContainerWidget : public SPanel
+class SDesItemContainerWidget final : public SPanel, public IDesTooltip
 {
 	SLATE_DECLARE_WIDGET(SDesItemContainerWidget, SPanel)
 	class FSlot : public TWidgetSlotWithAttributeSupport<FSlot>
@@ -78,6 +79,8 @@ protected:
 	using FScopedWidgetSlotArguments = TPanelChildren<FSlot>::FScopedWidgetSlotArguments;
 
 	FScopedWidgetSlotArguments AddSlot();
+	
+	virtual void UpdateCachedTooltipData() override;
 
 public:
 	SLATE_BEGIN_ARGS(SDesItemContainerWidget)

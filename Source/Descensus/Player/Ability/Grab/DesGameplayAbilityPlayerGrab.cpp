@@ -48,7 +48,8 @@ void UDesGameplayAbilityPlayerGrab::ActivateAbilityLocalPlayer(const FGameplayAb
                                                                const FGameplayAbilityActivationInfo ActivationInfo,
                                                                const FGameplayEventData* TriggerEventData)
 {
-	FDesGameplayAbilityTargetData_PrimitiveComponent* TargetData = new FDesGameplayAbilityTargetData_PrimitiveComponent();
+	FDesGameplayAbilityTargetData_PrimitiveComponent* TargetData = new
+		FDesGameplayAbilityTargetData_PrimitiveComponent();
 
 	if (const auto PC = GetDesPlayerControllerFromActorInfo())
 	{
@@ -84,7 +85,8 @@ void UDesGameplayAbilityPlayerGrab::ActivateAbilityWithTargetData(
 
 			FGameplayCueParameters Parameters;
 			Parameters.Location = PrimitiveComponent->GetComponentLocation();
-			GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(TAG_GameplayCue_Ability_PlayerGrab, Parameters);
+			GetAbilitySystemComponentFromActorInfo()->
+				ExecuteGameplayCue(TAG_GameplayCue_Ability_PlayerGrab, Parameters);
 
 			const auto GrabTask = UDesAbilityTaskPlayerGrab::PlayerGrab(this, Character);
 			GrabTask->ReadyForActivation();

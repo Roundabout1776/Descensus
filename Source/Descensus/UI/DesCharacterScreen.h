@@ -17,15 +17,15 @@ protected:
 	TSharedPtr<SBorder> Root;
 	TSharedPtr<SBox> ItemContainerBox;
 	TSharedPtr<SDesItemContainerWidget> ItemContainerWidget;
-	
+
 	TWeakObjectPtr<UDesInventoryComponent> InventoryComponent;
-	
+
 	virtual TSharedRef<SWidget> RebuildWidget() override;
-	
+
 public:
 	virtual void ReleaseSlateResources(bool bReleaseChildren) override;
 	void InitForCharacter(const ADesPlayerCharacter* Character);
-	
+
 #if WITH_EDITOR
 	virtual const FText GetPaletteCategory() override;
 #endif

@@ -29,7 +29,9 @@ bool UDesInventoryComponent::CanInteractWithContainer(const UDesItemContainerCom
 void UDesInventoryComponent::ServerDestroyItem_Implementation(UDesItemInstance* InItemInstance)
 {
 	if (!InItemInstance)
+	{
 		return;
+	}
 
 	RemoveItemByInstance(InItemInstance);
 	GetWorld()->GetGameState<ADesGameState>()->DestroyItemInstance(InItemInstance);
@@ -38,7 +40,9 @@ void UDesInventoryComponent::ServerDestroyItem_Implementation(UDesItemInstance* 
 void UDesInventoryComponent::ServerDestroyEjectedItem_Implementation()
 {
 	if (!EjectedItem)
+	{
 		return;
+	}
 
 	GetWorld()->GetGameState<ADesGameState>()->DestroyItemInstance(EjectedItem);
 
@@ -49,13 +53,19 @@ void UDesInventoryComponent::ServerMoveEjectedItem_Implementation(UDesItemContai
                                                                   const FIntVector2 Coords)
 {
 	if (!Container)
+	{
 		return;
+	}
 
 	if (!CanInteractWithContainer(Container))
+	{
 		return;
+	}
 
 	if (!EjectedItem)
+	{
 		return;
+	}
 
 	const auto ItemData = EjectedItem->GetItemData();
 
@@ -80,7 +90,9 @@ void UDesInventoryComponent::ServerMoveEjectedItem_Implementation(UDesItemContai
 			if (const auto GridValue = Container->Grid[Y * InGridSize.X + X]; GridValue != 0)
 			{
 				if (GridValueToItemsIndex(GridValue) == GridValueToItemsIndex(SoleItemGridValue))
+				{
 					continue;
+				}
 				if (SoleItemGridValue != 0)
 				{
 					return;
@@ -114,16 +126,13 @@ void UDesInventoryComponent::ServerMoveEjectedItem_Implementation(UDesItemContai
 
 					return;
 				}
-				else
-				{
-					/* Set quantity of an existing item in the container to max
+				/* Set quantity of an existing item in the container to max
 					 * and subtract the difference from ejected item. */
-					EjectedItem->SetQuantity(
-						EjectedItem->GetQuantity() - (MaxQuantity - EntryToStack.ItemInstance->GetQuantity()));
-					EntryToStack.ItemInstance->SetQuantity(MaxQuantity);
+				EjectedItem->SetQuantity(
+					EjectedItem->GetQuantity() - (MaxQuantity - EntryToStack.ItemInstance->GetQuantity()));
+				EntryToStack.ItemInstance->SetQuantity(MaxQuantity);
 
-					return;
-				}
+				return;
 			}
 		}
 	}
@@ -149,16 +158,22 @@ void UDesInventoryComponent::ServerEjectItem_Implementation(UDesItemContainerCom
                                                             UDesItemInstance* InItemInstance)
 {
 	if (EjectedItem)
+	{
 		return;
+	}
 
 	if (!CanInteractWithContainer(Container))
+	{
 		return;
+	}
 
 	if (!Container->GetItemsRef().ContainsByPredicate([InItemInstance](const FItemContainerEntry& Entry)
 	{
 		return Entry.ItemInstance == InItemInstance;
 	}))
+	{
 		return;
+	}
 
 	Container->RemoveItemByInstance(InItemInstance);
 

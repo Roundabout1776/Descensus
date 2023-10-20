@@ -39,12 +39,14 @@ protected:
 	static inline constexpr int32 HUDLayerZ = 1;
 	static inline constexpr int32 ItemLayerZ = 4;
 	static inline constexpr int32 TooltipLayerZ = 5;
-	
+
 	TSharedPtr<SDesHUDLayer> HUDLayer;
 	TSharedPtr<SDesItemLayer> ItemLayer;
 	TSharedPtr<SDesTooltipLayer> TooltipLayer;
-	
+
 	TSharedPtr<FSlateUser> SlateUser;
+
+	TWeakPtr<SWidget> LastTooltipWidgetUnderCursor;
 
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UDesMainUILayer> MainUILayer;
@@ -67,9 +69,6 @@ public:
 
 	ADesHUD();
 	virtual void Tick(float DeltaSeconds) override;
-
-	void NewWidgetUnderCursor(UDesWidget* Widget);
-	void UpdateWidgetUnderCursor(UDesWidget* Widget);
 
 	void NewActorUnderCursor(const AActor* Actor, const UDesMetaComponent* MetaComponent);
 	void UpdateActorUnderCursor(const AActor* Actor) const;

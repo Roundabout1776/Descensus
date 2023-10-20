@@ -238,7 +238,9 @@ bool UDesItemContainerComponent::AddItemAuto(UDesItemInstance* InItemInstance)
 void UDesItemContainerComponent::RemoveItemByInstance(UDesItemInstance* InItemInstance)
 {
 	if (!InItemInstance)
+	{
 		return;
+	}
 	for (auto ItemIter = GetItemsRef().CreateIterator(); ItemIter; ++ItemIter)
 	{
 		if (const FItemContainerEntry& Entry = *ItemIter; Entry.ItemInstance && Entry.ItemInstance == InItemInstance)
