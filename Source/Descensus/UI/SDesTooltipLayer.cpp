@@ -20,10 +20,23 @@ void SDesTooltipLayer::Construct(const FArguments& InArgs)
 		 .Padding(Style->Padding)
 		 .BorderImage(&Style->CommonBox)
 			[
-				SAssignNew(TooltipHeader, STextBlock)
+				SNew(SVerticalBox)
+				+ SVerticalBox::Slot()
+				[
+
+					SAssignNew(TooltipHeader, STextBlock)
 			 .Justification(ETextJustify::Center)
 			 .TextStyle(&Style->DefaultTextStyle)
 			 .Text(INVTEXT("Tooltip Header"))
+				]
+				+ SVerticalBox::Slot()
+				[
+
+					SAssignNew(TooltipDescription, STextBlock)
+			 .Justification(ETextJustify::Center)
+			 .TextStyle(&Style->DefaultTextStyle)
+			 .Text(INVTEXT("Tooltip Description"))
+				]
 			]
 		];
 }
@@ -32,6 +45,15 @@ void SDesTooltipLayer::SetTooltipData(const FDesTooltipData& TooltipData)
 {
 	CachedViewportSize = GetParentWidget()->GetTickSpaceGeometry().GetLocalSize();
 	TooltipHeader->SetText(TooltipData.Header);
+	if (TooltipData.Description.IsEmpty())
+	{
+		TooltipDescription->SetVisibility(EVisibility::Collapsed);
+	}
+	else
+	{
+		TooltipDescription->SetText(TooltipData.Description);
+		TooltipDescription->SetVisibility(EVisibility::HitTestInvisible);
+	}
 }
 
 void SDesTooltipLayer::SetTooltipPosition(const FVector2D& InPosition, bool bShouldAddVerticalOffset)

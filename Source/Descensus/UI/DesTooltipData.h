@@ -21,5 +21,5 @@ struct DESCENSUS_API FDesTooltipData
 	FText Header;
 
 	UPROPERTY()
-	TArray<FText> Content;
+	FText Description;
 };

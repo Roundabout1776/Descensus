@@ -1,5 +1,6 @@
 ﻿#include "SDesItemContainerWidget.h"
 
+#include "DesLogging.h"
 #include "SDesItemLayer.h"
 #include "SDesItemWidget.h"
 #include "Components/DesItemContainerComponent.h"
@@ -78,9 +79,12 @@ SDesItemContainerWidget::FScopedWidgetSlotArguments SDesItemContainerWidget::Add
 
 void SDesItemContainerWidget::UpdateCachedTooltipData()
 {
-	auto& Data = GetCachedTooltipDataMutable();
-
-	Data.Header = INVTEXT("Complex Header");
+	if (const auto ItemInstance = LastItemUnderCursor.Get())
+	{
+		auto& Data = GetCachedTooltipDataMutable();
+		Data.Header = ItemInstance->GetItemData()->DisplayName;
+		Data.Description = ItemInstance->GetItemData()->Description;
+	}
 }
 
 void SDesItemContainerWidget::OnArrangeChildren(const FGeometry& AllottedGeometry,
@@ -258,13 +262,34 @@ FReply SDesItemContainerWidget::OnMouseMove(const FGeometry& MyGeometry, const F
 			});
 		}
 	}
+	else
+	{
+		/* Update tooltip for current item. */
+		const auto Coords = GetCoordsUnderPointer(MyGeometry, MouseEvent);
+		if (const auto ItemInstance = ItemContainerComponent->GetItemInstance(Coords))
+		{
+			if (!LastItemUnderCursor.IsValid() || LastItemUnderCursor.Get() != ItemInstance)
+			{
+				LastItemUnderCursor = MakeWeakObjectPtr(ItemInstance);
+				SetTooltipDirty(true);
+			}
+		}
+		else
+		{
+			if (LastItemUnderCursor.IsValid())
+			{
+				LastItemUnderCursor.Reset();
+				SetTooltipDirty(true);
+			}
+		}
+	}
 	SetTelegraphVisible(bNewIsTelegraphVisible);
 	return FReply::Unhandled();
 }
 
 bool SDesItemContainerWidget::ShouldShowTooltip()
 {
-	return !GetIsTelegraphVisible();
+	return !GetIsTelegraphVisible() && LastItemUnderCursor.IsValid();
 }
 
 void SDesItemContainerWidget::SetTelegraphPosition(FVector2D Position)
@@ -336,7 +361,7 @@ void SDesItemContainerWidget::AttachToItemContainerComponent(UDesItemContainerCo
 
 	/* @TODO: make sure it's ok. */
 	OnAnyChangesDelegateHandle = ItemContainerComponent->OnAnyChangesDelegate.AddSP(this, &ThisClass::OnyAnyChanges);
-	
+
 	SetGridSize(ItemContainerComponent->GridSize);
 
 	OnyAnyChanges(InItemContainerComponent->GetItemsRef());

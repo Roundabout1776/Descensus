@@ -37,8 +37,6 @@ protected:
 		bIsDirty = bNewIsDirty;
 	}
 
-	bool IsTooltipDirty() const { return bIsDirty; }
-
 	virtual void UpdateCachedTooltipData() = 0;
 
 	void AddTooltipMetaData(SWidget* Widget)
@@ -60,6 +58,7 @@ public:
 	}
 
 	virtual bool ShouldShowTooltip() { return true; }
+	bool IsTooltipDirty() const { return bIsDirty; }
 };
 
 class DESCENSUS_API SDesTooltipLayer final : public SCompoundWidget
@@ -67,6 +66,7 @@ class DESCENSUS_API SDesTooltipLayer final : public SCompoundWidget
 	FVector2D CachedViewportSize;
 	TSharedPtr<SBorder> Tooltip;
 	TSharedPtr<STextBlock> TooltipHeader;
+	TSharedPtr<STextBlock> TooltipDescription;
 
 public:
 	SLATE_BEGIN_ARGS(SDesTooltipLayer)

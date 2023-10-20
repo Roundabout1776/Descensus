@@ -87,7 +87,7 @@ void ADesHUD::Tick(float DeltaSeconds)
 
 		if (Tooltip)
 		{
-			if (bNewTooltipWidget)
+			if (bNewTooltipWidget || Tooltip->IsTooltipDirty())
 			{
 				ShowTooltip(Tooltip->GetCachedTooltipData(), MousePosition, true);
 			}
@@ -101,7 +101,7 @@ void ADesHUD::Tick(float DeltaSeconds)
 		else
 		{
 			LastTooltipWidgetUnderCursor.Reset();
-			if (CurrentCursorTarget != ECursorTarget::Actor)
+			if (CurrentCursorTarget == ECursorTarget::Widget)
 			{
 				HideTooltip();
 			}

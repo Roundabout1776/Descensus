@@ -10,6 +10,7 @@
 #include "Widgets/DeclarativeSyntaxSupport.h"
 #include "Widgets/SPanel.h"
 
+class UDesItemInstance;
 struct FItemContainerEntry;
 class SDesItemLayer;
 class UDesItemContainerComponent;
@@ -68,6 +69,7 @@ class SDesItemContainerWidget final : public SPanel, public IDesTooltip
 	};
 
 protected:
+	TWeakObjectPtr<UDesItemInstance> LastItemUnderCursor;
 	TPanelChildren<FSlot> Children;
 	TSlateAttribute<FIntVector> GridSizeAttribute;
 	int32 CurrentItemWidgetIndex{};
