@@ -37,4 +37,5 @@ public:
 	void OnEjectedItemChanged(const UDesItemInstance* ItemInstance);
 	void OnAnyChanges(const TArray<FItemContainerEntry>& ItemContainerEntries) const;
 	void SetInventoryComponent(UDesInventoryComponent* InInventoryComponent);
+	static FDesItemWidgetData GetItemWidgetData(const UDesItemInstance* ItemInstance);
 };

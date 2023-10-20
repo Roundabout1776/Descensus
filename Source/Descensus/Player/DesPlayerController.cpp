@@ -16,6 +16,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Slate/SceneViewport.h"
 #include "UI/DesMainUILayer.h"
+#include "UI/SDesHUDLayer.h"
 
 ADesPlayerController::ADesPlayerController(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -250,8 +251,7 @@ void ADesPlayerController::OnRep_CurrentContainer() const
 {
 	if (IsLocalController())
 	{
-		const auto MainUILayer = DesHUD->GetMainUILayer();
-		MainUILayer->SetCurrentContainer(CurrentContainer);
+		DesHUD->GetHUDLayer()->SetCurrentContainer(CurrentContainer);
 	}
 }
 

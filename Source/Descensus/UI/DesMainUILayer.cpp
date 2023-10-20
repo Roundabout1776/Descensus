@@ -3,7 +3,6 @@
 #include "EnhancedInputSubsystems.h"
 #include "Components/DesItemContainerComponent.h"
 #include "Components/Overlay.h"
-#include "Items/DesItemContainerWidget.h"
 #include "Player/DesPlayerController.h"
 #include "Player/DesInventoryComponent.h"
 #include "UI/DesShortcutsPanel.h"
@@ -34,28 +33,4 @@ void UDesMainUILayer::NativeOnInitialized()
 void UDesMainUILayer::HandleControlMappingsRebuilt()
 {
 	ShortcutsPanel->UpdateInputMappings(PlayerController.Get());
-}
-
-void UDesMainUILayer::SetupItemSystem(const TSharedRef<SDesItemLayer>& InItemLayer,
-                                      UDesInventoryComponent* InventoryComponent)
-{
-	Inventory->AttachToItemContainerComponent(Cast<UDesItemContainerComponent>(InventoryComponent));
-	Inventory->SetItemLayer(InItemLayer);
-
-	CurrentContainer->SetItemLayer(InItemLayer);
-	CurrentContainer->SetVisibility(ESlateVisibility::Collapsed);
-}
-
-void UDesMainUILayer::SetCurrentContainer(UDesItemContainerComponent* ItemContainerComponent)
-{
-	if (ItemContainerComponent)
-	{
-		CurrentContainer->AttachToItemContainerComponent(ItemContainerComponent);
-		CurrentContainer->SetVisibility(ESlateVisibility::Visible);
-	}
-	else
-	{
-		CurrentContainer->DetachFromItemContainerComponent();
-		CurrentContainer->SetVisibility(ESlateVisibility::Collapsed);
-	}
 }

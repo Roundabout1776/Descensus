@@ -1,8 +1,13 @@
 ﻿#include "SDesItemContainerWidget.h"
 
+#include "SDesItemLayer.h"
 #include "SDesItemWidget.h"
+#include "Components/DesItemContainerComponent.h"
+#include "Items/DesItemData.h"
+#include "Items/DesItemInstance.h"
 #include "Types/PaintArgs.h"
 #include "Layout/ArrangedChildren.h"
+#include "Player/DesInventoryComponent.h"
 #include "UI/DesStyle.h"
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
@@ -186,6 +191,82 @@ FChildren* SDesItemContainerWidget::GetChildren()
 	return &Children;
 }
 
+FReply SDesItemContainerWidget::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
+{
+	const auto EjectedItem = ItemLayer->GetEjectedItem();
+
+	FIntVector2 Coords;
+	if (EjectedItem)
+	{
+		const auto Size = EjectedItem->GetItemData()->Size;
+		Coords = GetCoordsUnderPointerForSize(MyGeometry, MouseEvent, Size);
+	}
+	else
+	{
+		Coords = GetCoordsUnderPointer(MyGeometry, MouseEvent);
+	}
+
+	if (const auto ItemInstance = ItemContainerComponent->GetItemInstance(Coords))
+	{
+		if (EjectedItem)
+		{
+			/* Swap item. */
+			ItemLayer->GetInventoryComponent()->ServerMoveEjectedItem(ItemContainerComponent.Get(), Coords);
+		}
+		else
+		{
+			/* Eject item. */
+			ItemLayer->GetInventoryComponent()->ServerEjectItem(ItemContainerComponent.Get(), ItemInstance);
+		}
+	}
+	else
+	{
+		/* Move item. */
+		if (EjectedItem && GetIsTelegraphVisible())
+		{
+			ItemLayer->GetInventoryComponent()->ServerMoveEjectedItem(ItemContainerComponent.Get(), Coords);
+			// ItemLayer->EndItemMove();
+		}
+	}
+	return FReply::Handled();
+}
+
+void SDesItemContainerWidget::OnMouseLeave(const FPointerEvent& MouseEvent)
+{
+	SetTelegraphVisible(false);
+}
+
+FReply SDesItemContainerWidget::OnMouseMove(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
+{
+	bool bNewIsTelegraphVisible = false;
+	if (ItemLayer->GetEjectedItem())
+	{
+		const FIntVector2 ItemSize = ItemLayer->GetEjectedItem()->GetItemData()->Size;
+		const auto Coords = GetCoordsUnderPointerForSize(MyGeometry, MouseEvent, ItemSize);
+		const auto GridSize = GetGridSize();
+
+		if (Coords.X + ItemSize.X - 1 >= GridSize.X || Coords.Y + ItemSize.Y - 1 >= GridSize.Y)
+		{
+		}
+		else
+		{
+			bNewIsTelegraphVisible = true;
+			const auto Style = FDesStyle::GetDefaultStyle();
+			SetTelegraphSize(FVector2D(ItemSize.X * Style->CellSize, ItemSize.Y * Style->CellSize));
+			SetTelegraphPosition(FVector2D{
+				Coords.X * (MyGeometry.Size.X / GridSize.X), Coords.Y * (MyGeometry.Size.Y / GridSize.Y)
+			});
+		}
+	}
+	SetTelegraphVisible(bNewIsTelegraphVisible);
+	return FReply::Unhandled();
+}
+
+bool SDesItemContainerWidget::ShouldShowTooltip()
+{
+	return !GetIsTelegraphVisible();
+}
+
 void SDesItemContainerWidget::SetTelegraphPosition(FVector2D Position)
 {
 	TelegraphPosition = Position;
@@ -238,6 +319,81 @@ void SDesItemContainerWidget::CollapseAllItems()
 		Widget.SetVisibility(EVisibility::Collapsed);
 	});
 	CurrentItemWidgetIndex = 0;
+}
+
+void SDesItemContainerWidget::SetItemLayer(const TSharedRef<SDesItemLayer>& InItemLayer)
+{
+	ItemLayer = InItemLayer.ToSharedPtr();
+}
+
+void SDesItemContainerWidget::AttachToItemContainerComponent(UDesItemContainerComponent* InItemContainerComponent)
+{
+	check(InItemContainerComponent);
+
+	DetachFromItemContainerComponent();
+
+	ItemContainerComponent = MakeWeakObjectPtr(InItemContainerComponent);
+
+	/* @TODO: make sure it's ok. */
+	OnAnyChangesDelegateHandle = ItemContainerComponent->OnAnyChangesDelegate.AddSP(this, &ThisClass::OnyAnyChanges);
+	
+	SetGridSize(ItemContainerComponent->GridSize);
+
+	OnyAnyChanges(InItemContainerComponent->GetItemsRef());
+}
+
+void SDesItemContainerWidget::DetachFromItemContainerComponent()
+{
+	if (!ItemContainerComponent.IsValid())
+	{
+		return;
+	}
+
+	ItemContainerComponent->OnAnyChangesDelegate.Remove(OnAnyChangesDelegateHandle);
+	ItemContainerComponent.Reset();
+
+	CollapseAllItems();
+}
+
+FIntVector2 SDesItemContainerWidget::ClampCoords(const FIntVector2& InCoords) const
+{
+	const auto GridSize = GetGridSize();
+	return FIntVector2(FMath::Clamp(InCoords.X, 0, GridSize.X - 1), FMath::Clamp(InCoords.Y, 0, GridSize.Y - 1));
+}
+
+FIntVector2 SDesItemContainerWidget::GetCoordsUnderPointerForSize(const FGeometry& Geometry,
+                                                                  const FPointerEvent& PointerEvent,
+                                                                  const FIntVector2& Size) const
+{
+	const auto Style = FDesStyle::GetDefaultStyle();
+	const auto GridSize = GetGridSize();
+	FVector2D MouseLocal = Geometry.AbsoluteToLocal(PointerEvent.GetScreenSpacePosition());
+	MouseLocal -= FVector2D(Size.X * Style->CellSize / 2.0, Size.Y * Style->CellSize / 2.0);
+	MouseLocal /= Geometry.Size;
+	MouseLocal *= FVector2D(GridSize.X, GridSize.Y);
+	return ClampCoords({FMath::RoundToInt32(MouseLocal.X), FMath::RoundToInt32(MouseLocal.Y)});
+}
+
+FIntVector2 SDesItemContainerWidget::GetCoordsUnderPointer(const FGeometry& Geometry,
+                                                           const FPointerEvent& PointerEvent) const
+{
+	const auto GridSize = GetGridSize();
+	FVector2D MouseLocal = Geometry.AbsoluteToLocal(PointerEvent.GetScreenSpacePosition());
+	MouseLocal /= Geometry.Size;
+	MouseLocal *= FVector2D(GridSize.X, GridSize.Y);
+	return ClampCoords({static_cast<int>(MouseLocal.X), static_cast<int>(MouseLocal.Y)});
+}
+
+void SDesItemContainerWidget::OnyAnyChanges(const TArray<FItemContainerEntry>& ItemContainerEntries)
+{
+	CollapseAllItems();
+	for (auto& Entry : ItemContainerEntries)
+	{
+		if (const auto ItemInstance = Entry.ItemInstance)
+		{
+			AddItem(Entry.Position, SDesItemLayer::GetItemWidgetData(ItemInstance));
+		}
+	}
 }
 
 END_SLATE_FUNCTION_BUILD_OPTIMIZATION

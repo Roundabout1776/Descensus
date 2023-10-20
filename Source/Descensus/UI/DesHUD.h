@@ -61,8 +61,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category="Descensus|Inscription")
 	TSubclassOf<ADesInscriptionCanvas> InscriptionCanvasClass;
 
-	void CreateSlateWidgetAndAddToViewport(const TSharedRef<SWidget>& Widget, const int32 ZOrder) const;
-
 public:
 	UPROPERTY(BlueprintReadOnly)
 	ECursorTarget CurrentCursorTarget = ECursorTarget::None;
@@ -77,6 +75,7 @@ public:
 	void HideTooltip();
 
 	FORCEINLINE UDesMainUILayer* GetMainUILayer() const { return MainUILayer; }
+	FORCEINLINE TSharedRef<SDesHUDLayer> GetHUDLayer() const { return HUDLayer.ToSharedRef(); }
 
 	FORCEINLINE ADesInscriptionCanvas* GetInscriptionCanvas() const { return InscriptionCanvas; }
 

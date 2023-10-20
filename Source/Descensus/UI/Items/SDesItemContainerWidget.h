@@ -10,6 +10,9 @@
 #include "Widgets/DeclarativeSyntaxSupport.h"
 #include "Widgets/SPanel.h"
 
+struct FItemContainerEntry;
+class SDesItemLayer;
+class UDesItemContainerComponent;
 struct FDesItemWidgetData;
 class FArrangedChildren;
 class FPaintArgs;
@@ -71,6 +74,9 @@ protected:
 	bool bIsTelegraphVisible{};
 	FVector2D TelegraphPosition{};
 	FVector2D TelegraphSize{};
+	FDelegateHandle OnAnyChangesDelegateHandle;
+	TWeakObjectPtr<UDesItemContainerComponent> ItemContainerComponent;
+	TSharedPtr<SDesItemLayer> ItemLayer;
 
 	virtual FVector2D ComputeDesiredSize(float) const override;
 
@@ -103,7 +109,11 @@ public:
 	                      FSlateWindowElementList& OutDrawElements, int32 LayerId, const FWidgetStyle& InWidgetStyle,
 	                      bool bParentEnabled) const override;
 	virtual FChildren* GetChildren() override;
+	virtual FReply OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
+	virtual void OnMouseLeave(const FPointerEvent& MouseEvent) override;
+	virtual FReply OnMouseMove(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
 
+	virtual bool ShouldShowTooltip() override;
 	void SetTelegraphPosition(FVector2D Position);
 	void SetTelegraphSize(FVector2D Size);
 	FORCEINLINE bool GetIsTelegraphVisible() const { return bIsTelegraphVisible; }
@@ -112,4 +122,12 @@ public:
 	FIntVector GetGridSize() const;
 	void AddItem(FIntVector2 Position, const FDesItemWidgetData& Data);
 	void CollapseAllItems();
+	void SetItemLayer(const TSharedRef<SDesItemLayer>& InItemLayer);
+	void AttachToItemContainerComponent(UDesItemContainerComponent* InItemContainerComponent);
+	void DetachFromItemContainerComponent();
+	FIntVector2 ClampCoords(const FIntVector2& InCoords) const;
+	FIntVector2 GetCoordsUnderPointerForSize(const FGeometry& Geometry, const FPointerEvent& PointerEvent,
+	                                         const FIntVector2& Size) const;
+	FIntVector2 GetCoordsUnderPointer(const FGeometry& Geometry, const FPointerEvent& PointerEvent) const;
+	void OnyAnyChanges(const TArray<FItemContainerEntry>& ItemContainerEntries);
 };

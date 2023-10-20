@@ -1,12 +1,10 @@
 ﻿#include "SDesItemLayer.h"
 
-#include "DesItemContainerWidget.h"
 #include "SDesItemWidget.h"
 #include "Items/DesItemData.h"
 #include "Items/DesItemInstance.h"
 #include "Player/DesInventoryComponent.h"
 #include "UI/DesStyle.h"
-#include "Widgets/SCanvas.h"
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 
@@ -76,7 +74,7 @@ void SDesItemLayer::OnEjectedItemChanged(const UDesItemInstance* ItemInstance)
 {
 	if (ItemInstance)
 	{
-		ShowEjectedItem(UDesItemContainerWidget::GetItemWidgetData(ItemInstance));
+		ShowEjectedItem(GetItemWidgetData(ItemInstance));
 	}
 	else
 	{
@@ -95,6 +93,20 @@ void SDesItemLayer::OnAnyChanges(const TArray<FItemContainerEntry>& ItemContaine
 void SDesItemLayer::SetInventoryComponent(UDesInventoryComponent* InInventoryComponent)
 {
 	InventoryComponent = MakeWeakObjectPtr(InInventoryComponent);
+}
+
+FDesItemWidgetData SDesItemLayer::GetItemWidgetData(const UDesItemInstance* ItemInstance)
+{
+	if (ItemInstance)
+	{
+		const auto ItemData = ItemInstance->GetItemData();
+
+		return FDesItemWidgetData{
+			ItemData->Size, ItemInstance->GetQuantity(),
+			ItemData->MaxQuantity, &ItemData->IconBrush
+		};
+	}
+	return FDesItemWidgetData{};
 }
 
 END_SLATE_FUNCTION_BUILD_OPTIMIZATION

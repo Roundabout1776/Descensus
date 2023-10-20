@@ -39,12 +39,6 @@ FVector2D ADesHUD::GetDesiredTooltipPositionForActor(const AActor* Actor) const
 	return DesiredPosition;
 }
 
-void ADesHUD::CreateSlateWidgetAndAddToViewport(const TSharedRef<SWidget>& Widget, const int32 ZOrder) const
-{
-	const auto LocalPlayer = GetOwningPlayerController()->GetLocalPlayer();
-	LocalPlayer->ViewportClient->AddViewportWidgetContent(Widget, ZOrder);
-}
-
 ADesHUD::ADesHUD()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -157,20 +151,26 @@ void ADesHUD::InitForCharacter(const ADesPlayerCharacter* Character)
 	InscriptionCanvas = GetWorld()->SpawnActor<ADesInscriptionCanvas>(InscriptionCanvasClass, Parameters);
 	InscriptionCanvas->DoInitialSetup(PlayerController->GetLocalPlayer()->ViewportClient->Viewport);
 
-	SlateUser = PlayerController->GetLocalPlayer()->GetSlateUser();
-
-	CreateSlateWidgetAndAddToViewport(SAssignNew(HUDLayer, SDesHUDLayer), HUDLayerZ);
-
-	CreateSlateWidgetAndAddToViewport(SAssignNew(ItemLayer, SDesItemLayer), ItemLayerZ);
+	const auto LocalPlayer = GetOwningPlayerController()->GetLocalPlayer();
+	const auto ViewportClient = LocalPlayer->ViewportClient;
+	
+	SlateUser = LocalPlayer->GetSlateUser();
+	
+	ItemLayer = SNew(SDesItemLayer);
 	ItemLayer->SetInventoryComponent(InventoryComponent);
+	ViewportClient->AddViewportWidgetContent(ItemLayer.ToSharedRef(), ItemLayerZ);
 
-	CreateSlateWidgetAndAddToViewport(SAssignNew(TooltipLayer, SDesTooltipLayer), TooltipLayerZ);
+	HUDLayer = SNew(SDesHUDLayer);
+	HUDLayer->SetupItemSystem(ItemLayer.ToSharedRef(), InventoryComponent);
+	ViewportClient->AddViewportWidgetContent(HUDLayer.ToSharedRef(), HUDLayerZ);
 
+	TooltipLayer = SNew(SDesTooltipLayer);
+	ViewportClient->AddViewportWidgetContent(TooltipLayer.ToSharedRef(), TooltipLayerZ);
+	
 	check(IsValid(MainUILayerClass));
 	MainUILayer = CreateWidget<UDesMainUILayer>(PlayerController, MainUILayerClass);
 	MainUILayer->AddToPlayerScreen(MainLayerZ);
 	MainUILayer->InscriptionOverlay->SetBrushFromMaterial(InscriptionCanvas->GetInscriptionCanvasMaterial());
-	MainUILayer->SetupItemSystem(ItemLayer.ToSharedRef(), Character->Inventory);
 
 	InventoryComponent->OnEjectedItemChanged.AddWeakLambda(this, [this](const UDesItemInstance* EjectedItem)
 	{

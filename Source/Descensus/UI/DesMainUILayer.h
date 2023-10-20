@@ -8,7 +8,6 @@ class SDesItemLayer;
 class UDesItemContainerComponent;
 class UDesItemLayer;
 class UDesCharacterScreen;
-class UDesItemContainerWidget;
 class UDesInventoryComponent;
 class UInputAction;
 class SDesShortcutsPanel;
@@ -47,16 +46,6 @@ public:
 	// UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	// TObjectPtr<UDesCharacterScreen> CharacterScreen;
 
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UDesItemContainerWidget> Inventory;
-
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UDesItemContainerWidget> CurrentContainer;
-
 	UFUNCTION()
 	void HandleControlMappingsRebuilt();
-
-	void SetupItemSystem(const TSharedRef<SDesItemLayer>& InItemLayer, UDesInventoryComponent* InventoryComponent);
-
-	void SetCurrentContainer(UDesItemContainerComponent* ItemContainerComponent);
 };
