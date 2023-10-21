@@ -190,6 +190,10 @@ void UDesInventoryComponent::SetEjectedItem(UDesItemInstance* ItemInstance)
 {
 	EjectedItem = ItemInstance;
 	OnRep_EjectedItem();
+	if (EjectedItem)
+	{
+		EjectedItem->ChangesListener = this;
+	}
 }
 
 void UDesInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

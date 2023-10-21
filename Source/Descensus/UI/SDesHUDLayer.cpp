@@ -60,8 +60,8 @@ void SDesHUDLayer::SetCrosshairVisible(const bool bNewVisible) const
 void SDesHUDLayer::SetupItemSystem(const TSharedRef<SDesItemLayer>& InItemLayer,
                                    UDesInventoryComponent* InventoryComponent) const
 {
-	Inventory->AttachToItemContainerComponent(Cast<UDesItemContainerComponent>(InventoryComponent));
 	Inventory->SetItemLayer(InItemLayer);
+	Inventory->AttachToItemContainerComponent(Cast<UDesItemContainerComponent>(InventoryComponent));
 
 	CurrentContainer->SetItemLayer(InItemLayer);
 	CurrentContainer->SetVisibility(EVisibility::Collapsed);

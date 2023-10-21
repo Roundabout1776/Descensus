@@ -360,11 +360,11 @@ void SDesItemContainerWidget::AttachToItemContainerComponent(UDesItemContainerCo
 	ItemContainerComponent = MakeWeakObjectPtr(InItemContainerComponent);
 
 	/* @TODO: make sure it's ok. */
-	OnAnyChangesDelegateHandle = ItemContainerComponent->OnAnyChangesDelegate.AddSP(this, &ThisClass::OnyAnyChanges);
+	OnAnyChangesDelegateHandle = ItemContainerComponent->OnAnyChangesDelegate.AddSP(this, &ThisClass::OnAnyChanges);
 
 	SetGridSize(ItemContainerComponent->GridSize);
 
-	OnyAnyChanges(InItemContainerComponent->GetItemsRef());
+	OnAnyChanges(InItemContainerComponent->GetItemsRef());
 }
 
 void SDesItemContainerWidget::DetachFromItemContainerComponent()
@@ -409,7 +409,7 @@ FIntVector2 SDesItemContainerWidget::GetCoordsUnderPointer(const FGeometry& Geom
 	return ClampCoords({static_cast<int>(MouseLocal.X), static_cast<int>(MouseLocal.Y)});
 }
 
-void SDesItemContainerWidget::OnyAnyChanges(const TArray<FItemContainerEntry>& ItemContainerEntries)
+void SDesItemContainerWidget::OnAnyChanges(const TArray<FItemContainerEntry>& ItemContainerEntries)
 {
 	CollapseAllItems();
 	for (auto& Entry : ItemContainerEntries)

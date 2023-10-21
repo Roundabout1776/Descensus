@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "UObject/WeakInterfacePtr.h"
 #include "DesItemInstance.generated.h"
 
 class IDesItemChangesListenerInterface;
@@ -26,12 +27,11 @@ public:
 	UPROPERTY(VisibleInstanceOnly, Replicated)
 	TWeakObjectPtr<ADesItemActor> ItemActor;
 
-	UPROPERTY(Transient)
-	TScriptInterface<IDesItemChangesListenerInterface> ChangesListener;
+	TWeakInterfacePtr<IDesItemChangesListenerInterface> ChangesListener;
+	
+	virtual bool IsSupportedForNetworking() const override { return true; }
 
 	TObjectPtr<UDesItemData> GetItemData() const;
-
-	virtual bool IsSupportedForNetworking() const override { return true; }
 
 	void SetQuantity(int32 InQuantity);
 	FORCEINLINE int32 GetQuantity() const { return Quantity; }

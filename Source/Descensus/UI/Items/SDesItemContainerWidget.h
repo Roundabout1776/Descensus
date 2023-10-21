@@ -131,5 +131,5 @@ public:
 	FIntVector2 GetCoordsUnderPointerForSize(const FGeometry& Geometry, const FPointerEvent& PointerEvent,
 	                                         const FIntVector2& Size) const;
 	FIntVector2 GetCoordsUnderPointer(const FGeometry& Geometry, const FPointerEvent& PointerEvent) const;
-	void OnyAnyChanges(const TArray<FItemContainerEntry>& ItemContainerEntries);
+	void OnAnyChanges(const TArray<FItemContainerEntry>& ItemContainerEntries);
 };

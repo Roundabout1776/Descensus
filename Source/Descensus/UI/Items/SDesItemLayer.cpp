@@ -82,14 +82,6 @@ void SDesItemLayer::OnEjectedItemChanged(const UDesItemInstance* ItemInstance)
 	}
 }
 
-void SDesItemLayer::OnAnyChanges(const TArray<FItemContainerEntry>& ItemContainerEntries) const
-{
-	if (const auto EjectedItem = GetEjectedItem())
-	{
-		UpdateEjectedItemQuantity(EjectedItem->GetQuantity(), EjectedItem->GetItemData()->MaxQuantity);
-	}
-}
-
 void SDesItemLayer::SetInventoryComponent(UDesInventoryComponent* InInventoryComponent)
 {
 	InventoryComponent = MakeWeakObjectPtr(InInventoryComponent);

@@ -15,6 +15,7 @@
 #include "SDesTooltipLayer.h"
 #include "Components/DesItemContainerComponent.h"
 #include "Components/Image.h"
+#include "Items/DesItemData.h"
 #include "Items/SDesItemLayer.h"
 #include "Player/DesInventoryComponent.h"
 #include "Widgets/DeclarativeSyntaxSupport.h"
@@ -72,7 +73,7 @@ void ADesHUD::Tick(float DeltaSeconds)
 					{
 						continue;
 					}
-					
+
 					if (!LastTooltipWidgetUnderCursor.HasSameObject(WidgetPinned.Get()))
 					{
 						bNewTooltipWidget = true;
@@ -144,18 +145,17 @@ void ADesHUD::InitForCharacter(const ADesPlayerCharacter* Character)
 {
 	const auto InventoryComponent = Character->Inventory;
 	const auto PlayerController = Cast<ADesPlayerController>(GetOwningPlayerController());
+	const auto LocalPlayer = PlayerController->GetLocalPlayer();
+	const auto ViewportClient = LocalPlayer->ViewportClient;
 
 	check(IsValid(InscriptionCanvasClass));
 	FActorSpawnParameters Parameters;
 	Parameters.Owner = this;
 	InscriptionCanvas = GetWorld()->SpawnActor<ADesInscriptionCanvas>(InscriptionCanvasClass, Parameters);
-	InscriptionCanvas->DoInitialSetup(PlayerController->GetLocalPlayer()->ViewportClient->Viewport);
+	InscriptionCanvas->DoInitialSetup(ViewportClient->Viewport);
 
-	const auto LocalPlayer = GetOwningPlayerController()->GetLocalPlayer();
-	const auto ViewportClient = LocalPlayer->ViewportClient;
-	
 	SlateUser = LocalPlayer->GetSlateUser();
-	
+
 	ItemLayer = SNew(SDesItemLayer);
 	ItemLayer->SetInventoryComponent(InventoryComponent);
 	ViewportClient->AddViewportWidgetContent(ItemLayer.ToSharedRef(), ItemLayerZ);
@@ -166,30 +166,14 @@ void ADesHUD::InitForCharacter(const ADesPlayerCharacter* Character)
 
 	TooltipLayer = SNew(SDesTooltipLayer);
 	ViewportClient->AddViewportWidgetContent(TooltipLayer.ToSharedRef(), TooltipLayerZ);
-	
+
 	check(IsValid(MainUILayerClass));
 	MainUILayer = CreateWidget<UDesMainUILayer>(PlayerController, MainUILayerClass);
 	MainUILayer->AddToPlayerScreen(MainLayerZ);
 	MainUILayer->InscriptionOverlay->SetBrushFromMaterial(InscriptionCanvas->GetInscriptionCanvasMaterial());
 
-	InventoryComponent->OnEjectedItemChanged.AddWeakLambda(this, [this](const UDesItemInstance* EjectedItem)
-	{
-		ItemLayer->OnEjectedItemChanged(EjectedItem);
-
-		if (EjectedItem)
-		{
-			SlateUser->SetCursorVisibility(false);
-		}
-		else
-		{
-			SlateUser->SetCursorVisibility(true);
-		}
-	});
-	InventoryComponent->OnAnyChangesDelegate.AddWeakLambda(
-		this, [this](const TArray<FItemContainerEntry>& ItemContainerEntries)
-		{
-			ItemLayer->OnAnyChanges(ItemContainerEntries);
-		});
+	InventoryComponent->OnEjectedItemChanged.AddUObject(this, &ThisClass::OnEjectedItemChanged);
+	InventoryComponent->OnAnyChangesDelegate.AddUObject(this, &ThisClass::OnAnyInventoryChanges);
 }
 
 void ADesHUD::LookStarted()
@@ -201,4 +185,32 @@ void ADesHUD::LookStarted()
 void ADesHUD::LookCompleted()
 {
 	HUDLayer->SetCrosshairVisible(false);
+}
+
+void ADesHUD::OnEjectedItemChanged(const UDesItemInstance* EjectedItem) const
+{
+	if (!ItemLayer.IsValid())
+		return;
+
+	ItemLayer->OnEjectedItemChanged(EjectedItem);
+
+	if (EjectedItem)
+	{
+		SlateUser->SetCursorVisibility(false);
+	}
+	else
+	{
+		SlateUser->SetCursorVisibility(true);
+	}
+}
+
+void ADesHUD::OnAnyInventoryChanges(const TArray<FItemContainerEntry>& ItemContainerEntries) const
+{
+	if (!ItemLayer.IsValid())
+		return;
+
+	if (const auto EjectedItem = ItemLayer->GetEjectedItem())
+	{
+		ItemLayer->UpdateEjectedItemQuantity(EjectedItem->GetQuantity(), EjectedItem->GetItemData()->MaxQuantity);
+	}
 }

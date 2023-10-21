@@ -115,7 +115,7 @@ void UDesItemContainerComponent::OnItemRemoved(const FItemContainerEntry& Entry)
 		return;
 	}
 	bGridDirty = true;
-	Entry.ItemInstance->ChangesListener = nullptr;
+	Entry.ItemInstance->ChangesListener.Reset();
 	OnItemRemovedDelegate.Broadcast(Entry);
 }
 

@@ -2,8 +2,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
+#include "Items/DesItemInstance.h"
 #include "DesHUD.generated.h"
 
+struct FItemContainerEntry;
 class SDesHUDLayer;
 class SDesItemLayer;
 class SDesTooltipLayer;
@@ -83,4 +85,7 @@ public:
 
 	void LookStarted();
 	void LookCompleted();
+
+	void OnEjectedItemChanged(const UDesItemInstance* EjectedItem) const;
+	void OnAnyInventoryChanges(const TArray<FItemContainerEntry>& ItemContainerEntries) const;
 };

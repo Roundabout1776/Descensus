@@ -6,7 +6,7 @@
 
 void UDesItemInstance::OnRep_Quantity(const int32 OldQuantity) const
 {
-	if (ChangesListener)
+	if (ChangesListener.IsValid())
 	{
 		ChangesListener->OnQuantityChanged(this, OldQuantity, Quantity);
 	}

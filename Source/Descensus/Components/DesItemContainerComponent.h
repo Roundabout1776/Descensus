@@ -63,7 +63,6 @@ class DESCENSUS_API UDesItemContainerComponent : public UActorComponent, public 
 	GENERATED_BODY()
 
 	friend struct FItemContainer;
-	friend class UDesInventoryComponent;
 
 protected:
 	/* Replicated list of items. */
