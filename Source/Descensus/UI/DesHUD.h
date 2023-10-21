@@ -73,7 +73,7 @@ public:
 	void NewActorUnderCursor(const AActor* Actor, const UDesMetaComponent* MetaComponent);
 	void UpdateActorUnderCursor(const AActor* Actor) const;
 
-	void ShowTooltip(FDesTooltipData TooltipData, FVector2D DesiredPosition, bool bShouldAddVerticalOffset);
+	void ShowTooltip(const FDesTooltipData& TooltipData, FVector2D DesiredPosition, bool bShouldAddVerticalOffset) const;
 	void HideTooltip();
 
 	FORCEINLINE UDesMainUILayer* GetMainUILayer() const { return MainUILayer; }

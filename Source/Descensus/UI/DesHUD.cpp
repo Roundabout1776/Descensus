@@ -31,8 +31,6 @@ FVector2D ADesHUD::GetDesiredTooltipPositionForActor(const AActor* Actor) const
 	FVector2D MousePosition;
 	UWidgetLayoutLibrary::GetMousePositionScaledByDPI(PlayerController, MousePosition.X,
 	                                                  MousePosition.Y);
-	// MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(PlayerController);
-	// PlayerController->GetMousePosition(MousePosition.X, MousePosition.Y);
 	FVector2D DesiredPosition;
 	DesiredPosition.X = MousePosition.X;
 	DesiredPosition.Y = TopLeftOut.Y;
@@ -128,11 +126,11 @@ void ADesHUD::UpdateActorUnderCursor(const AActor* Actor) const
 	TooltipLayer->SetTooltipPosition(GetDesiredTooltipPositionForActor(Actor), false);
 }
 
-void ADesHUD::ShowTooltip(FDesTooltipData TooltipData, FVector2D DesiredPosition, bool bShouldAddVerticalOffset)
+void ADesHUD::ShowTooltip(const FDesTooltipData& TooltipData, const FVector2D DesiredPosition, const bool bShouldAddVerticalOffset) const
 {
 	TooltipLayer->SetTooltipData(TooltipData);
-	TooltipLayer->SetVisibility(EVisibility::HitTestInvisible);
 	TooltipLayer->SetTooltipPosition(DesiredPosition, bShouldAddVerticalOffset);
+	TooltipLayer->SetVisibility(EVisibility::HitTestInvisible);
 }
 
 void ADesHUD::HideTooltip()

@@ -28,6 +28,7 @@ void SDesHUDLayer::Construct(const FArguments& InArgs)
 			.Visibility(EVisibility::Hidden)
 		]
 		+ SOverlay::Slot()
+		  .Padding(Style->Padding)
 		  .HAlign(HAlign_Right)
 		  .VAlign(VAlign_Top)
 		[
@@ -39,6 +40,7 @@ void SDesHUDLayer::Construct(const FArguments& InArgs)
 			]
 		]
 		+ SOverlay::Slot()
+		  .Padding(Style->Padding)
 		  .HAlign(HAlign_Right)
 		  .VAlign(VAlign_Center)
 		[

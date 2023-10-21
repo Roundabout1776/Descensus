@@ -54,6 +54,7 @@ void SDesTooltipLayer::SetTooltipData(const FDesTooltipData& TooltipData)
 		TooltipDescription->SetText(TooltipData.Description);
 		TooltipDescription->SetVisibility(EVisibility::HitTestInvisible);
 	}
+	SlatePrepass();
 }
 
 void SDesTooltipLayer::SetTooltipPosition(const FVector2D& InPosition, bool bShouldAddVerticalOffset)
