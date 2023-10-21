@@ -15,6 +15,7 @@ protected:
 	TSharedPtr<SDesCrosshair> Crosshair;
 	TSharedPtr<SDesItemContainerWidget> Inventory;
 	TSharedPtr<SDesItemContainerWidget> CurrentContainer;
+	TWeakObjectPtr<UDesInventoryComponent> InventoryComponent;
 
 public:
 	SLATE_BEGIN_ARGS(SDesHUDLayer)
@@ -27,7 +28,6 @@ public:
 
 	void SetCrosshairVisible(bool bNewVisible) const;
 
-	void SetupItemSystem(const TSharedRef<SDesItemLayer>& InItemLayer,
-                                          UDesInventoryComponent* InventoryComponent) const;
+	void SetupItemSystem(UDesInventoryComponent* InInventoryComponent);
 	void SetCurrentContainer(UDesItemContainerComponent* ItemContainerComponent) const;
 };

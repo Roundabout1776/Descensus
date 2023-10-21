@@ -5,9 +5,10 @@
 #include "Items/DesItemInstance.h"
 #include "DesHUD.generated.h"
 
+class SDesPopupLayer;
+class UDesInventoryComponent;
 struct FItemContainerEntry;
 class SDesHUDLayer;
-class SDesItemLayer;
 class SDesTooltipLayer;
 class UImage;
 class ADesInscriptionCanvas;
@@ -39,16 +40,16 @@ class DESCENSUS_API ADesHUD : public AHUD
 protected:
 	static inline constexpr int32 MainLayerZ = 0;
 	static inline constexpr int32 HUDLayerZ = 1;
-	static inline constexpr int32 ItemLayerZ = 4;
-	static inline constexpr int32 TooltipLayerZ = 5;
+	static inline constexpr int32 PopupLayerZ = 2;
 
 	TSharedPtr<SDesHUDLayer> HUDLayer;
-	TSharedPtr<SDesItemLayer> ItemLayer;
-	TSharedPtr<SDesTooltipLayer> TooltipLayer;
+	TSharedPtr<SDesPopupLayer> PopupLayer;
 
 	TSharedPtr<FSlateUser> SlateUser;
 
 	TWeakPtr<SWidget> LastTooltipWidgetUnderCursor;
+
+	TWeakObjectPtr<UDesInventoryComponent> InventoryComponent;
 
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UDesMainUILayer> MainUILayer;
@@ -73,7 +74,8 @@ public:
 	void NewActorUnderCursor(const AActor* Actor, const UDesMetaComponent* MetaComponent);
 	void UpdateActorUnderCursor(const AActor* Actor) const;
 
-	void ShowTooltip(const FDesTooltipData& TooltipData, FVector2D DesiredPosition, bool bShouldAddVerticalOffset) const;
+	void ShowTooltip(const FDesTooltipData& TooltipData, FVector2D DesiredPosition,
+	                 bool bShouldAddVerticalOffset) const;
 	void HideTooltip();
 
 	FORCEINLINE UDesMainUILayer* GetMainUILayer() const { return MainUILayer; }

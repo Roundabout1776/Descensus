@@ -1,6 +1,5 @@
 #include "DesHUD.h"
 
-#include "DesLogging.h"
 #include "Components/DesMetaComponent.h"
 #include "UI/DesUIUtilities.h"
 #include "Blueprint/UserWidget.h"
@@ -11,12 +10,11 @@
 #include "DesTooltipData.h"
 #include "DesMainUILayer.h"
 #include "SDesHUDLayer.h"
-#include "SDesShortcutSlot.h"
-#include "SDesTooltipLayer.h"
 #include "Components/DesItemContainerComponent.h"
 #include "Components/Image.h"
 #include "Items/DesItemData.h"
-#include "Items/SDesItemLayer.h"
+#include "SDesItemWidget.h"
+#include "SDesPopupLayer.h"
 #include "Player/DesInventoryComponent.h"
 #include "Widgets/DeclarativeSyntaxSupport.h"
 
@@ -50,9 +48,9 @@ void ADesHUD::Tick(float DeltaSeconds)
 	const FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(
 		GetOwningPlayerController());
 
-	if (ItemLayer.IsValid())
+	if (PopupLayer.IsValid())
 	{
-		ItemLayer->SetEjectedItemPosition(MousePosition);
+		PopupLayer->SetEjectedItemPosition(MousePosition);
 	}
 
 	if (SlateUser.IsValid())
@@ -92,7 +90,7 @@ void ADesHUD::Tick(float DeltaSeconds)
 			}
 			else
 			{
-				TooltipLayer->SetTooltipPosition(MousePosition, true);
+				PopupLayer->SetTooltipPosition(MousePosition, true);
 			}
 
 			CurrentCursorTarget = ECursorTarget::Widget;
@@ -123,25 +121,27 @@ void ADesHUD::NewActorUnderCursor(const AActor* Actor, const UDesMetaComponent* 
 
 void ADesHUD::UpdateActorUnderCursor(const AActor* Actor) const
 {
-	TooltipLayer->SetTooltipPosition(GetDesiredTooltipPositionForActor(Actor), false);
+	PopupLayer->SetTooltipPosition(GetDesiredTooltipPositionForActor(Actor), false);
 }
 
-void ADesHUD::ShowTooltip(const FDesTooltipData& TooltipData, const FVector2D DesiredPosition, const bool bShouldAddVerticalOffset) const
+void ADesHUD::ShowTooltip(const FDesTooltipData& TooltipData, const FVector2D DesiredPosition,
+                          const bool bShouldAddVerticalOffset) const
 {
-	TooltipLayer->SetTooltipData(TooltipData);
-	TooltipLayer->SetTooltipPosition(DesiredPosition, bShouldAddVerticalOffset);
-	TooltipLayer->SetVisibility(EVisibility::HitTestInvisible);
+	PopupLayer->SetTooltipData(TooltipData);
+	PopupLayer->SetTooltipPosition(DesiredPosition, bShouldAddVerticalOffset);
+	PopupLayer->SetTooltipVisible(true);
 }
 
 void ADesHUD::HideTooltip()
 {
-	TooltipLayer->SetVisibility(EVisibility::Hidden);
+	PopupLayer->SetTooltipVisible(false);
 	CurrentCursorTarget = ECursorTarget::None;
 }
 
 void ADesHUD::InitForCharacter(const ADesPlayerCharacter* Character)
 {
-	const auto InventoryComponent = Character->Inventory;
+	InventoryComponent = MakeWeakObjectPtr(Character->Inventory);
+
 	const auto PlayerController = Cast<ADesPlayerController>(GetOwningPlayerController());
 	const auto LocalPlayer = PlayerController->GetLocalPlayer();
 	const auto ViewportClient = LocalPlayer->ViewportClient;
@@ -154,16 +154,12 @@ void ADesHUD::InitForCharacter(const ADesPlayerCharacter* Character)
 
 	SlateUser = LocalPlayer->GetSlateUser();
 
-	ItemLayer = SNew(SDesItemLayer);
-	ItemLayer->SetInventoryComponent(InventoryComponent);
-	ViewportClient->AddViewportWidgetContent(ItemLayer.ToSharedRef(), ItemLayerZ);
+	PopupLayer = SNew(SDesPopupLayer);
+	ViewportClient->AddViewportWidgetContent(PopupLayer.ToSharedRef(), PopupLayerZ);
 
 	HUDLayer = SNew(SDesHUDLayer);
-	HUDLayer->SetupItemSystem(ItemLayer.ToSharedRef(), InventoryComponent);
+	HUDLayer->SetupItemSystem(InventoryComponent.Get());
 	ViewportClient->AddViewportWidgetContent(HUDLayer.ToSharedRef(), HUDLayerZ);
-
-	TooltipLayer = SNew(SDesTooltipLayer);
-	ViewportClient->AddViewportWidgetContent(TooltipLayer.ToSharedRef(), TooltipLayerZ);
 
 	check(IsValid(MainUILayerClass));
 	MainUILayer = CreateWidget<UDesMainUILayer>(PlayerController, MainUILayerClass);
@@ -187,28 +183,32 @@ void ADesHUD::LookCompleted()
 
 void ADesHUD::OnEjectedItemChanged(const UDesItemInstance* EjectedItem) const
 {
-	if (!ItemLayer.IsValid())
+	if (!PopupLayer.IsValid())
+	{
 		return;
-
-	ItemLayer->OnEjectedItemChanged(EjectedItem);
+	}
 
 	if (EjectedItem)
 	{
+		PopupLayer->ShowEjectedItem(EjectedItem);
 		SlateUser->SetCursorVisibility(false);
 	}
 	else
 	{
+		PopupLayer->HideEjectedItem();
 		SlateUser->SetCursorVisibility(true);
 	}
 }
 
 void ADesHUD::OnAnyInventoryChanges(const TArray<FItemContainerEntry>& ItemContainerEntries) const
 {
-	if (!ItemLayer.IsValid())
-		return;
-
-	if (const auto EjectedItem = ItemLayer->GetEjectedItem())
+	if (!PopupLayer.IsValid())
 	{
-		ItemLayer->UpdateEjectedItemQuantity(EjectedItem->GetQuantity(), EjectedItem->GetItemData()->MaxQuantity);
+		return;
+	}
+
+	if (const auto EjectedItem = InventoryComponent->GetEjectedItem())
+	{
+		PopupLayer->UpdateEjectedItemQuantity(EjectedItem->GetQuantity(), EjectedItem->GetItemData()->MaxQuantity);
 	}
 }

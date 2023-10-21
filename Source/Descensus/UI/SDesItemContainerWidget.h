@@ -1,15 +1,16 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "SDesPopupLayer.h"
 #include "Misc/Attribute.h"
 #include "Layout/Visibility.h"
 #include "SlotBase.h"
 #include "Widgets/SWidget.h"
 #include "Layout/Children.h"
-#include "UI/SDesTooltipLayer.h"
 #include "Widgets/DeclarativeSyntaxSupport.h"
 #include "Widgets/SPanel.h"
 
+class UDesInventoryComponent;
 class UDesItemInstance;
 struct FItemContainerEntry;
 class SDesItemLayer;
@@ -78,7 +79,7 @@ protected:
 	FVector2D TelegraphSize{};
 	FDelegateHandle OnAnyChangesDelegateHandle;
 	TWeakObjectPtr<UDesItemContainerComponent> ItemContainerComponent;
-	TSharedPtr<SDesItemLayer> ItemLayer;
+	TWeakObjectPtr<UDesInventoryComponent> InventoryComponent;
 
 	virtual FVector2D ComputeDesiredSize(float) const override;
 
@@ -87,7 +88,7 @@ protected:
 	using FScopedWidgetSlotArguments = TPanelChildren<FSlot>::FScopedWidgetSlotArguments;
 
 	FScopedWidgetSlotArguments AddSlot();
-	
+
 	virtual void UpdateCachedTooltipData() override;
 
 public:
@@ -122,10 +123,10 @@ public:
 	void SetTelegraphVisible(bool bIsVisible);
 	void SetGridSize(FIntVector InGridSize);
 	FIntVector GetGridSize() const;
-	void AddItem(FIntVector2 Position, const FDesItemWidgetData& Data);
+	void AddItem(FIntVector2 Position, const UDesItemInstance* ItemInstance);
 	void CollapseAllItems();
-	void SetItemLayer(const TSharedRef<SDesItemLayer>& InItemLayer);
-	void AttachToItemContainerComponent(UDesItemContainerComponent* InItemContainerComponent);
+	void AttachToItemContainerComponent(UDesItemContainerComponent* InItemContainerComponent,
+	                                    UDesInventoryComponent* InInventoryComponent);
 	void DetachFromItemContainerComponent();
 	FIntVector2 ClampCoords(const FIntVector2& InCoords) const;
 	FIntVector2 GetCoordsUnderPointerForSize(const FGeometry& Geometry, const FPointerEvent& PointerEvent,

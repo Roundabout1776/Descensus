@@ -1,7 +1,6 @@
 ﻿#include "SDesItemContainerWidget.h"
 
 #include "DesLogging.h"
-#include "SDesItemLayer.h"
 #include "SDesItemWidget.h"
 #include "Components/DesItemContainerComponent.h"
 #include "Items/DesItemData.h"
@@ -197,7 +196,12 @@ FChildren* SDesItemContainerWidget::GetChildren()
 
 FReply SDesItemContainerWidget::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
 {
-	const auto EjectedItem = ItemLayer->GetEjectedItem();
+	if (!InventoryComponent.IsValid() || !ItemContainerComponent.IsValid())
+	{
+		return FReply::Unhandled();
+	}
+
+	const auto EjectedItem = InventoryComponent->GetEjectedItem();
 
 	FIntVector2 Coords;
 	if (EjectedItem)
@@ -215,12 +219,12 @@ FReply SDesItemContainerWidget::OnMouseButtonDown(const FGeometry& MyGeometry, c
 		if (EjectedItem)
 		{
 			/* Swap item. */
-			ItemLayer->GetInventoryComponent()->ServerMoveEjectedItem(ItemContainerComponent.Get(), Coords);
+			InventoryComponent->ServerMoveEjectedItem(ItemContainerComponent.Get(), Coords);
 		}
 		else
 		{
 			/* Eject item. */
-			ItemLayer->GetInventoryComponent()->ServerEjectItem(ItemContainerComponent.Get(), ItemInstance);
+			InventoryComponent->ServerEjectItem(ItemContainerComponent.Get(), ItemInstance);
 		}
 	}
 	else
@@ -228,7 +232,7 @@ FReply SDesItemContainerWidget::OnMouseButtonDown(const FGeometry& MyGeometry, c
 		/* Move item. */
 		if (EjectedItem && GetIsTelegraphVisible())
 		{
-			ItemLayer->GetInventoryComponent()->ServerMoveEjectedItem(ItemContainerComponent.Get(), Coords);
+			InventoryComponent->ServerMoveEjectedItem(ItemContainerComponent.Get(), Coords);
 			// ItemLayer->EndItemMove();
 		}
 	}
@@ -242,10 +246,16 @@ void SDesItemContainerWidget::OnMouseLeave(const FPointerEvent& MouseEvent)
 
 FReply SDesItemContainerWidget::OnMouseMove(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
 {
-	bool bNewIsTelegraphVisible = false;
-	if (ItemLayer->GetEjectedItem())
+	if (!InventoryComponent.IsValid() || !ItemContainerComponent.IsValid())
 	{
-		const FIntVector2 ItemSize = ItemLayer->GetEjectedItem()->GetItemData()->Size;
+		return FReply::Unhandled();
+	}
+
+	bool bNewIsTelegraphVisible = false;
+
+	if (InventoryComponent->GetEjectedItem())
+	{
+		const FIntVector2 ItemSize = InventoryComponent->GetEjectedItem()->GetItemData()->Size;
 		const auto Coords = GetCoordsUnderPointerForSize(MyGeometry, MouseEvent, ItemSize);
 		const auto GridSize = GetGridSize();
 
@@ -317,7 +327,7 @@ FIntVector SDesItemContainerWidget::GetGridSize() const
 	return GridSizeAttribute.Get();
 }
 
-void SDesItemContainerWidget::AddItem(const FIntVector2 Position, const FDesItemWidgetData& Data)
+void SDesItemContainerWidget::AddItem(const FIntVector2 Position, const UDesItemInstance* ItemInstance)
 {
 	const auto Style = FDesStyle::GetDefaultStyle();
 	if (CurrentItemWidgetIndex >= Children.Num())
@@ -328,11 +338,12 @@ void SDesItemContainerWidget::AddItem(const FIntVector2 Position, const FDesItem
 		];
 	}
 	auto& Slot = Children[CurrentItemWidgetIndex];
-	Slot.SetSize(FVector2D(Data.Size.X * Style->CellSize, Data.Size.Y * Style->CellSize));
+	const auto ItemData = ItemInstance->GetItemData();
+	Slot.SetSize(FVector2D(ItemData->Size.X * Style->CellSize, ItemData->Size.Y * Style->CellSize));
 	Slot.SetPosition(FVector2D(Position.X * Style->CellSize, Position.Y * Style->CellSize));
-	const auto Child = StaticCastSharedRef<SDesItemWidget>(Slot.GetWidget());
-	Child->SetData(Data);
-	Child->SetVisibility(EVisibility::HitTestInvisible);
+	const auto ItemWidget = StaticCastSharedRef<SDesItemWidget>(Slot.GetWidget());
+	ItemWidget->SetItem(ItemInstance);
+	ItemWidget->SetVisibility(EVisibility::HitTestInvisible);
 
 	CurrentItemWidgetIndex++;
 }
@@ -346,18 +357,15 @@ void SDesItemContainerWidget::CollapseAllItems()
 	CurrentItemWidgetIndex = 0;
 }
 
-void SDesItemContainerWidget::SetItemLayer(const TSharedRef<SDesItemLayer>& InItemLayer)
-{
-	ItemLayer = InItemLayer.ToSharedPtr();
-}
-
-void SDesItemContainerWidget::AttachToItemContainerComponent(UDesItemContainerComponent* InItemContainerComponent)
+void SDesItemContainerWidget::AttachToItemContainerComponent(UDesItemContainerComponent* InItemContainerComponent,
+                                                             UDesInventoryComponent* InInventoryComponent)
 {
 	check(InItemContainerComponent);
 
 	DetachFromItemContainerComponent();
 
 	ItemContainerComponent = MakeWeakObjectPtr(InItemContainerComponent);
+	InventoryComponent = MakeWeakObjectPtr(InInventoryComponent);
 
 	/* @TODO: make sure it's ok. */
 	OnAnyChangesDelegateHandle = ItemContainerComponent->OnAnyChangesDelegate.AddSP(this, &ThisClass::OnAnyChanges);
@@ -369,13 +377,13 @@ void SDesItemContainerWidget::AttachToItemContainerComponent(UDesItemContainerCo
 
 void SDesItemContainerWidget::DetachFromItemContainerComponent()
 {
-	if (!ItemContainerComponent.IsValid())
+	if (ItemContainerComponent.IsValid() && OnAnyChangesDelegateHandle.IsValid())
 	{
-		return;
+		ItemContainerComponent->OnAnyChangesDelegate.Remove(OnAnyChangesDelegateHandle);
 	}
 
-	ItemContainerComponent->OnAnyChangesDelegate.Remove(OnAnyChangesDelegateHandle);
 	ItemContainerComponent.Reset();
+	InventoryComponent.Reset();
 
 	CollapseAllItems();
 }
@@ -416,7 +424,7 @@ void SDesItemContainerWidget::OnAnyChanges(const TArray<FItemContainerEntry>& It
 	{
 		if (const auto ItemInstance = Entry.ItemInstance)
 		{
-			AddItem(Entry.Position, SDesItemLayer::GetItemWidgetData(ItemInstance));
+			AddItem(Entry.Position, ItemInstance);
 		}
 	}
 }

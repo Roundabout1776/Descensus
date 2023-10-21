@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "Items/DesItemInstance.h"
 #include "Widgets/SCompoundWidget.h"
 
 class UDesItemInstance;
@@ -8,14 +9,6 @@ class UDesItemData;
 class SImage;
 class STextBlock;
 class SBox;
-
-struct DESCENSUS_API FDesItemWidgetData
-{
-	FIntVector2 Size{};
-	int32 Quantity{};
-	int32 MaxQuantity{};
-	const FSlateBrush* Brush = nullptr;
-};
 
 class DESCENSUS_API SDesItemWidget final : public SCompoundWidget
 {
@@ -28,12 +21,10 @@ public:
 		{
 		}
 
-		SLATE_ARGUMENT(FDesItemWidgetData, Data)
-
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs);
 
-	void SetData(const FDesItemWidgetData& Data) const;
+	void SetItem(const UDesItemInstance* ItemInstance) const;
 	void SetQuantity(int32 Quantity, int32 MaxQuantity) const;
 };

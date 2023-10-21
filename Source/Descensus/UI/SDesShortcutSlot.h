@@ -1,8 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "DesTooltipData.h"
-#include "SDesTooltipLayer.h"
+#include "SDesPopupLayer.h"
 #include "Widgets/SCompoundWidget.h"
 
 class UEnhancedInputLocalPlayerSubsystem;
@@ -20,7 +19,7 @@ class DESCENSUS_API SDesShortcutSlot final : public SCompoundWidget, public IDes
 
 protected:
 	virtual void UpdateCachedTooltipData() override;
-	
+
 public:
 	SLATE_BEGIN_ARGS(SDesShortcutSlot)
 		{

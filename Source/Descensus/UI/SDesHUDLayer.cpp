@@ -3,8 +3,7 @@
 #include "DesStyle.h"
 #include "SDesCrosshair.h"
 #include "Components/DesItemContainerComponent.h"
-#include "Items/SDesItemContainerWidget.h"
-#include "Items/SDesItemLayer.h"
+#include "SDesItemContainerWidget.h"
 #include "Player/DesInventoryComponent.h"
 
 void SDesHUDLayer::Construct(const FArguments& InArgs)
@@ -49,6 +48,7 @@ void SDesHUDLayer::Construct(const FArguments& InArgs)
 			.BorderImage(&Style->CommonBox)
 			[
 				SAssignNew(CurrentContainer, SDesItemContainerWidget)
+				.Visibility(EVisibility::Collapsed)
 			]
 		]
 	];
@@ -59,13 +59,11 @@ void SDesHUDLayer::SetCrosshairVisible(const bool bNewVisible) const
 	Crosshair->SetVisibility(bNewVisible ? EVisibility::HitTestInvisible : EVisibility::Hidden);
 }
 
-void SDesHUDLayer::SetupItemSystem(const TSharedRef<SDesItemLayer>& InItemLayer,
-                                   UDesInventoryComponent* InventoryComponent) const
+void SDesHUDLayer::SetupItemSystem(UDesInventoryComponent* InInventoryComponent)
 {
-	Inventory->SetItemLayer(InItemLayer);
-	Inventory->AttachToItemContainerComponent(Cast<UDesItemContainerComponent>(InventoryComponent));
-
-	CurrentContainer->SetItemLayer(InItemLayer);
+	InventoryComponent = MakeWeakObjectPtr(InInventoryComponent);
+	Inventory->AttachToItemContainerComponent(Cast<UDesItemContainerComponent>(InventoryComponent),
+	                                          InInventoryComponent);
 	CurrentContainer->SetVisibility(EVisibility::Collapsed);
 }
 
@@ -73,7 +71,7 @@ void SDesHUDLayer::SetCurrentContainer(UDesItemContainerComponent* ItemContainer
 {
 	if (ItemContainerComponent)
 	{
-		CurrentContainer->AttachToItemContainerComponent(ItemContainerComponent);
+		CurrentContainer->AttachToItemContainerComponent(ItemContainerComponent, InventoryComponent.Get());
 		CurrentContainer->SetVisibility(EVisibility::Visible);
 	}
 	else

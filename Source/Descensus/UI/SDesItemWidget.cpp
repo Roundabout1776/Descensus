@@ -3,6 +3,7 @@
 #include "SlateOptMacros.h"
 #include "Widgets/Layout/SBox.h"
 #include "Engine/Texture2D.h"
+#include "Items/DesItemData.h"
 #include "UI/DesStyle.h"
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
@@ -34,16 +35,17 @@ void SDesItemWidget::Construct(const FArguments& InArgs)
 	];
 }
 
-void SDesItemWidget::SetData(const FDesItemWidgetData& Data) const
+void SDesItemWidget::SetItem(const UDesItemInstance* ItemInstance) const
 {
 	const auto Style = FDesStyle::GetDefaultStyle();
+	const auto ItemData = ItemInstance->GetItemData();
 
-	Box->SetHeightOverride(Data.Size.X * Style->CellSize);
-	Box->SetWidthOverride(Data.Size.Y * Style->CellSize);
+	Box->SetHeightOverride(ItemData->Size.X * Style->CellSize);
+	Box->SetWidthOverride(ItemData->Size.Y * Style->CellSize);
 
-	IconImage->SetImage(Data.Brush);
+	IconImage->SetImage(&ItemData->IconBrush);
 
-	SetQuantity(Data.Quantity, Data.MaxQuantity);
+	SetQuantity(ItemInstance->GetQuantity(), ItemData->MaxQuantity);
 }
 
 void SDesItemWidget::SetQuantity(const int32 Quantity, const int32 MaxQuantity) const
