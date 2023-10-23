@@ -2,6 +2,8 @@
 
 #include "AbilitySystemComponent.h"
 #include "DesGameplayTags.h"
+#include "DesInventoryComponent.h"
+#include "DesLogging.h"
 #include "UI/DesHUD.h"
 #include "Components//DesMetaComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -116,6 +118,13 @@ void ADesPlayerController::PlayerTick(float DeltaTime)
 	/* Handle actor under cursor. */
 	if (!bIsLooking)
 	{
+		if (DesHUD->CurrentCursorTarget == ECursorTarget::Widget)
+		{
+			MetaComponentUnderCursor.Reset();
+			CurrentClickablePrimitive.Reset();
+			return;
+		}
+
 		FVector2D MousePosition;
 		FHitResult HitResult;
 		bool bHit = false;
@@ -127,12 +136,6 @@ void ADesPlayerController::PlayerTick(float DeltaTime)
 		}
 
 		CurrentClickablePrimitive = bHit ? HitResult.Component.Get() : nullptr;
-
-		if (DesHUD->CurrentCursorTarget == ECursorTarget::Widget)
-		{
-			MetaComponentUnderCursor.Reset();
-			return;
-		}
 
 		if (const auto ComponentUnderCursor = CurrentClickablePrimitive.Get(); IsValid(ComponentUnderCursor))
 		{
@@ -227,6 +230,13 @@ void ADesPlayerController::InputPrimaryCompleted()
 			{
 				/* Otherwise, attempt to grab. */
 				ASC->ReleaseAbilitiesByTag(FGameplayTagContainer(TAG_Ability_PlayerGrab), true);
+			}
+		}
+		else
+		{
+			if (PlayerCharacter->Inventory->GetEjectedItem())
+			{
+				PlayerCharacter->Inventory->ServerDestroyEjectedItem();
 			}
 		}
 	}

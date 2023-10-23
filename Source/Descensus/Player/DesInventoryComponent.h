@@ -34,6 +34,9 @@ public:
 	void ServerDestroyEjectedItem();
 
 	UFUNCTION(Server, Reliable)
+	void ServerLaunchEjectedItem();
+
+	UFUNCTION(Server, Reliable)
 	void ServerMoveEjectedItem(UDesItemContainerComponent* Container, FIntVector2 Coords);
 
 	UFUNCTION(Server, Reliable)

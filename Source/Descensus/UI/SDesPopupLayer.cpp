@@ -122,7 +122,7 @@ void SDesPopupLayer::UpdateEjectedItemQuantity(const int32 Quantity, const int32
 	EjectedItemWidget->SetQuantity(Quantity, MaxQuantity);
 }
 
-void SDesPopupLayer::ShowEjectedItem(const UDesItemInstance* ItemInstance)
+void SDesPopupLayer::SetEjectedItem(const UDesItemInstance* ItemInstance)
 {
 	const auto Style = FDesStyle::GetDefaultStyle();
 	const auto ItemData = ItemInstance->GetItemData();
@@ -136,12 +136,11 @@ void SDesPopupLayer::ShowEjectedItem(const UDesItemInstance* ItemInstance)
 	EjectedItemWidget->SetRenderTransform(Transform);
 
 	EjectedItemWidget->SetItem(ItemInstance);
-	EjectedItemWidget->SetVisibility(EVisibility::HitTestInvisible);
 }
 
-void SDesPopupLayer::HideEjectedItem() const
+void SDesPopupLayer::SetEjectedItemVisible(const bool bIsVisible) const
 {
-	EjectedItemWidget->SetVisibility(EVisibility::Collapsed);
+	EjectedItemWidget->SetVisibility(bIsVisible ? EVisibility::HitTestInvisible : EVisibility::Hidden);
 }
 
 END_SLATE_FUNCTION_BUILD_OPTIMIZATION

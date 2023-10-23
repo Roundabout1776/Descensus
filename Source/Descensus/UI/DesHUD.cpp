@@ -172,13 +172,19 @@ void ADesHUD::InitForCharacter(const ADesPlayerCharacter* Character)
 
 void ADesHUD::LookStarted()
 {
+	bIsLooking = true;
 	HideTooltip();
 	HUDLayer->SetCrosshairVisible(true);
+	UpdateEjectedItemVisibility();
+	UpdateCursorVisibility();
 }
 
 void ADesHUD::LookCompleted()
 {
+	bIsLooking = false;
 	HUDLayer->SetCrosshairVisible(false);
+	UpdateEjectedItemVisibility();
+	UpdateCursorVisibility();
 }
 
 void ADesHUD::OnEjectedItemChanged(const UDesItemInstance* EjectedItem) const
@@ -190,13 +196,14 @@ void ADesHUD::OnEjectedItemChanged(const UDesItemInstance* EjectedItem) const
 
 	if (EjectedItem)
 	{
-		PopupLayer->ShowEjectedItem(EjectedItem);
-		SlateUser->SetCursorVisibility(false);
+		PopupLayer->SetEjectedItem(EjectedItem);
+		UpdateEjectedItemVisibility();
+		UpdateCursorVisibility();
 	}
 	else
 	{
-		PopupLayer->HideEjectedItem();
-		SlateUser->SetCursorVisibility(true);
+		UpdateEjectedItemVisibility();
+		UpdateCursorVisibility();
 	}
 }
 
@@ -211,4 +218,14 @@ void ADesHUD::OnAnyInventoryChanges(const TArray<FItemContainerEntry>& ItemConta
 	{
 		PopupLayer->UpdateEjectedItemQuantity(EjectedItem->GetQuantity(), EjectedItem->GetItemData()->MaxQuantity);
 	}
+}
+
+void ADesHUD::UpdateCursorVisibility() const
+{
+	SlateUser->SetCursorVisibility(!bIsLooking && !InventoryComponent->GetEjectedItem());
+}
+
+void ADesHUD::UpdateEjectedItemVisibility() const
+{
+	PopupLayer->SetEjectedItemVisible(!bIsLooking && InventoryComponent->GetEjectedItem());
 }

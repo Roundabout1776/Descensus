@@ -87,6 +87,6 @@ public:
 
 	void SetEjectedItemPosition(const FVector2D& MousePosition);
 	void UpdateEjectedItemQuantity(int32 Quantity, int32 MaxQuantity) const;
-	void ShowEjectedItem(const UDesItemInstance* ItemInstance);
-	void HideEjectedItem() const;
+	void SetEjectedItem(const UDesItemInstance* ItemInstance);
+	void SetEjectedItemVisible(bool bIsVisible) const;
 };

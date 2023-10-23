@@ -49,6 +49,16 @@ void UDesInventoryComponent::ServerDestroyEjectedItem_Implementation()
 	SetEjectedItem(nullptr);
 }
 
+void UDesInventoryComponent::ServerLaunchEjectedItem_Implementation()
+{
+	if (!EjectedItem)
+	{
+		return;
+	}
+
+	
+}
+
 void UDesInventoryComponent::ServerMoveEjectedItem_Implementation(UDesItemContainerComponent* Container,
                                                                   const FIntVector2 Coords)
 {

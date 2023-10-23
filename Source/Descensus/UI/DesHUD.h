@@ -42,6 +42,8 @@ protected:
 	static inline constexpr int32 HUDLayerZ = 1;
 	static inline constexpr int32 PopupLayerZ = 2;
 
+	bool bIsLooking;
+
 	TSharedPtr<SDesHUDLayer> HUDLayer;
 	TSharedPtr<SDesPopupLayer> PopupLayer;
 
@@ -90,4 +92,7 @@ public:
 
 	void OnEjectedItemChanged(const UDesItemInstance* EjectedItem) const;
 	void OnAnyInventoryChanges(const TArray<FItemContainerEntry>& ItemContainerEntries) const;
+
+	void UpdateCursorVisibility() const;
+	void UpdateEjectedItemVisibility() const;
 };
