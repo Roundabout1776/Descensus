@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "NativeGameplayTags.h"
 #include "AbilitySystem/DesGameplayAbilityWithData.h"
-#include "DesGameplayAbilityPlayerGrab.generated.h"
+#include "DesGameplayAbility_PlayerGrab.generated.h"
 
 class UGameplayCueNotify_Static;
 
@@ -12,7 +12,7 @@ UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Ability_PlayerGrab_Active)
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_GameplayCue_Ability_PlayerGrab)
 
 UCLASS()
-class DESCENSUS_API UDesGameplayAbilityPlayerGrab : public UDesGameplayAbilityWithData
+class DESCENSUS_API UDesGameplayAbility_PlayerGrab : public UDesGameplayAbilityWithData
 {
 	GENERATED_BODY()
 
@@ -34,5 +34,5 @@ public:
 	                                const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags,
 	                                FGameplayTagContainer* OptionalRelevantTags) const override;
 
-	UDesGameplayAbilityPlayerGrab();
+	UDesGameplayAbility_PlayerGrab();
 };

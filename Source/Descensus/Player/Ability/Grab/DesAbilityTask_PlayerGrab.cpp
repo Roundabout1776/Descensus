@@ -1,15 +1,15 @@
-#include "Player/Ability/Grab/DesAbilityTaskPlayerGrab.h"
+#include "Player/Ability/Grab/DesAbilityTask_PlayerGrab.h"
 
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "Player/DesPlayerCharacter.h"
 
-UDesAbilityTaskPlayerGrab::UDesAbilityTaskPlayerGrab(const FObjectInitializer& ObjectInitializer) : Super(
+UDesAbilityTask_PlayerGrab::UDesAbilityTask_PlayerGrab(const FObjectInitializer& ObjectInitializer) : Super(
 	ObjectInitializer)
 {
 	bTickingTask = true;
 }
 
-void UDesAbilityTaskPlayerGrab::TickTask(float DeltaTime)
+void UDesAbilityTask_PlayerGrab::TickTask(float DeltaTime)
 {
 	if (ShouldBroadcastAbilityTaskDelegates())
 	{
@@ -25,10 +25,10 @@ void UDesAbilityTaskPlayerGrab::TickTask(float DeltaTime)
 	}
 }
 
-UDesAbilityTaskPlayerGrab* UDesAbilityTaskPlayerGrab::PlayerGrab(UGameplayAbility* OwningAbility,
+UDesAbilityTask_PlayerGrab* UDesAbilityTask_PlayerGrab::PlayerGrab(UGameplayAbility* OwningAbility,
                                                                  ADesPlayerCharacter* InCharacter)
 {
-	const auto NewTask = NewAbilityTask<UDesAbilityTaskPlayerGrab>(OwningAbility);
+	const auto NewTask = NewAbilityTask<UDesAbilityTask_PlayerGrab>(OwningAbility);
 	NewTask->Character = MakeWeakObjectPtr(InCharacter);
 	return NewTask;
 }

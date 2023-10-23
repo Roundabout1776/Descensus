@@ -1,7 +1,7 @@
-#include "Character/Ability/Jump/DesGameplayAbilityJump.h"
+#include "DesGameplayAbility_Jump.h"
 
 #include "DesGameplayTags.h"
-#include "Character/Ability/Jump/DesGameplayEffectJumpCost.h"
+#include "Character/Ability/Jump/DesGameplayEffect_JumpCost.h"
 #include "Character/DesCharacter.h"
 #include "Input/DesAbilityInputID.h"
 
@@ -11,7 +11,7 @@ UDesGameplayAbilityJump::UDesGameplayAbilityJump()
 {
 	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalPredicted;
 	AbilityTags.AddTag(TAG_Ability_Jump);
-	CostGameplayEffectClass = UDesGameplayEffectJumpCost::StaticClass();
+	CostGameplayEffectClass = UDesGameplayEffect_JumpCost::StaticClass();
 	AbilityInputID = EDesAbilityInputID::Jump;
 }
 

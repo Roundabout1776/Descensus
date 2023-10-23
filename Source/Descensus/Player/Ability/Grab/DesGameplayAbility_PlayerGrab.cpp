@@ -1,7 +1,7 @@
-#include "Player/Ability/Grab/DesGameplayAbilityPlayerGrab.h"
+#include "Player/Ability/Grab/DesGameplayAbility_PlayerGrab.h"
 
 #include "AbilitySystemComponent.h"
-#include "Player/Ability/Grab/DesAbilityTaskPlayerGrab.h"
+#include "Player/Ability/Grab/DesAbilityTask_PlayerGrab.h"
 #include "Character/Ability/DesGameplayAbilityHandsBase.h"
 #include "Character/Ability/DesGameplayAbilityPrimaryBase.h"
 #include "Abilities/Tasks/AbilityTask_WaitInputRelease.h"
@@ -13,7 +13,7 @@ UE_DEFINE_GAMEPLAY_TAG(TAG_Ability_PlayerGrab, "Ability.PlayerGrab")
 UE_DEFINE_GAMEPLAY_TAG(TAG_Ability_PlayerGrab_Active, "Ability.PlayerGrab.Active")
 UE_DEFINE_GAMEPLAY_TAG(TAG_GameplayCue_Ability_PlayerGrab, "GameplayCue.Ability.PlayerGrab")
 
-UDesGameplayAbilityPlayerGrab::UDesGameplayAbilityPlayerGrab()
+UDesGameplayAbility_PlayerGrab::UDesGameplayAbility_PlayerGrab()
 {
 	AbilityTags.AddTag(TAG_Ability_PlayerGrab);
 	AbilityTags.AddTag(TAG_Ability_Hands);
@@ -22,7 +22,7 @@ UDesGameplayAbilityPlayerGrab::UDesGameplayAbilityPlayerGrab()
 	CancelAbilitiesWithTag.AddTag(TAG_Ability_Primary);
 }
 
-void UDesGameplayAbilityPlayerGrab::EndAbilityCleanup(const FGameplayAbilitySpecHandle Handle,
+void UDesGameplayAbility_PlayerGrab::EndAbilityCleanup(const FGameplayAbilitySpecHandle Handle,
                                                       const FGameplayAbilityActorInfo* ActorInfo,
                                                       const FGameplayAbilityActivationInfo ActivationInfo,
                                                       bool bReplicateEndAbility, bool bWasCancelled)
@@ -43,7 +43,7 @@ void UDesGameplayAbilityPlayerGrab::EndAbilityCleanup(const FGameplayAbilitySpec
 	CachedPrimitiveComponent.Reset();
 }
 
-void UDesGameplayAbilityPlayerGrab::ActivateAbilityLocalPlayer(const FGameplayAbilitySpecHandle Handle,
+void UDesGameplayAbility_PlayerGrab::ActivateAbilityLocalPlayer(const FGameplayAbilitySpecHandle Handle,
                                                                const FGameplayAbilityActorInfo* ActorInfo,
                                                                const FGameplayAbilityActivationInfo ActivationInfo,
                                                                const FGameplayEventData* TriggerEventData)
@@ -64,7 +64,7 @@ void UDesGameplayAbilityPlayerGrab::ActivateAbilityLocalPlayer(const FGameplayAb
 	NotifyTargetDataReady(TargetDataHandle, FGameplayTag());
 }
 
-void UDesGameplayAbilityPlayerGrab::ActivateAbilityWithTargetData(
+void UDesGameplayAbility_PlayerGrab::ActivateAbilityWithTargetData(
 	const FGameplayAbilityTargetDataHandle& LocalTargetDataHandle, FGameplayTag GameplayTag)
 {
 	const bool bIsAuthority = CurrentActorInfo->IsNetAuthority();
@@ -88,7 +88,7 @@ void UDesGameplayAbilityPlayerGrab::ActivateAbilityWithTargetData(
 			GetAbilitySystemComponentFromActorInfo()->
 				ExecuteGameplayCue(TAG_GameplayCue_Ability_PlayerGrab, Parameters);
 
-			const auto GrabTask = UDesAbilityTaskPlayerGrab::PlayerGrab(this, Character);
+			const auto GrabTask = UDesAbilityTask_PlayerGrab::PlayerGrab(this, Character);
 			GrabTask->ReadyForActivation();
 
 			CachedPrimitiveComponent = MakeWeakObjectPtr(PrimitiveComponent);
@@ -99,7 +99,7 @@ void UDesGameplayAbilityPlayerGrab::ActivateAbilityWithTargetData(
 	CancelAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, bIsAuthority);
 }
 
-bool UDesGameplayAbilityPlayerGrab::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
+bool UDesGameplayAbility_PlayerGrab::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                                        const FGameplayAbilityActorInfo* ActorInfo,
                                                        const FGameplayTagContainer* SourceTags,
                                                        const FGameplayTagContainer* TargetTags,

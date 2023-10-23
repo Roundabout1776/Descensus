@@ -3,8 +3,8 @@
 #include "AbilitySystemComponent.h"
 #include "Character/Ability/DesGameplayAbilityHandsBase.h"
 #include "Character/DesCharacter.h"
-#include "Character/Ability/DrawWeapon/DesGameplayAbilityDrawWeapon.h"
-#include "Character/Ability/Inscribe/DesGameplayAbilityInscribe.h"
+#include "Character/Ability/DrawWeapon/DesGameplayAbility_DrawWeapon.h"
+#include "Character/Ability/Inscribe/DesGameplayAbility_Inscribe.h"
 
 void UDesHumanoidAnimInstance::InitializeForCharacter(ADesCharacter* InCharacter)
 {

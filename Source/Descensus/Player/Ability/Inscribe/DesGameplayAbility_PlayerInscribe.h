@@ -2,13 +2,13 @@
 
 #include "CoreMinimal.h"
 #include "Character/Ability/DesGameplayAbilityPrimaryBase.h"
-#include "DesGameplayAbilityPlayerInscribe.generated.h"
+#include "DesGameplayAbility_PlayerInscribe.generated.h"
 
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Ability_PlayerInscribe)
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Ability_PlayerInscribe_Active)
 
 UCLASS()
-class DESCENSUS_API UDesGameplayAbilityPlayerInscribe : public UDesGameplayAbilityPrimaryBase
+class DESCENSUS_API UDesGameplayAbility_PlayerInscribe : public UDesGameplayAbilityPrimaryBase
 {
 	GENERATED_BODY()
 
@@ -29,5 +29,5 @@ protected:
 	void OnInputRelease(float TimeHeld);
 
 public:
-	UDesGameplayAbilityPlayerInscribe();
+	UDesGameplayAbility_PlayerInscribe();
 };

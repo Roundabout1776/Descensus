@@ -1,8 +1,8 @@
-﻿#include "Character/Ability/Jump/DesGameplayMMCJumpCost.h"
+﻿#include "Character/Ability/Jump/DesGameplayMMC_JumpCost.h"
 
 #include "Character/DesCharacterAttributeSet.h"
 
-UDesGameplayMMCJumpCost::UDesGameplayMMCJumpCost()
+UDesGameplayMMC_JumpCost::UDesGameplayMMC_JumpCost()
 {
 	MaxStaminaDef.AttributeToCapture = UDesCharacterAttributeSet::GetMaxStaminaAttribute();
 	MaxStaminaDef.AttributeSource = EGameplayEffectAttributeCaptureSource::Source;
@@ -11,7 +11,7 @@ UDesGameplayMMCJumpCost::UDesGameplayMMCJumpCost()
 	RelevantAttributesToCapture.Add(MaxStaminaDef);
 }
 
-float UDesGameplayMMCJumpCost::CalculateBaseMagnitude_Implementation(const FGameplayEffectSpec& Spec) const
+float UDesGameplayMMC_JumpCost::CalculateBaseMagnitude_Implementation(const FGameplayEffectSpec& Spec) const
 {
 	const FAggregatorEvaluateParameters EvaluateParameters;
 	auto MaxStamina = 0.0f;

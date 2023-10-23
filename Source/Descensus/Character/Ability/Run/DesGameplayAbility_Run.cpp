@@ -1,11 +1,11 @@
-#include "Character/Ability/Run/DesGameplayAbilityRun.h"
+#include "Character/Ability/Run/DesGameplayAbility_Run.h"
 
 #include "AbilitySystemComponent.h"
 #include "DesLogging.h"
 #include "DesGameplayTags.h"
 #include "Abilities/Tasks/AbilityTask_WaitAttributeChange.h"
 #include "Abilities/Tasks/AbilityTask_WaitInputRelease.h"
-#include "Character/Ability/Run/DesAbilityTaskRun.h"
+#include "Character/Ability/Run/DesAbilityTask_Run.h"
 #include "Character/DesCharacter.h"
 #include "Character/DesCharacterAttributeSet.h"
 #include "Character/DesCharacterMovementComponent.h"
@@ -13,7 +13,7 @@
 
 UE_DEFINE_GAMEPLAY_TAG(TAG_Ability_Run, "Ability.Run")
 
-UDesGameplayAbilityRun::UDesGameplayAbilityRun()
+UDesGameplayAbility_Run::UDesGameplayAbility_Run()
 {
 	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalPredicted;
 	AbilityTags.AddTag(TAG_Ability_Run);
@@ -24,7 +24,7 @@ UDesGameplayAbilityRun::UDesGameplayAbilityRun()
 	StaminaCost = 3.0f;
 }
 
-bool UDesGameplayAbilityRun::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
+bool UDesGameplayAbility_Run::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                                 const FGameplayAbilityActorInfo* ActorInfo,
                                                 const FGameplayTagContainer* SourceTags,
                                                 const FGameplayTagContainer* TargetTags,
@@ -35,7 +35,7 @@ bool UDesGameplayAbilityRun::CanActivateAbility(const FGameplayAbilitySpecHandle
 		Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
 }
 
-void UDesGameplayAbilityRun::EndAbility(const FGameplayAbilitySpecHandle Handle,
+void UDesGameplayAbility_Run::EndAbility(const FGameplayAbilitySpecHandle Handle,
                                         const FGameplayAbilityActorInfo* ActorInfo,
                                         const FGameplayAbilityActivationInfo ActivationInfo,
                                         bool bReplicateEndAbility, bool bWasCancelled)
@@ -47,7 +47,7 @@ void UDesGameplayAbilityRun::EndAbility(const FGameplayAbilitySpecHandle Handle,
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
-void UDesGameplayAbilityRun::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
+void UDesGameplayAbility_Run::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                              const FGameplayAbilityActorInfo* ActorInfo,
                                              const FGameplayAbilityActivationInfo ActivationInfo,
                                              const FGameplayEventData* TriggerEventData)
@@ -64,7 +64,7 @@ void UDesGameplayAbilityRun::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 		WaitStaminaChange->OnChange.AddDynamic(this, &ThisClass::OnStaminaDepleted);
 		WaitStaminaChange->ReadyForActivation();
 
-		const auto RunTask = UAbilityTask::NewAbilityTask<UDesAbilityTaskRun>(this);
+		const auto RunTask = UAbilityTask::NewAbilityTask<UDesAbilityTask_Run>(this);
 		RunTask->OnRun.BindUObject(this, &ThisClass::OnRun);
 		RunTask->ReadyForActivation();
 	}
@@ -74,17 +74,17 @@ void UDesGameplayAbilityRun::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 	WaitInputReleaseTask->ReadyForActivation();
 }
 
-void UDesGameplayAbilityRun::OnInputRelease(float TimeHeld)
+void UDesGameplayAbility_Run::OnInputRelease(float TimeHeld)
 {
 	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 }
 
-void UDesGameplayAbilityRun::OnStaminaDepleted()
+void UDesGameplayAbility_Run::OnStaminaDepleted()
 {
 	CancelAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true);
 }
 
-void UDesGameplayAbilityRun::OnRun(bool bEligibleForRunning, float DeltaTime) const
+void UDesGameplayAbility_Run::OnRun(bool bEligibleForRunning, float DeltaTime) const
 {
 	if (bEligibleForRunning)
 	{

@@ -1,13 +1,13 @@
-﻿#include "Character/Ability/Run/DesAbilityTaskRun.h"
+﻿#include "Character/Ability/Run/DesAbilityTask_Run.h"
 
 #include "Character/DesCharacterMovementComponent.h"
 
-UDesAbilityTaskRun::UDesAbilityTaskRun(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
+UDesAbilityTask_Run::UDesAbilityTask_Run(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	bTickingTask = true;
 }
 
-void UDesAbilityTaskRun::Activate()
+void UDesAbilityTask_Run::Activate()
 {
 	const FGameplayAbilityActorInfo* ActorInfo = Ability->GetCurrentActorInfo();
 	CachedMovementComponent = MakeWeakObjectPtr(
@@ -15,7 +15,7 @@ void UDesAbilityTaskRun::Activate()
 	SetWaitingOnAvatar();
 }
 
-void UDesAbilityTaskRun::TickTask(float DeltaTime)
+void UDesAbilityTask_Run::TickTask(float DeltaTime)
 {
 	if (ShouldBroadcastAbilityTaskDelegates())
 	{

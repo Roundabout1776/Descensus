@@ -6,7 +6,7 @@
 #include "DesCharacter.generated.h"
 
 class UAttributeSet;
-class UDesGameplayAbilityRun;
+class UDesGameplayAbility_Run;
 class UDesGameplayAbilityJump;
 class UGameplayEffect;
 class UDesGameplayAbility;

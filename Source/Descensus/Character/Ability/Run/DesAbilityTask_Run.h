@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "Abilities/Tasks/AbilityTask.h"
 #include "UObject/ObjectMacros.h"
-#include "DesAbilityTaskRun.generated.h"
+#include "DesAbilityTask_Run.generated.h"
 
 class UDesCharacterMovementComponent;
 class UMovementComponent;
@@ -11,7 +11,7 @@ class UMovementComponent;
 DECLARE_DELEGATE_TwoParams(FRunDelegate, bool, float);
 
 UCLASS()
-class DESCENSUS_API UDesAbilityTaskRun : public UAbilityTask
+class DESCENSUS_API UDesAbilityTask_Run : public UAbilityTask
 {
 	GENERATED_UCLASS_BODY()
 	UPROPERTY()

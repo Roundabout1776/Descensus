@@ -3,8 +3,8 @@
 #include "DesPhysicalMaterial.h"
 #include "AbilitySystem/DesAbilitySystemComponent.h"
 #include "Components/DesMetaComponent.h"
-#include "Character/Ability/Jump/DesGameplayAbilityJump.h"
-#include "Character/Ability/Run/DesGameplayAbilityRun.h"
+#include "Ability\Jump\DesGameplayAbility_Jump.h"
+#include "Character/Ability/Run/DesGameplayAbility_Run.h"
 #include "Character/Ability/DesGameplayEffectStaminaRegen.h"
 #include "Components/AudioComponent.h"
 #include "Character/DesCharacterAttributeSet.h"
@@ -30,7 +30,7 @@ ADesCharacter::ADesCharacter(const FObjectInitializer& ObjectInitializer) : Supe
 	bUseControllerRotationPitch = false;
 
 	DefaultAbilities.Empty();
-	DefaultAbilities.Add(UDesGameplayAbilityRun::StaticClass());
+	DefaultAbilities.Add(UDesGameplayAbility_Run::StaticClass());
 	DefaultAbilities.Add(UDesGameplayAbilityJump::StaticClass());
 
 	DefaultEffects.Empty();

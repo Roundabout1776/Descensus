@@ -7,7 +7,7 @@
 #include "UI/DesHUD.h"
 #include "Components//DesMetaComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "Ability/Grab/DesGameplayAbilityPlayerGrab.h"
+#include "Ability/Grab/DesGameplayAbility_PlayerGrab.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Input/DesEnhancedInputComponent.h"

@@ -1,20 +1,20 @@
-﻿#include "Player/Ability/Inscribe/DesGameplayAbilityPlayerInscribe.h"
+﻿#include "Player/Ability/Inscribe/DesGameplayAbility_PlayerInscribe.h"
 
 #include "AbilitySystemComponent.h"
 #include "DesGameplayTags.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEffectRemoved.h"
 #include "Abilities/Tasks/AbilityTask_WaitInputRelease.h"
-#include "Character/Ability/Inscribe/DesGameplayAbilityInscribe.h"
+#include "Character/Ability/Inscribe/DesGameplayAbility_Inscribe.h"
 #include "Player/DesPlayerCharacter.h"
-#include "Player/Ability/Inscribe/DesGameplayEffectPlayerInscribe.h"
+#include "Player/Ability/Inscribe/DesGameplayEffect_PlayerInscribe.h"
 #include "Player/DesPlayerController.h"
 #include "UI/DesHUD.h"
-#include "Player/Ability/Inscribe/DesAbilityTaskPlayerInscribe.h"
+#include "Player/Ability/Inscribe/DesAbilityTask_PlayerInscribe.h"
 
 UE_DEFINE_GAMEPLAY_TAG(TAG_Ability_PlayerInscribe, "Ability.PlayerInscribe")
 UE_DEFINE_GAMEPLAY_TAG(TAG_Ability_PlayerInscribe_Active, "Ability.PlayerInscribe.Active")
 
-UDesGameplayAbilityPlayerInscribe::UDesGameplayAbilityPlayerInscribe()
+UDesGameplayAbility_PlayerInscribe::UDesGameplayAbility_PlayerInscribe()
 {
 	AbilityTags.AddTag(TAG_Ability_PlayerInscribe);
 	BlockAbilitiesWithTag.AddTag(TAG_Ability_Hands);
@@ -22,7 +22,7 @@ UDesGameplayAbilityPlayerInscribe::UDesGameplayAbilityPlayerInscribe()
 	ReplicatedActivationOwnedTags.AddTag(TAG_Ability_PlayerInscribe_Active);
 }
 
-void UDesGameplayAbilityPlayerInscribe::EndAbility(const FGameplayAbilitySpecHandle Handle,
+void UDesGameplayAbility_PlayerInscribe::EndAbility(const FGameplayAbilitySpecHandle Handle,
                                                    const FGameplayAbilityActorInfo* ActorInfo,
                                                    const FGameplayAbilityActivationInfo ActivationInfo,
                                                    bool bReplicateEndAbility, bool bWasCancelled)
@@ -32,13 +32,13 @@ void UDesGameplayAbilityPlayerInscribe::EndAbility(const FGameplayAbilitySpecHan
 	GetAbilitySystemComponentFromActorInfo()->RemoveActiveGameplayEffect(EffectHandle);
 }
 
-void UDesGameplayAbilityPlayerInscribe::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
+void UDesGameplayAbility_PlayerInscribe::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                                         const FGameplayAbilityActorInfo* ActorInfo,
                                                         const FGameplayAbilityActivationInfo ActivationInfo,
                                                         const FGameplayEventData* TriggerEventData)
 {
 	EffectHandle = ApplyGameplayEffectToOwner(Handle, ActorInfo, ActivationInfo,
-	                                          GetDefault<UDesGameplayEffectPlayerInscribe>(), 0.0f);
+	                                          GetDefault<UDesGameplayEffect_PlayerInscribe>(), 0.0f);
 
 	if (HasAuthority(&ActivationInfo))
 	{
@@ -52,7 +52,7 @@ void UDesGameplayAbilityPlayerInscribe::ActivateAbility(const FGameplayAbilitySp
 	{
 		const auto PlayerCharacter = Cast<ADesPlayerCharacter>(ActorInfo->AvatarActor.Get());
 		const auto PlayerController = Cast<ADesPlayerController>(ActorInfo->PlayerController);
-		const auto PlayerInscribe = UDesAbilityTaskPlayerInscribe::PlayerInscribe(
+		const auto PlayerInscribe = UDesAbilityTask_PlayerInscribe::PlayerInscribe(
 			this, PlayerCharacter->GetInscriptionComponent(),
 			PlayerController->GetHUD<ADesHUD>()->GetInscriptionCanvas(), PlayerController);
 		PlayerInscribe->ReadyForActivation();
@@ -63,12 +63,12 @@ void UDesGameplayAbilityPlayerInscribe::ActivateAbility(const FGameplayAbilitySp
 	}
 }
 
-void UDesGameplayAbilityPlayerInscribe::OnTimeout(const FGameplayEffectRemovalInfo& GameplayEffectRemovalInfo)
+void UDesGameplayAbility_PlayerInscribe::OnTimeout(const FGameplayEffectRemovalInfo& GameplayEffectRemovalInfo)
 {
 	EndAbilityCurrent();
 }
 
-void UDesGameplayAbilityPlayerInscribe::OnInputRelease(float TimeHeld)
+void UDesGameplayAbility_PlayerInscribe::OnInputRelease(float TimeHeld)
 {
 	EndAbilityCurrent();
 }

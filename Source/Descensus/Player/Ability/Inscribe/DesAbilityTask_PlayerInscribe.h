@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/Tasks/AbilityTask.h"
-#include "DesAbilityTaskPlayerInscribe.generated.h"
+#include "DesAbilityTask_PlayerInscribe.generated.h"
 
 class ADesPlayerController;
 class ADesInscriptionCanvas;
@@ -11,7 +11,7 @@ class UDesInscriptionComponent;
 DECLARE_MULTICAST_DELEGATE(FPlayerInscribeDelegate)
 
 UCLASS()
-class DESCENSUS_API UDesAbilityTaskPlayerInscribe : public UAbilityTask
+class DESCENSUS_API UDesAbilityTask_PlayerInscribe : public UAbilityTask
 {
 	GENERATED_BODY()
 
@@ -34,7 +34,7 @@ public:
 
 	FTimerHandle PerformActionTimerHandle;
 
-	static UDesAbilityTaskPlayerInscribe* PlayerInscribe(UGameplayAbility* OwningAbility,
+	static UDesAbilityTask_PlayerInscribe* PlayerInscribe(UGameplayAbility* OwningAbility,
 	                                                     UDesInscriptionComponent* InInscriptionComponent,
 	                                                     ADesInscriptionCanvas* InInscriptionCanvas,
 	                                                     ADesPlayerController* InPlayerController);

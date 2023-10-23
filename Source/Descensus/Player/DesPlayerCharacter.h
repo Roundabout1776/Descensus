@@ -9,7 +9,7 @@ class UPhysicsHandleComponent;
 struct FGameplayAbilitySpecHandle;
 struct FGameplayAbilitySpec;
 struct FInputActionInstance;
-class UDesGameplayAbilityPlayerInscribe;
+class UDesGameplayAbility_PlayerInscribe;
 class UDesInputConfig;
 class UDesHeadBobComponent;
 class UCameraComponent;

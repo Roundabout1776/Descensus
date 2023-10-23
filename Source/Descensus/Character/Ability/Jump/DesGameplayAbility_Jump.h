@@ -1,17 +1,14 @@
-﻿#pragma once
+#pragma once
 
 #include "CoreMinimal.h"
 #include "NativeGameplayTags.h"
-#include "Character/Ability/DesGameplayAbilityPrimaryBase.h"
-#include "DesGameplayAbilityAttack.generated.h"
+#include "AbilitySystem/DesGameplayAbility.h"
+#include "DesGameplayAbility_Jump.generated.h"
 
-enum class EDesWeaponType : uint8;
-
-UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Ability_Attack)
-UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Character_State_Attacking)
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Ability_Jump)
 
 UCLASS()
-class DESCENSUS_API UDesGameplayAbilityAttack : public UDesGameplayAbilityPrimaryBase
+class DESCENSUS_API UDesGameplayAbilityJump : public UDesGameplayAbility
 {
 	GENERATED_BODY()
 
@@ -23,18 +20,9 @@ protected:
 	                        const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility,
 	                        bool bWasCancelled) override;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Descensus|Ability")
-	TMap<EDesWeaponType, TObjectPtr<UAnimMontage>> Montages;
-
-	UFUNCTION()
-	void OnMontageCompleted();
-
-	UFUNCTION()
-	void OnMontageCancelled();
-
-	UFUNCTION()
-	void OnMontageInterrupted();
-
 public:
-	UDesGameplayAbilityAttack();
+	UDesGameplayAbilityJump();
+	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+	                                const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags,
+	                                FGameplayTagContainer* OptionalRelevantTags) const override;
 };

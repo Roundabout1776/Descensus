@@ -1,16 +1,16 @@
-﻿#include "Character/Ability/Attack/DesGameplayAbilityAttack.h"
+﻿#include "Character/Ability/Attack/DesGameplayAbility_Attack.h"
 
 #include "DesGameplayTags.h"
 #include "DesLogging.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
-#include "Character/Ability/DrawWeapon/DesGameplayAbilityDrawWeapon.h"
+#include "Character/Ability/DrawWeapon/DesGameplayAbility_DrawWeapon.h"
 #include "Items/DesWeaponType.h"
 #include "Player/DesPlayerCharacter.h"
 
 UE_DEFINE_GAMEPLAY_TAG(TAG_Ability_Attack, "Ability.Attack")
 UE_DEFINE_GAMEPLAY_TAG(TAG_Character_State_Attacking, "Character.State.Attacking")
 
-UDesGameplayAbilityAttack::UDesGameplayAbilityAttack()
+UDesGameplayAbility_Attack::UDesGameplayAbility_Attack()
 {
 	AbilityTags.AddTag(TAG_Ability_Attack);
 	BlockAbilitiesWithTag.AddTag(TAG_Ability_Hands);
@@ -18,7 +18,7 @@ UDesGameplayAbilityAttack::UDesGameplayAbilityAttack()
 	ReplicatedActivationOwnedTags.AddTag(TAG_Character_State_Attacking);
 }
 
-void UDesGameplayAbilityAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
+void UDesGameplayAbility_Attack::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                                 const FGameplayAbilityActorInfo* ActorInfo,
                                                 const FGameplayAbilityActivationInfo ActivationInfo,
                                                 const FGameplayEventData* TriggerEventData)
@@ -41,7 +41,7 @@ void UDesGameplayAbilityAttack::ActivateAbility(const FGameplayAbilitySpecHandle
 	}
 }
 
-void UDesGameplayAbilityAttack::EndAbility(const FGameplayAbilitySpecHandle Handle,
+void UDesGameplayAbility_Attack::EndAbility(const FGameplayAbilitySpecHandle Handle,
                                            const FGameplayAbilityActorInfo* ActorInfo,
                                            const FGameplayAbilityActivationInfo ActivationInfo,
                                            bool bReplicateEndAbility, bool bWasCancelled)
@@ -49,17 +49,17 @@ void UDesGameplayAbilityAttack::EndAbility(const FGameplayAbilitySpecHandle Hand
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
-void UDesGameplayAbilityAttack::OnMontageCompleted()
+void UDesGameplayAbility_Attack::OnMontageCompleted()
 {
 	EndAbilityCurrent();
 }
 
-void UDesGameplayAbilityAttack::OnMontageCancelled()
+void UDesGameplayAbility_Attack::OnMontageCancelled()
 {
 	EndAbilityCurrent();
 }
 
-void UDesGameplayAbilityAttack::OnMontageInterrupted()
+void UDesGameplayAbility_Attack::OnMontageInterrupted()
 {
 	EndAbilityCurrent();
 }

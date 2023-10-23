@@ -2,14 +2,14 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/Tasks/AbilityTask.h"
-#include "DesAbilityTaskPlayerGrab.generated.h"
+#include "DesAbilityTask_PlayerGrab.generated.h"
 
 class ADesPlayerCharacter;
 class UCharacterMovementComponent;
 class UPhysicsHandleComponent;
 
 UCLASS()
-class DESCENSUS_API UDesAbilityTaskPlayerGrab : public UAbilityTask
+class DESCENSUS_API UDesAbilityTask_PlayerGrab : public UAbilityTask
 {
 	GENERATED_UCLASS_BODY()
 	UPROPERTY()
@@ -18,6 +18,6 @@ class DESCENSUS_API UDesAbilityTaskPlayerGrab : public UAbilityTask
 public:
 	virtual void TickTask(float DeltaTime) override;
 
-	static UDesAbilityTaskPlayerGrab* PlayerGrab(UGameplayAbility* OwningAbility,
+	static UDesAbilityTask_PlayerGrab* PlayerGrab(UGameplayAbility* OwningAbility,
 	                                             ADesPlayerCharacter* InCharacter);
 };

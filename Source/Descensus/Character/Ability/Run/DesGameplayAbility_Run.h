@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "NativeGameplayTags.h"
 #include "AbilitySystem/DesGameplayAbility.h"
-#include "DesGameplayAbilityRun.generated.h"
+#include "DesGameplayAbility_Run.generated.h"
 
 class UDesGameplayEffectRun;
 class UAbilityTask_WaitInputRelease;
@@ -13,7 +13,7 @@ class UAbilityTask_WaitDelay;
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Ability_Run)
 
 UCLASS()
-class DESCENSUS_API UDesGameplayAbilityRun : public UDesGameplayAbility
+class DESCENSUS_API UDesGameplayAbility_Run : public UDesGameplayAbility
 {
 	GENERATED_BODY()
 
@@ -41,7 +41,7 @@ protected:
 	float StaminaCost;
 
 public:
-	UDesGameplayAbilityRun();
+	UDesGameplayAbility_Run();
 
 	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	                                const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags,

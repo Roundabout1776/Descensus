@@ -1,4 +1,4 @@
-#include "Character/Ability/DrawWeapon/DesGameplayAbilityDrawWeapon.h"
+#include "Character/Ability/DrawWeapon/DesGameplayAbility_DrawWeapon.h"
 
 #include "AbilitySystemComponent.h"
 #include "DesGameplayTags.h"
@@ -9,7 +9,7 @@ UE_DEFINE_GAMEPLAY_TAG(TAG_Ability_DrawWeapon, "Ability.DrawWeapon")
 UE_DEFINE_GAMEPLAY_TAG(TAG_Ability_DrawWeapon_Active, "Ability.DrawWeapon.Active")
 UE_DEFINE_GAMEPLAY_TAG(TAG_Ability_DrawWeapon_Active_Local, "Ability.DrawWeapon.Active.Local")
 
-UDesGameplayAbilityDrawWeapon::UDesGameplayAbilityDrawWeapon()
+UDesGameplayAbility_DrawWeapon::UDesGameplayAbility_DrawWeapon()
 {
 	AbilityTags.AddTag(TAG_Ability_DrawWeapon);
 	ActivationOwnedTags.AddTag(TAG_Equip_Unarmed);

@@ -1,16 +1,16 @@
-﻿#include "Character/Ability/Jump/DesGameplayEffectJumpCost.h"
+﻿#include "Character/Ability/Jump/DesGameplayEffect_JumpCost.h"
 
-#include "Character/Ability/Jump/DesGameplayMMCJumpCost.h"
+#include "Character/Ability/Jump/DesGameplayMMC_JumpCost.h"
 #include "Character/DesCharacterAttributeSet.h"
 
-UDesGameplayEffectJumpCost::UDesGameplayEffectJumpCost()
+UDesGameplayEffect_JumpCost::UDesGameplayEffect_JumpCost()
 {
 	Modifiers.Empty();
 
 	FGameplayModifierInfo StaminaModifier;
 	StaminaModifier.Attribute = UDesCharacterAttributeSet::GetStaminaAttribute();
 	FCustomCalculationBasedFloat ModifierMagnitude;
-	ModifierMagnitude.CalculationClassMagnitude = UDesGameplayMMCJumpCost::StaticClass();
+	ModifierMagnitude.CalculationClassMagnitude = UDesGameplayMMC_JumpCost::StaticClass();
 	StaminaModifier.ModifierMagnitude = ModifierMagnitude;
 	Modifiers.Add(StaminaModifier);
 }

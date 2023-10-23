@@ -12,7 +12,7 @@
 #include "Internationalization/TextFormatter.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "Player/DesPlayerAttributeSet.h"
-#include "Player/Ability/Inscribe/DesGameplayAbilityPlayerInscribe.h"
+#include "Player/Ability/Inscribe/DesGameplayAbility_PlayerInscribe.h"
 #include "Player/DesPlayerAnimInstance.h"
 
 ADesPlayerCharacter::ADesPlayerCharacter(const FObjectInitializer& ObjectInitializer) : Super(
