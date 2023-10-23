@@ -5,9 +5,10 @@
 #include "Items/DesItemInstance.h"
 #include "DesHUD.generated.h"
 
+struct FItemContainerEntry;
+struct FDesTooltipData;
 class SDesPopupLayer;
 class UDesInventoryComponent;
-struct FItemContainerEntry;
 class SDesHUDLayer;
 class SDesTooltipLayer;
 class UImage;
@@ -20,7 +21,6 @@ class UOverlay;
 class UDesGenericTooltip;
 class UDesMetaComponent;
 class SDesShortcutsPanel;
-struct FDesTooltipData;
 
 UENUM(BlueprintType)
 enum class ECursorTarget : uint8
@@ -42,7 +42,7 @@ protected:
 	static inline constexpr int32 HUDLayerZ = 1;
 	static inline constexpr int32 PopupLayerZ = 2;
 
-	bool bIsLooking;
+	bool bIsLooking{};
 
 	TSharedPtr<SDesHUDLayer> HUDLayer;
 	TSharedPtr<SDesPopupLayer> PopupLayer;

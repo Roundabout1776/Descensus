@@ -55,6 +55,9 @@ void ADesHUD::Tick(const float DeltaSeconds)
 
 	if (SlateUser.IsValid())
 	{
+		if (bIsLooking)
+			return;
+		
 		TSharedPtr<IDesTooltip> Tooltip{};
 		bool bNewTooltipWidget{};
 		for (auto& WidgetWeak : SlateUser->GetLastWidgetsUnderCursor().Widgets)
