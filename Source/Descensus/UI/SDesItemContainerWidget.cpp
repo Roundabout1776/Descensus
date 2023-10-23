@@ -63,7 +63,8 @@ void SDesItemContainerWidget::Construct(const FArguments& InArgs)
 	GridSizeAttribute.Assign(*this, InArgs._GridSize);
 	Children.AddSlots(MoveTemp(const_cast<TArray<FSlot::FSlotArguments>&>(InArgs._Slots)));
 
-	AddTooltipMetaData(this);
+	AddTooltipMetaData(SharedThis(this));
+	// AddMetadata(MakeShared<FDesTooltipMetaData>(SharedThis(this)));
 }
 
 SDesItemContainerWidget::FSlot::FSlotArguments SDesItemContainerWidget::Slot()

@@ -1,5 +1,6 @@
 ﻿#include "SDesPopupLayer.h"
 
+#include "DesLogging.h"
 #include "DesStyle.h"
 #include "DesTooltipData.h"
 #include "Items/DesItemData.h"

@@ -60,8 +60,9 @@ void SDesShortcutSlot::Construct(const FArguments& InArgs)
 	];
 
 	SetImageFromTexture(InArgs._FixedIconTexture.Get());
-	
-	AddTooltipMetaData(this);
+
+	AddTooltipMetaData(SharedThis(this));
+	// AddMetadata(MakeShared<FDesTooltipMetaData>(SharedThis(this)));
 }
 
 void SDesShortcutSlot::SetImageFromTexture(UTexture2D* Texture)

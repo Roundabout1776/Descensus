@@ -41,7 +41,7 @@ ADesHUD::ADesHUD()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-void ADesHUD::Tick(float DeltaSeconds)
+void ADesHUD::Tick(const float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
@@ -55,18 +55,24 @@ void ADesHUD::Tick(float DeltaSeconds)
 
 	if (SlateUser.IsValid())
 	{
-		IDesTooltip* Tooltip{};
+		TSharedPtr<IDesTooltip> Tooltip{};
 		bool bNewTooltipWidget{};
 		for (auto& WidgetWeak : SlateUser->GetLastWidgetsUnderCursor().Widgets)
 		{
-			const auto WidgetPinned = WidgetWeak.Pin();
-			if (WidgetPinned.IsValid())
+			if (const auto WidgetPinned = WidgetWeak.Pin(); WidgetPinned.IsValid())
 			{
-				const auto MetaData = WidgetPinned->GetMetaData<FDesTooltipMetaData>();
-				if (MetaData.IsValid())
+				if (const auto MetaData = WidgetPinned->GetMetaData<FDesTooltipMetaData>(); MetaData.IsValid())
 				{
-					if (!MetaData->Tooltip->ShouldShowTooltip())
+					Tooltip = MetaData->Tooltip.Pin();
+
+					if (!Tooltip.IsValid())
 					{
+						continue;
+					}
+
+					if (!Tooltip->ShouldShowTooltip())
+					{
+						Tooltip.Reset();
 						continue;
 					}
 
@@ -76,7 +82,6 @@ void ADesHUD::Tick(float DeltaSeconds)
 						LastTooltipWidgetUnderCursor = WidgetWeak;
 					}
 
-					Tooltip = MetaData->Tooltip;
 					break;
 				}
 			}

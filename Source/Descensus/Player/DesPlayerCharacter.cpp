@@ -9,6 +9,7 @@
 #include "Player/DesHeadBobComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Input/DesEnhancedInputComponent.h"
+#include "Internationalization/TextFormatter.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "Player/DesPlayerAttributeSet.h"
 #include "Player/Ability/Inscribe/DesGameplayAbilityPlayerInscribe.h"

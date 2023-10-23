@@ -12,21 +12,21 @@ class DESCENSUS_API FDesTooltipMetaData final : public ISlateMetaData
 public:
 	SLATE_METADATA_TYPE(FDesTooltipMetaData, ISlateMetaData)
 
-	explicit FDesTooltipMetaData(IDesTooltip* InTooltip) : Tooltip(InTooltip)
+	explicit FDesTooltipMetaData(const TSharedRef<IDesTooltip>& InTooltip) : Tooltip(InTooltip.ToWeakPtr())
 	{
 	}
 
 	FDesTooltipMetaData(const FDesTooltipMetaData&) = delete;
 	FDesTooltipMetaData& operator=(const FDesTooltipMetaData&) = delete;
 
-	IDesTooltip* Tooltip{};
+	TWeakPtr<IDesTooltip> Tooltip;
 };
 
 class DESCENSUS_API IDesTooltip
 {
 	FDesTooltipData CachedTooltipData;
 	bool bIsDirty = true;
-
+	
 protected:
 	virtual FDesTooltipData& GetCachedTooltipDataMutable() { return CachedTooltipData; }
 
@@ -37,9 +37,13 @@ protected:
 
 	virtual void UpdateCachedTooltipData() = 0;
 
-	void AddTooltipMetaData(SWidget* Widget)
+	template <typename WidgetWithTooltip, typename = TEnableIf<
+		          TIsDerivedFrom<WidgetWithTooltip, SWidget>::Value && TIsDerivedFrom<
+			          WidgetWithTooltip, IDesTooltip>::Value,
+		          bool>>
+	void AddTooltipMetaData(const TSharedRef<WidgetWithTooltip>& InSharedThis)
 	{
-		Widget->AddMetadata(MakeShared<FDesTooltipMetaData>(this));
+		InSharedThis->AddMetadata(MakeShared<FDesTooltipMetaData>(InSharedThis));
 	}
 
 public:

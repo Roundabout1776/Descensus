@@ -35,6 +35,9 @@ protected:
 	void SetFirstPersonMode(bool bFirstPerson) const;
 
 public:
+	UPROPERTY(VisibleInstanceOnly, Transient)
+	FText FormattedText;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Descensus|PlayerCharacter")
 	TObjectPtr<UDesInventoryComponent> Inventory;
 
